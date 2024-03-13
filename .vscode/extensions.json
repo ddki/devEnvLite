@@ -1,0 +1,11 @@
+{
+	"recommendations": [
+		"Vue.volar",
+		"tauri-apps.tauri-vscode",
+		"esbenp.prettier-vscode",
+		"editorconfig.editorconfig",
+		"rust-lang.rust-analyzer",
+		"tamasfe.even-better-toml",
+		"bradlc.vscode-tailwindcss"
+	]
+}
