@@ -1,9 +1,14 @@
-#app {
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#main {
 	height: 100dvh;
 	display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 30px 1fr 18px;
-  gap: 0px 0px;
+  grid-template-rows: 2rem 1fr 1.5rem;
+  gap: .5rem 0;
   grid-template-areas:
     "."
     "."

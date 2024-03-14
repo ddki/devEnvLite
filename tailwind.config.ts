@@ -9,6 +9,9 @@ export default {
 				primary: "#0099CC",
 				second: "#666666",
 			},
+			gridTemplateColumns: {
+				main: "20dvw minmax(60dvw, 1fr) 20dvw",
+			},
 		},
 	},
 	plugins: [

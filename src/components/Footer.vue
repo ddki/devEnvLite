@@ -1,9 +1,8 @@
 <template>
-	<footer class="flex flex-row justify-between pl-2 pr-2 bg-second text-slate-200 text-xs">
-		<span>Version: <span>V{{ appVersion }}</span></span>
-		<span>License: <a _blank href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0</a></span>
-		<span>Author: <a _blank href="https://github.com/ddki">ddki</a></span>
-		<span>Power by: <a _blank href="https://tauri.app/">Tauri</a></span>
+	<footer class="flex flex-row justify-center items-center pl-2 pr-2 bg-second text-slate-200 text-sm">
+		<span class="mr-6">Version: <span>V{{ appVersion }}</span></span>
+		<span class="mr-6">License: <a target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0</a></span>
+		<span>Power by: <a target="_blank" href="https://tauri.app/">Tauri</a></span>
 	</footer>
 </template>
 

@@ -12,9 +12,27 @@
 	"app": {
 		"windows": [
 			{
+				"label": "splashscreen",
+				"url": "splashscreen.html",
+				"width": 800,
+				"height": 600,
+				"visible": true,
+				"resizable": false,
+				"decorations": false,
+				"center": true,
+				"fullscreen": false
+			},
+			{
 				"title": "DevEnvLite",
 				"width": 800,
-				"height": 600
+				"height": 600,
+				"label": "main",
+				"visible": false,
+				"fullscreen": false,
+				"center": true,
+				"shadow": true,
+				"focus": true,
+				"resizable": true
 			}
 		],
 		"security": {
@@ -24,6 +42,10 @@
 	"bundle": {
 		"active": true,
 		"targets": "all",
+		"category": "DeveloperTool",
+		"copyright": "ddki",
+		"license": "GPL-3.0",
+		"licenseFile": "../LICENSE",
 		"icon": [
 			"icons/32x32.png",
 			"icons/128x128.png",
