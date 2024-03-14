@@ -1,0 +1,11 @@
+#app {
+	height: 100dvh;
+	display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 30px 1fr 18px;
+  gap: 0px 0px;
+  grid-template-areas:
+    "."
+    "."
+    ".";
+}

@@ -1,20 +1,20 @@
-<script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-</script>
-
 <template>
-  <div class="container">
-    <h1>Welcome to Tauri!</h1>
-  </div>
+	<Header />
+	<main>
+
+	</main>
+
+	<Suspense>
+		<template #default>
+			<Footer />
+		</template>
+	</Suspense>
 </template>
 
-<style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
-}
-</style>
+<script setup lang="ts">
+import { defineAsyncComponent } from "vue";
+import Header from "./components/Header.vue";
+
+const Footer = defineAsyncComponent(() => import("./components/Footer.vue"));
+</script>

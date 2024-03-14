@@ -1,0 +1,38 @@
+header:
+  collate: 一键整理
+  backup: 备份
+  recover: 恢复
+  setting: 设置
+
+settings:
+  theme: 主题
+  language: 语言
+  home-dir: 应用目录
+  cache-dir: 缓存目录
+  data-dir: 数据目录
+  env-backup-dir: 环境变量备份目录
+
+config:
+  import-config: 导入配置
+  new-config: 新增配置
+  context-menu:
+    active: 激活
+    check: 检查
+    apply: 应用
+    modify: 修改
+    delete: 删除
+    add: 添加
+
+env-group:
+  new-config-group: 新增分组
+  group-name: 分组名称
+  group-code: 分组标识
+  group-description: 分组描述
+
+env:
+  key: 键
+  value: 值
+  description: 描述
+  sort: 序号
+
+save: 保存

@@ -7,5 +7,8 @@
 	},
 	"tailwindCSS.includeLanguages": {
 		"plaintext": "html"
-	}
+	},
+	"i18n-ally.localesPaths": [
+		"src/locales"
+	]
 }

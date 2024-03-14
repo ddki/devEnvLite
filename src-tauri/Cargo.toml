@@ -1,8 +1,8 @@
 [package]
 name = "devenvlite"
 version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "一个环境变量管理和配置工具。 A lightweight tool for managing and configuring environment variables. "
+authors = ["ddki"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -11,8 +11,13 @@ edition = "2021"
 tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-beta", features = [] }
+tauri = { version = "2.0.0-beta", features = ["devtools", "config-json5"] }
 tauri-plugin-shell = "2.0.0-beta"
+tauri-plugin-dialog = "2.0.0-beta"
+tauri-plugin-updater = "2.0.0-beta"
+tauri-plugin-single-instance = "2.0.0-beta"
+tauri-plugin-store = "2.0.0-beta"
+tauri-plugin-notification = "2.0.0-beta"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 

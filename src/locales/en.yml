@@ -1,0 +1,38 @@
+header:
+  collate: Collate
+  backup: Backup
+  recover: Recover
+  setting: Setting
+
+settings:
+  theme: Theme
+  language: Language
+  home-dir: Home Directory
+  cache-dir: Cache Directory
+  data-dir: Data Directory
+  env-backup-dir: Environment Backup Directory
+
+config:
+  import-config: Import Config
+  new-config: New Config
+  context-menu:
+    active: Active
+    check: Check
+    apply: Apply
+    modify: Modify
+    delete: Delete
+    add: Add
+
+env-group:
+  new-config-group: New Config Group
+  group-name: Group Name
+  group-code: Group Code
+  group-description: Group Description
+
+env:
+  key: Key
+  value: Value
+  description: Description
+  sort: Serial Number
+
+save: Save
