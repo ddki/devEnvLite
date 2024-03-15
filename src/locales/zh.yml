@@ -12,6 +12,8 @@ settings:
   cache-dir: 缓存目录
   data-dir: 数据目录
   env-backup-dir: 环境变量备份目录
+  directory: 目录
+  save: 保存
 
 config:
   import-config: 导入配置
@@ -37,3 +39,4 @@ env:
   sort: 序号
 
 save: 保存
+close: 关闭

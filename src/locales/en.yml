@@ -12,6 +12,8 @@ settings:
   cache-dir: Cache Directory
   data-dir: Data Directory
   env-backup-dir: Environment Backup Directory
+  directory: Directory
+  save: Save
 
 config:
   import-config: Import Config
@@ -37,3 +39,4 @@ env:
   sort: Serial Number
 
 save: Save
+close: Close

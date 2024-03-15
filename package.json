@@ -49,9 +49,7 @@
 			"biome format --write --no-errors-on-unmatched",
 			"biome lint --apply --no-errors-on-unmatched"
 		],
-		"**/*": [
-			"git add"
-		]
+		"**/*": ["git add"]
 	},
 	"volta": {
 		"node": "20.11.1",

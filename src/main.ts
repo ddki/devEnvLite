@@ -6,11 +6,14 @@ import { createI18n } from "vue-i18n";
 import "./styles/tailwind.css";
 
 import App from "./App.vue";
+import { getSetting } from "./store/setting";
 import "./styles/main.css";
 import { disableContextMenu, disableRefresh } from "./utils/Webview";
 
+const setting = await getSetting();
+
 const i18n = createI18n({
-	locale: "en",
+	locale: setting.language || "en",
 	messages,
 });
 
