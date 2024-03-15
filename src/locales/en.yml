@@ -3,6 +3,7 @@ header:
   backup: Backup
   recover: Recover
   setting: Setting
+  theme: Theme
 
 settings:
   theme: Theme

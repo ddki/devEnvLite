@@ -19,5 +19,5 @@ app.use(i18n);
 app.use(ContextMenu);
 app.mount("#main");
 
-disableRefresh();
-disableContextMenu();
+// disableRefresh();
+// disableContextMenu();

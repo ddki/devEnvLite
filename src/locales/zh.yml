@@ -3,6 +3,7 @@ header:
   backup: 备份
   recover: 恢复
   setting: 设置
+  theme: 主题
 
 settings:
   theme: 主题
