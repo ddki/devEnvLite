@@ -1,14 +1,6 @@
 import { Store } from "@tauri-apps/plugin-store";
 
-interface Setting {
-	language: string | null;
-	theme: string | null;
-	homeDir: string | null;
-	cacheDir: string | null;
-	dataDir: string | null;
-	envBackupDir: string | null;
-}
-const store = new Store("DevEnvLite.settings");
+const store = new Store("settings.json");
 
 const getSetting = async (): Promise<Setting> => {
 	return {

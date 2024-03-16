@@ -3,6 +3,7 @@
 
 use tauri_plugin_log::{Target, TargetKind};
 
+
 pub mod command;
 
 fn main() {
@@ -12,7 +13,7 @@ fn main() {
 				.targets([
 					Target::new(TargetKind::Stdout),
 					Target::new(TargetKind::LogDir {
-						file_name: Some("DevEnvLite.log".to_string()),
+						file_name: Some("log".to_string()),
 					}),
 					Target::new(TargetKind::Webview),
 				])
@@ -33,7 +34,7 @@ fn main() {
 			// app.save_window_state(StateFlags::all());
 			Ok(())
 		})
-		.invoke_handler(tauri::generate_handler![command::close_splashscreen])
+		.invoke_handler(tauri::generate_handler![command::close_splashscreen, command::get_files_from_base_dir])
 		.run(tauri::generate_context!())
 		.expect("error while running tauri application");
 }

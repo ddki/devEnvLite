@@ -3,8 +3,7 @@
 		<button type="button" class="btn btn-primary btn-sm sm:btn-sm md:btn-md" @click="onCollate">
 			{{ t('header.collate') }}
 		</button>
-		<button type="button" class="btn btn-primary btn-sm sm:btn-sm md:btn-md"
-			onclick="setting_modal.showModal()">
+		<button type="button" class="btn btn-primary btn-sm sm:btn-sm md:btn-md" onclick="setting_modal.showModal()">
 			{{ t('header.setting') }}
 		</button>
 	</header>
@@ -17,7 +16,7 @@
 			<p class="py-4">
 				<Suspense>
 					<template #default>
-						<Setting />
+						<Setting @callBack="postSaveSetting" />
 					</template>
 				</Suspense>
 			</p>
@@ -26,11 +25,20 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, getCurrentInstance } from "vue";
 import { useI18n } from "vue-i18n";
+const global = getCurrentInstance()?.appContext.config.globalProperties;
 const Setting = defineAsyncComponent(() => import("./Setting.vue"));
 
 const { t } = useI18n();
 
-const onCollate = () => {};
+const onCollate = () => {
+	console.log(global?.$toast)
+	global?.$toast.success("哈哈哈哈")
+};
+
+const postSaveSetting = () => {
+	const settingModal = document.getElementById("setting_modal") as HTMLDialogElement
+	settingModal.close()
+}
 </script>

@@ -8,5 +8,12 @@
 	"tailwindCSS.includeLanguages": {
 		"plaintext": "html"
 	},
-	"i18n-ally.localesPaths": ["src/locales"]
+	"i18n-ally.localesPaths": ["src/locales"],
+	"[vue]": {
+		"editor.defaultFormatter": "Vue.volar"
+	},
+	"[typescript,javascript,json,jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"i18n-ally.keystyle": "nested"
 }

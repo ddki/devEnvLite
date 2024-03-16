@@ -18,6 +18,9 @@ settings:
 config:
   import-config: 导入配置
   new-config: 新增配置
+  name: 名称
+  note: 描述
+  sort: 序号
   context-menu:
     active: 激活
     check: 检查
@@ -40,3 +43,5 @@ env:
 
 save: 保存
 close: 关闭
+success: 成功
+failure: 失败

@@ -16,8 +16,11 @@ settings:
   save: Save
 
 config:
-  import-config: Import Config
-  new-config: New Config
+  import-config: Import
+  new-config: New
+  name: Name
+  note: Note
+  sort: Sort
   context-menu:
     active: Active
     check: Check
@@ -27,7 +30,7 @@ config:
     add: Add
 
 env-group:
-  new-config-group: New Config Group
+  new-config-group: New
   group-name: Group Name
   group-code: Group Code
   group-description: Group Description
@@ -40,3 +43,5 @@ env:
 
 save: Save
 close: Close
+success: Successed
+failure: Failed

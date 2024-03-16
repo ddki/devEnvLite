@@ -9,8 +9,11 @@ import App from "./App.vue";
 import { getSetting } from "./store/setting";
 import "./styles/main.css";
 import { disableContextMenu, disableRefresh } from "./utils/Webview";
+import Toast from "./components/Toast/index";
 
 const setting = await getSetting();
+
+console.log(setting)
 
 const i18n = createI18n({
 	locale: setting.language || "en",
@@ -20,7 +23,10 @@ const i18n = createI18n({
 const app = createApp(App);
 app.use(i18n);
 app.use(ContextMenu);
+app.use(Toast);
 app.mount("#main");
 
+// 设置daisyui主题
+document.documentElement.setAttribute("data-theme", setting.theme || "light");
 // disableRefresh();
 // disableContextMenu();

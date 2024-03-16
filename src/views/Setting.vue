@@ -4,9 +4,6 @@
 			{{ t('settings.theme') }}
 		</span>
 		<select data-choose-theme class="select select-primary w-full max-w-xs" v-model="settingDate.theme">
-			<option disabled selected>
-				{{ t('settings.theme') }}
-			</option>
 			<option v-for="(item, index) in themeList" :key="index" :value="item">
 				{{ item }}
 			</option>
@@ -17,9 +14,6 @@
 			{{ t('settings.language') }}
 		</span>
 		<select class="select select-primary w-full max-w-xs" v-model="settingDate.language">
-			<option disabled selected>
-				{{ t('settings.language') }}
-			</option>
 			<option v-for="(item, index) in languageList" :key="index" :value="item.value">
 				{{ item.label }}
 			</option>
@@ -64,11 +58,14 @@
 
 <script setup lang="ts">
 import { themeChange } from "theme-change";
-import { reactive } from "vue";
+import { getCurrentInstance, reactive } from "vue";
 import { useI18n } from "vue-i18n";
 import { getSetting, saveSetting } from "../store/setting";
 
 const { t } = useI18n();
+const global = getCurrentInstance()?.appContext.config.globalProperties;
+
+const emits = defineEmits(["callBack"]);
 
 const themeList = ["light", "dark", "cupcake", "synthwave", "dracula", "business", "dim"];
 const languageList = [
@@ -104,6 +101,9 @@ const onSave = async () => {
 	});
 	if (save) {
 		themeChange(false);
+		emits("callBack");
+	} else {
+		global?.$toast.warning(t("save") + t("failure"));
 	}
 };
 </script>
