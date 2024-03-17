@@ -13,13 +13,8 @@ pub fn close_splashscreen(app: AppHandle) {
 	app.get_webview_window("main").unwrap().show().unwrap();
 }
 
-#[derive(Clone, serde::Serialize)]
-struct FileName {
-	name: String
-}
-
 #[tauri::command]
-pub fn get_files_from_base_dir(app: AppHandle) -> Result<Vec<String>, bool> {
+pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, bool> {
 	let app_config_dir = app.path().app_config_dir().unwrap();
 	let app_cache_dir = app.path().app_cache_dir().unwrap();
 	let app_data_dir = app.path().app_data_dir().unwrap();
@@ -43,18 +38,23 @@ pub fn get_files_from_base_dir(app: AppHandle) -> Result<Vec<String>, bool> {
 	println!("config_dir = {:?}", config_dir);
 	println!("local_data_dir = {:?}", local_data_dir);
 	let mut config_path = app_data_dir.clone();
-	config_path.push("configs");
+	config_path.push("config");
 
-	let mut config_file_names: Vec<String> = vec![];
+	let mut config_ids: Vec<String> = vec![];
 	if let Ok(entries) = fs::read_dir(config_path) {
 		for entry in entries.flatten() {
 			let file_path = entry.path();
 			if let Some(extension) = file_path.extension() {
-					if extension == "json" {
-						config_file_names.push(file_path.display().to_string());
-					}
+				println!("extension: {:?}", extension);
+				println!("file_name: {:?}", file_path.file_name());
+				if extension == "json" {
+					let config_file_name =
+						file_path.file_name().unwrap().to_str().unwrap().to_string();
+					let id = str::replace(&config_file_name, ".json", "");
+					config_ids.push(id);
+				}
 			}
 		}
 	}
-	Ok(config_file_names)
+	Ok(config_ids)
 }

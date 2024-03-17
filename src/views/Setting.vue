@@ -118,5 +118,6 @@ const onSave = async () => {
 	align-content: center;
 	justify-items: end;
 	align-items: center;
+	padding: 0.2rem 0;
 }
 </style>

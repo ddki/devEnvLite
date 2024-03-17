@@ -1,6 +1,6 @@
 import { Store } from "@tauri-apps/plugin-store";
 
-const store = new Store("settings.json");
+const store = new Store("config/settings.json");
 
 const getSetting = async (): Promise<Setting> => {
 	return {

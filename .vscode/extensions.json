@@ -6,6 +6,7 @@
 		"rust-lang.rust-analyzer",
 		"tamasfe.even-better-toml",
 		"bradlc.vscode-tailwindcss",
-		"biomejs.biome"
+		"biomejs.biome",
+		"lokalise.i18n-ally"
 	]
 }

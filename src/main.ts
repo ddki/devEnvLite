@@ -6,14 +6,12 @@ import { createI18n } from "vue-i18n";
 import "./styles/tailwind.css";
 
 import App from "./App.vue";
+import Toast from "./components/Toast/index";
 import { getSetting } from "./store/setting";
 import "./styles/main.css";
 import { disableContextMenu, disableRefresh } from "./utils/Webview";
-import Toast from "./components/Toast/index";
 
 const setting = await getSetting();
-
-console.log(setting)
 
 const i18n = createI18n({
 	locale: setting.language || "en",

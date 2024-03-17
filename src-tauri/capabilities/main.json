@@ -2,7 +2,7 @@
 	"$schema": "../gen/schemas/desktop-schema.json",
 	"identifier": "default",
 	"description": "Capability for the main window",
-	"windows": ["main"],
+	"windows": ["main", "splashscreen"],
 	"permissions": [
 		"path:default",
 		"event:default",
@@ -18,6 +18,13 @@
 		"updater:default",
 		"store:allow-get",
 		"store:allow-set",
-		"store:allow-save"
+		"store:allow-save",
+		"store:allow-has",
+		"store:allow-load",
+		"store:allow-clear",
+		"store:allow-delete",
+		"store:allow-values",
+		"window-state:allow-save-window-state",
+		"window-state:allow-restore-window-state"
 	]
 }

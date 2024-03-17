@@ -17,13 +17,11 @@
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
 import { themeChange } from "theme-change";
-import { defineAsyncComponent, onMounted } from "vue";
+import { defineAsyncComponent } from "vue";
 import Header from "./views/Header.vue";
 const Main = defineAsyncComponent(() => import("./views/MainContent.vue"));
 const Footer = defineAsyncComponent(() => import("./views/Footer.vue"));
 
-onMounted(() => {
-	invoke("close_splashscreen");
-	themeChange(false);
-});
+invoke("close_splashscreen");
+themeChange(false);
 </script>

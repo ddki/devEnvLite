@@ -18,6 +18,7 @@ settings:
 config:
   import-config: 导入配置
   new-config: 新增配置
+  id: 唯一标识
   name: 名称
   note: 描述
   sort: 序号

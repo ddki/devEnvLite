@@ -18,6 +18,7 @@ settings:
 config:
   import-config: Import
   new-config: New
+  id: Unique Identifier
   name: Name
   note: Note
   sort: Sort

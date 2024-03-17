@@ -9,6 +9,7 @@ interface Setting {
 
 interface ActiveConfig {
 	activeConfigId: string;
+	configNames: string[];
 }
 
 interface Config {

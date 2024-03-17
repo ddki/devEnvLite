@@ -9,7 +9,7 @@
 			</button>
 		</div>
 		<div>
-			<p>配置1</p>
+			<p v-for="item in configs" :key="item?.id">{{ item?.name }}</p>
 		</div>
 	</div>
 	<dialog id="new_config_modal" class="modal modal-bottom sm:modal-middle">
@@ -31,24 +31,34 @@
 
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { getConfigs } from "../store/config";
 const NewConfig = defineAsyncComponent(() => import("./Config/NewConfig.vue"));
 
 const { t } = useI18n();
 
-const importConfig = async () => {
-	const files = await invoke("get_files_from_base_dir");
-	console.log(files);
+let configs = reactive<Config[]>([]);
+
+const loadStore = async () => {
+	const configIds = (await invoke("get_config_ids")) as string[];
+	const storeConfigs = (await getConfigs(configIds)).filter((item) => item.id && item.name);
+	configs = storeConfigs;
 };
+
+await loadStore();
+
+console.log(configs);
+const importConfig = async () => {};
 
 const newConfig = () => {
 	const modal = document.getElementById("new_config_modal") as HTMLDialogElement;
 	modal.showModal();
 };
 
-const postSaveSetting = () => {
+const postSaveSetting = async () => {
 	const modal = document.getElementById("new_config_modal") as HTMLDialogElement;
 	modal.close();
+	await loadStore();
 };
 </script>
