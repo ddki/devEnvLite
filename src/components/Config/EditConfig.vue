@@ -1,4 +1,9 @@
 <template>
+	<div class="flex flex-row" v-if="errorMessage != null">
+		<div class="alert alert-error">
+			{{ errorMessage }}
+		</div>
+	</div>
 	<div class="item">
 		<span>
 			{{ t('config.id') }}
@@ -27,7 +32,6 @@
 		<input type="text" class="input input-bordered input-primary w-full max-w-xs" v-model="saveData.note"
 			:placeholder="t('config.note')" />
 	</div>
-
 	<div class="flex flex-row justify-end mt-8">
 		<button type="button" class="btn btn-primary btn-sm sm:btn-sm md:btn-md" @click="onSave">
 			{{ t('save') }}
@@ -38,7 +42,7 @@
 
 <script setup lang="ts">
 import { v4 as uuidv4 } from "uuid";
-import { getCurrentInstance, reactive } from "vue";
+import { getCurrentInstance, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { getConfig, getConfigNames, saveConfig } from "../../store/config";
 
@@ -65,13 +69,17 @@ const saveData = reactive<Config>({
 	note: storeConfig.note,
 	sort: storeConfig.sort || 0,
 });
-const configNames = await getConfigNames();
+
+const errorMessage = ref();
 
 const onSave = async () => {
 	if (!saveData.name) {
-		global?.$toast.warning(`${t("config.name")}不能为空`);
+		global?.$toast.warning(`${t("config.name")}不能为空`, ["center", "middle"]);
+		errorMessage.value = `${t("config.name")}不能为空`
 		return;
 	}
+	const configNames = await getConfigNames();
+	console.log("configNames = ", configNames);
 	if (configNames?.includes(saveData.name)) {
 		global?.$toast.warning(`${t("config.name")}已经存在`);
 		return;

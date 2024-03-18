@@ -34,7 +34,7 @@ const { t } = useI18n();
 
 const onCollate = () => {
 	console.log(global?.$toast)
-	global?.$toast.success("哈哈哈哈")
+	global?.$toast.error("哈哈哈哈")
 };
 
 const postSaveSetting = () => {

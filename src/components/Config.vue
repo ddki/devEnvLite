@@ -9,10 +9,12 @@
 			</button>
 		</div>
 		<div>
-			<p v-for="item in configs" :key="item?.id">{{ item?.name }}</p>
+			<ul class="menu bg-base-200 w-full rounded-box">
+				<li v-for="item in configs" :key="item?.id"><a class="active">{{ item?.name }}</a></li>
+			</ul>
 		</div>
 	</div>
-	<dialog id="new_config_modal" class="modal modal-bottom sm:modal-middle">
+	<dialog id="new_config_modal" class="modal modal-bottom sm:modal-middle" v-if="editConfigDialog">
 		<div class="modal-box">
 			<form method="dialog">
 				<button class="btn btn-sm sm:btn-sm md:btn-md btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -21,7 +23,7 @@
 			<p class="py-4">
 				<Suspense>
 					<template #default>
-						<NewConfig @callBack="postSaveSetting" />
+						<EditConfig :id="configId" @callBack="postSaveSetting" />
 					</template>
 				</Suspense>
 			</p>
@@ -31,19 +33,21 @@
 
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
-import { defineAsyncComponent, reactive, watch } from "vue";
+import { defineAsyncComponent, nextTick, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { getConfigs } from "../store/config";
-const NewConfig = defineAsyncComponent(() => import("./Config/NewConfig.vue"));
+const EditConfig = defineAsyncComponent(() => import("./Config/EditConfig.vue"));
 
 const { t } = useI18n();
 
-let configs = reactive<Config[]>([]);
+const configs = ref<Config[]>([]);
+const configId = ref();
+const editConfigDialog = ref(false);
 
 const loadStore = async () => {
 	const configIds = (await invoke("get_config_ids")) as string[];
-	const storeConfigs = (await getConfigs(configIds)).filter((item) => item.id && item.name);
-	configs = storeConfigs;
+	const storeConfigs = (await getConfigs(configIds)).filter((item) => item.id && item.name).sort();
+	configs.value = storeConfigs;
 };
 
 await loadStore();
@@ -52,13 +56,19 @@ console.log(configs);
 const importConfig = async () => {};
 
 const newConfig = () => {
-	const modal = document.getElementById("new_config_modal") as HTMLDialogElement;
-	modal.showModal();
+	configId.value = "";
+	editConfigDialog.value = true;
+	nextTick(() => {
+		const modal = document.getElementById("new_config_modal") as HTMLDialogElement;
+		modal.showModal();
+	});
 };
 
 const postSaveSetting = async () => {
+	editConfigDialog.value = false;
 	const modal = document.getElementById("new_config_modal") as HTMLDialogElement;
 	modal.close();
+	location.reload;
 	await loadStore();
 };
 </script>

@@ -1,4 +1,5 @@
 import { Store } from "@tauri-apps/plugin-store";
+import { remove } from "@tauri-apps/plugin-fs";
 
 const activeConfigStore = new Store("active-config.json");
 
@@ -26,12 +27,21 @@ const getActiveConfigId = async (): Promise<string> => {
 
 const setActiveConfigId = async (id: string): Promise<void> => {
 	await activeConfigStore.set("activeConfigId", id);
+	await activeConfigStore.save();
 };
 
 const pushConfigName = async (name: string): Promise<void> => {
 	const configNames = ((await activeConfigStore.get("configNames")) as string[]) || [];
 	configNames.push(name);
 	await activeConfigStore.set("configNames", configNames);
+	await activeConfigStore.save();
+};
+
+const popConfigName = async (name: string): Promise<void> => {
+	const configNames = ((await activeConfigStore.get("configNames")) as string[]) || [];
+	const newConfigNames = configNames.filter((item) => item !== name);
+	await activeConfigStore.set("configNames", newConfigNames);
+	await activeConfigStore.save();
 };
 
 const getConfig = async (id: string): Promise<Config> => {
@@ -69,8 +79,16 @@ const saveConfig = async (config: Config): Promise<boolean> => {
 		await store.set("sort", config.sort);
 		await store.set("groupEnvs", config.groupEnvs || []);
 		await store.save();
+
+		await pushConfigName(config.name);
 	}
 	return load;
+};
+
+const deleteConfig = async (config: Config): Promise<void> => {
+	const path = `config/${config.id}.json`;
+	await remove(path);
+	await popConfigName(config.name);
 };
 
 const loadConfig = async (store: Store, config: Config): Promise<boolean> => {
@@ -93,4 +111,5 @@ export {
 	getConfig,
 	getConfigs,
 	saveConfig,
+	deleteConfig,
 };
