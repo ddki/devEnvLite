@@ -5,6 +5,9 @@ body {
 
 #main {
 	height: 100dvh;
+	display: grid;
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+	grid-template-rows: 2rem minmax(4rem, 1fr) 2rem;
   grid-template-areas:
     "."
     "."

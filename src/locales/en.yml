@@ -50,3 +50,4 @@ save: Save
 close: Close
 success: Successed
 failure: Failed
+version: Version

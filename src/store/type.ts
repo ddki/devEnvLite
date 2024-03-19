@@ -1,10 +1,9 @@
 interface Setting {
-	language: string | null;
-	theme: string | null;
-	homeDir: string | null;
-	cacheDir: string | null;
-	dataDir: string | null;
-	envBackupDir: string | null;
+	language: string;
+	homeDir: string;
+	cacheDir: string;
+	dataDir: string;
+	envBackupDir: string;
 }
 
 interface ActiveConfig {

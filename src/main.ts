@@ -1,6 +1,7 @@
 import ContextMenu from "@imengyu/vue3-context-menu";
 import "@imengyu/vue3-context-menu/lib/vue3-context-menu.css";
 import messages from "@intlify/unplugin-vue-i18n/messages";
+import "element-plus/dist/index.css";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import "./styles/tailwind.css";
@@ -24,7 +25,5 @@ app.use(ContextMenu);
 app.use(Toast);
 app.mount("#main");
 
-// 设置daisyui主题
-document.documentElement.setAttribute("data-theme", setting.theme || "light");
 // disableRefresh();
 // disableContextMenu();
