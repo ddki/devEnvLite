@@ -16,8 +16,9 @@ settings:
   save: Save
 
 config:
-  import-config: Import
-  new-config: New
+  import-config: Import Config
+  new-config: New Config
+  edit-config: Edit Config
   id: Unique Identifier
   name: Name
   note: Note
@@ -29,6 +30,9 @@ config:
     modify: Modify
     delete: Delete
     add: Add
+  error:
+    nameNotEmpty: Name is not empty.
+    nameExists: Name has already been.
 
 env-group:
   new-config-group: New

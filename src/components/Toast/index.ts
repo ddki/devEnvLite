@@ -23,7 +23,7 @@ const createToast = (options: {
 	timer = setTimeout(() => {
 		toastInstance.unmount();
 		document.body.removeChild(el);
-	}, options.duration || 200000);
+	}, options.duration || 2000);
 };
 
 const toast = {

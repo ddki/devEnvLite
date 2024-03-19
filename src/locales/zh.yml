@@ -18,6 +18,7 @@ settings:
 config:
   import-config: 导入配置
   new-config: 新增配置
+  edit-config: 编辑配置
   id: 唯一标识
   name: 名称
   note: 描述
@@ -29,6 +30,9 @@ config:
     modify: 修改
     delete: 删除
     add: 添加
+  error:
+    nameNotEmpty: 名称不能为空
+    nameExists: 名称已经存在
 
 env-group:
   new-config-group: 新增分组

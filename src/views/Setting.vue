@@ -3,7 +3,7 @@
 		<span>
 			{{ t('settings.theme') }}
 		</span>
-		<select data-choose-theme class="select select-primary w-full max-w-xs" v-model="settingDate.theme">
+		<select data-choose-theme class="select select-primary w-full max-w-xs" v-model="settingForm.theme">
 			<option v-for="(item, index) in themeList" :key="index" :value="item">
 				{{ item }}
 			</option>
@@ -13,7 +13,7 @@
 		<span>
 			{{ t('settings.language') }}
 		</span>
-		<select class="select select-primary w-full max-w-xs" v-model="settingDate.language">
+		<select class="select select-primary w-full max-w-xs" v-model="settingForm.language">
 			<option v-for="(item, index) in languageList" :key="index" :value="item.value">
 				{{ item.label }}
 			</option>
@@ -23,28 +23,28 @@
 		<span>
 			{{ t('settings.home-dir') }}
 		</span>
-		<input class="input input-bordered input-primary w-full max-w-xs" v-model="settingDate.homeDir"
+		<input class="input input-bordered input-primary w-full max-w-xs" v-model="settingForm.homeDir"
 			:placeholder="t('settings.home-dir')" />
 	</div>
 	<div class="item">
 		<span>
 			{{ t('settings.cache-dir') }}
 		</span>
-		<input class="input input-bordered input-primary w-full max-w-xs" v-model="settingDate.cacheDir"
+		<input class="input input-bordered input-primary w-full max-w-xs" v-model="settingForm.cacheDir"
 			:placeholder="t('settings.cache-dir')" />
 	</div>
 	<div class="item">
 		<span>
 			{{ t('settings.data-dir') }}
 		</span>
-		<input class="input input-bordered input-primary w-full max-w-xs" v-model="settingDate.dataDir"
+		<input class="input input-bordered input-primary w-full max-w-xs" v-model="settingForm.dataDir"
 			:placeholder="t('settings.data-dir')" />
 	</div>
 	<div class="item">
 		<span>
 			{{ t('settings.env-backup-dir') }}
 		</span>
-		<input class="input input-bordered input-primary w-full max-w-xs" v-model="settingDate.envBackupDir"
+		<input class="input input-bordered input-primary w-full max-w-xs" v-model="settingForm.envBackupDir"
 			:placeholder="t('settings.env-backup-dir')" />
 	</div>
 
@@ -54,20 +54,53 @@
 		</button>
 	</div>
 
+	<el-dialog v-model="dialogFormVisible" title="Shipping address" width="500">
+		<el-form :model="settingForm">
+			<el-form-item :label="t('settings.language')">
+				<el-select v-model="settingForm.language" :placeholder="t('settings.language')">
+					<option v-for="(item, index) in languageList" :key="index" :value="item.value">
+						{{ item.label }}
+					</option>
+				</el-select>
+			</el-form-item>
+			<el-form-item :label="t('settings.home-dir')">
+				<el-input v-model="settingForm.homeDir" />
+			</el-form-item>
+			<el-form-item :label="t('settings.cache-dir')">
+				<el-input v-model="settingForm.cacheDir" />
+			</el-form-item>
+			<el-form-item :label="t('settings.data-dir')">
+				<el-input v-model="settingForm.dataDir" />
+			</el-form-item>
+			<el-form-item :label="t('settings.env-backup-dir')">
+				<el-input v-model="settingForm.envBackupDir" />
+			</el-form-item>
+		</el-form>
+		<template #footer>
+			<div class="dialog-footer">
+				<el-button type="primary" @click="dialogFormVisible = false">
+					Confirm
+				</el-button>
+			</div>
+		</template>
+	</el-dialog>
 </template>
 
 <script setup lang="ts">
-import { themeChange } from "theme-change";
 import { getCurrentInstance, reactive } from "vue";
 import { useI18n } from "vue-i18n";
+import { ElMessage } from 'element-plus'
+import { useDark, useToggle } from '@vueuse/core'
 import { getSetting, saveSetting } from "../store/setting";
+
 
 const { t } = useI18n();
 const global = getCurrentInstance()?.appContext.config.globalProperties;
 
 const emits = defineEmits(["callBack"]);
+const isDark = useDark()
 
-const themeList = ["light", "dark", "cupcake", "synthwave", "dracula", "business", "dim"];
+const themeList = ["light", "dark"];
 const languageList = [
 	{
 		value: "zh",
@@ -81,7 +114,7 @@ const languageList = [
 
 const setting = await getSetting();
 
-const settingDate = reactive({
+const settingForm = reactive({
 	language: setting.language,
 	theme: setting.theme,
 	homeDir: setting.homeDir,
@@ -92,18 +125,18 @@ const settingDate = reactive({
 
 const onSave = async () => {
 	const save = await saveSetting({
-		language: settingDate.language,
-		theme: settingDate.theme,
-		homeDir: settingDate.homeDir,
-		cacheDir: settingDate.cacheDir,
-		dataDir: settingDate.dataDir,
-		envBackupDir: settingDate.envBackupDir,
+		language: settingForm.language,
+		theme: settingForm.theme,
+		homeDir: settingForm.homeDir,
+		cacheDir: settingForm.cacheDir,
+		dataDir: settingForm.dataDir,
+		envBackupDir: settingForm.envBackupDir,
 	});
 	if (save) {
-		themeChange(false);
+		useToggle(isDark);
 		emits("callBack");
 	} else {
-		global?.$toast.warning(t("save") + t("failure"));
+		ElMessage.error(t("save") + t("failure"))
 	}
 };
 </script>

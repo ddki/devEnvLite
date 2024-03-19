@@ -7,8 +7,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import Config from "../components/Config.vue";
-import GroupEnv from "../components/GroupEnv.vue";
+import Config from "./Config.vue";
+import GroupEnv from "./GroupEnv.vue";
 import { getActiveConfig, getConfig } from '../store/config';
 
 const { t } = useI18n();

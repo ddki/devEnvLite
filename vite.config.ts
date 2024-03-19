@@ -4,6 +4,9 @@ import path from "node:path";
 import vue from "@vitejs/plugin-vue";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import { defineConfig } from "vite";
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -13,6 +16,12 @@ export default defineConfig(async () => ({
 			include: [path.resolve(__dirname, "./src/locales/*.yml")],
 			jitCompilation: true,
 		}),
+		AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
 	],
 
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
