@@ -1,8 +1,14 @@
 <template>
 	<header class="flex flex-row justify-between p-2">
-		<el-button type="primary" @click="onCollate">{{ t('header.collate') }}</el-button>
-		<el-button type="primary" @click="openSettings">{{ t('header.setting') }}</el-button>
-		<SettingModal v-model:visible="settingsModalVisible" :title="t('header.setting')" />
+		<div>
+			<el-button type="primary" @click="onCollate">{{ t('header.collate') }}</el-button>
+			<el-button type="primary" @click="onCollate">{{ t('header.backup') }}</el-button>
+			<el-button type="primary" @click="onCollate">{{ t('header.recover') }}</el-button>
+		</div>
+		<div>
+			<el-button type="primary" @click="openSettings">{{ t('header.setting') }}</el-button>
+			<SettingModal v-model:visible="settingsModalVisible" :title="t('header.setting')" />
+		</div>
 	</header>
 
 </template>

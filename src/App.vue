@@ -4,6 +4,7 @@
 			<el-config-provider :locale="locale">
 				<Header />
 				<Main />
+				<Footer />
 			</el-config-provider>
 		</template>
 	</Suspense>
@@ -16,6 +17,7 @@ import { ElConfigProvider } from "element-plus";
 import { ref } from "vue";
 import Header from "./views/Header.vue";
 import Main from "./views/MainContent.vue";
+import Footer from "./views/Footer.vue";
 
 import en from "element-plus/dist/locale/en.mjs";
 import zhCn from "element-plus/dist/locale/zh-cn.mjs";

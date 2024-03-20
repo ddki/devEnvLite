@@ -19,10 +19,10 @@ config:
   import-config: 导入配置
   new-config: 新增配置
   edit-config: 编辑配置
-  id: 唯一标识
-  name: 名称
-  note: 描述
-  sort: 序号
+  id: 配置唯一标识
+  name: 配置名称
+  note: 配置描述
+  sort: 配置序号
   context-menu:
     active: 激活
     check: 检查
@@ -34,11 +34,16 @@ config:
     nameNotEmpty: 名称不能为空
     nameExists: 名称已经存在
 
-env-group:
-  new-config-group: 新增分组
-  group-name: 分组名称
-  group-code: 分组标识
-  group-description: 分组描述
+envGroup:
+  new: 新增分组
+  id: 分组唯一标识
+  name: 分组名称
+  note: 分组描述
+  sort: 分组序号
+  error:
+    selectConfig: 请先选择一个配置
+    nameNotEmpty: 名称不能为空
+    nameExists: 名称已经存在
 
 env:
   key: 键

@@ -1,17 +1,17 @@
 <template>
 	<el-dialog v-model="props.visible" :title="props.title" @close="closeDialog" width="32rem" v-if="props.visible">
 		<el-form ref="formRef" :model="form" label-position="right" label-width="auto">
-			<el-form-item prop="id" :label="t('config.id')">
-				<el-input v-model="form.id" clearable :placeholder="t('config.id')" />
+			<el-form-item prop="id" :label="t('envGroup.id')">
+				<el-input v-model="form.id" clearable :placeholder="t('envGroup.id')" />
 			</el-form-item>
-			<el-form-item prop="name" :label="t('config.name')">
-				<el-input v-model="form.name" clearable :placeholder="t('config.name')" />
+			<el-form-item prop="name" :label="t('envGroup.name')">
+				<el-input v-model="form.name" clearable :placeholder="t('envGroup.name')" />
 			</el-form-item>
-			<el-form-item prop="note" :label="t('config.note')">
-				<el-input v-model="form.note" clearable :placeholder="t('config.note')" />
+			<el-form-item prop="note" :label="t('envGroup.note')">
+				<el-input v-model="form.note" clearable :placeholder="t('envGroup.note')" />
 			</el-form-item>
-			<el-form-item prop="sort" :label="t('config.sort')">
-				<el-input v-model="form.sort" clearable :placeholder="t('config.sort')" />
+			<el-form-item prop="sort" :label="t('envGroup.sort')">
+				<el-input v-model="form.sort" clearable :placeholder="t('envGroup.sort')" />
 			</el-form-item>
 		</el-form>
 		<template #footer>
@@ -56,7 +56,7 @@ const onSave = async () => {
 	if (!form.name) {
 		ElNotification({
 			title: props.title,
-			message: t("config.error.nameNotEmpty"),
+			message: t("envGroup.error.nameNotEmpty"),
 			position: "bottom-right",
 			type: "error",
 		});
@@ -67,7 +67,7 @@ const onSave = async () => {
 	if (configNames?.includes(form.name)) {
 		ElNotification({
 			title: props.title,
-			message: t("config.error.nameExists"),
+			message: t("envGroup.error.nameExists"),
 			position: "bottom-right",
 			type: "error",
 		});

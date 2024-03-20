@@ -19,10 +19,10 @@ config:
   import-config: Import Config
   new-config: New Config
   edit-config: Edit Config
-  id: Unique Identifier
-  name: Name
-  note: Note
-  sort: Sort
+  id: Config's Unique Identifier
+  name: Config's Name
+  note: Config's Note
+  sort: Config's Sort
   context-menu:
     active: Active
     check: Check
@@ -34,11 +34,16 @@ config:
     nameNotEmpty: Name is not empty.
     nameExists: Name has already been.
 
-env-group:
-  new-config-group: New
-  group-name: Group Name
-  group-code: Group Code
-  group-description: Group Description
+envGroup:
+  new: New Group
+  id: Group's Identifier
+  name: Group's Name
+  note: Group's Note
+  sort: Group's Sort
+  error:
+    selectConfig: Please select a configuration first.
+    nameNotEmpty: Name is not empty.
+    nameExists: Name has already been.
 
 env:
   key: Key

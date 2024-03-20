@@ -6,8 +6,16 @@
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
 			<ul class="menu bg-base-200 w-full rounded-box">
-				<li v-for="item in configs" :key="item?.id"><a :class="item.activeClass" @click="editConfig(item)">{{ item?.name
-						}}</a></li>
+				<div v-for="item in configs" :key="item?.id" @click="onClickConfig(item)"
+					@contextmenu="onContextMenu($event, item)">
+					<li
+						:class="`text-ellipsis text-nowrap overflow-hidden py-1 cursor-pointer hover:bg-blue-200 flex flex-row justify-start items-center ${item.activeClass}`">
+						<el-icon v-if="item.isActive">
+							<CircleCheck />
+						</el-icon>
+						<span>{{ item?.name }}</span>
+					</li>
+				</div>
 			</ul>
 		</div>
 	</div>
@@ -17,14 +25,26 @@
 
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
-import { nextTick, ref } from "vue";
+import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { getConfigs } from "../../store/config";
+import { ElNotification } from "element-plus";
+import { CircleCheck } from "@element-plus/icons-vue";
+import ContextMenu from "@imengyu/vue3-context-menu";
+import { deleteConfig, getConfigs, setActiveConfigId } from "../../store/config";
 import EditConfigModal from "./EditConfigModal.vue";
 
 interface ConfigData extends Config {
 	activeClass?: string;
+	isActive?: boolean;
 }
+
+const props = defineProps({
+	activeConfigId: String,
+	selectedConfigId: String
+});
+
+const emits = defineEmits(["update:activeConfigId", "update:selectedConfigId"]);
+
 const { t } = useI18n();
 
 const configs = ref<ConfigData[]>([]);
@@ -34,13 +54,28 @@ const editConfigModalTitle = ref(t("config.new-config"));
 
 const loadStore = async () => {
 	const configIds = (await invoke("get_config_ids")) as string[];
-	const storeConfigs = (await getConfigs(configIds)).filter((item) => item.id && item.name).sort();
+	const storeConfigs = (await getConfigs(configIds))
+		.filter((item) => item.id && item.name)
+		.map((item) => item as ConfigData)
+		.map((item) => {
+			if (item.id === props.activeConfigId) {
+				item.isActive = true;
+				item.activeClass = "active";
+			}
+			return item;
+		})
+		.sort((a, b) => {
+			if (a.isActive === b.isActive) {
+				return b.sort - a.sort;
+			}
+			return a.isActive ? -1 : 1;
+		});
 	configs.value = storeConfigs;
+	console.log("loadStore ...");
 };
 
 await loadStore();
 
-console.log(configs);
 const importConfig = async () => {};
 
 const newConfig = () => {
@@ -71,4 +106,75 @@ const resetConfigsActiveClass = () => {
 		return item;
 	});
 };
+
+const onClickConfig = (config: ConfigData) => {
+	emits("update:selectedConfigId", config.id);
+	ElNotification({
+		title: "Config",
+		message: `选中${config.name}`,
+		position: "bottom-right",
+		type: "info",
+	});
+};
+
+// 右键菜单
+const onContextMenu = (e: MouseEvent, config: ConfigData) => {
+	e.preventDefault();
+	ContextMenu.showContextMenu({
+		x: e.x,
+		y: e.y,
+		items: [
+			{
+				label: t("config.context-menu.active"),
+				onClick: async () => {
+					await setActiveConfigId(config.id);
+					emits("update:activeConfigId", config.id);
+				},
+				hidden: config.id === props.activeConfigId,
+			},
+			{
+				label: t("config.context-menu.check"),
+				onClick: () => {
+					// todo 调用rust
+				},
+			},
+			{
+				label: t("config.context-menu.apply"),
+				onClick: () => {
+					// todo 调用rust
+				},
+			},
+			{
+				label: t("config.context-menu.modify"),
+				onClick: () => {
+					editConfig(config);
+				},
+			},
+			{
+				label: t("config.context-menu.delete"),
+				onClick: async () => {
+					await deleteConfig(config);
+					await loadStore();
+				},
+			},
+		],
+	});
+};
+
+watch(
+	() => props.activeConfigId,
+	async (newValue, oldValue) => {
+		if (newValue !== oldValue) {
+			await loadStore();
+		}
+	},
+);
 </script>
+
+<style>
+.active {
+	padding: .5rem;
+	color: var(--el-color-white);
+	background-color: var(--el-color-primary);
+}
+</style>

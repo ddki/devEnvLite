@@ -1,5 +1,5 @@
 import { Store } from "@tauri-apps/plugin-store";
-import { remove } from "@tauri-apps/plugin-fs";
+import { BaseDirectory, remove } from "@tauri-apps/plugin-fs";
 
 const activeConfigStore = new Store("active-config.json");
 
@@ -86,8 +86,8 @@ const saveConfig = async (config: Config): Promise<boolean> => {
 };
 
 const deleteConfig = async (config: Config): Promise<void> => {
-	const path = `config/${config.id}.json`;
-	await remove(path);
+	const path = `config\\${config.id}.json`;
+	await remove(path, { baseDir: BaseDirectory.AppData });
 	await popConfigName(config.name);
 };
 
