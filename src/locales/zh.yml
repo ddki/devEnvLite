@@ -16,6 +16,7 @@ settings:
   save: 保存
 
 config:
+  text: 配置
   import-config: 导入配置
   new-config: 新增配置
   edit-config: 编辑配置
@@ -35,7 +36,9 @@ config:
     nameExists: 名称已经存在
 
 envGroup:
+  text: 分组
   new: 新增分组
+  edit: 编辑分组
   id: 分组唯一标识
   name: 分组名称
   note: 分组描述

@@ -29,13 +29,14 @@ import { ElNotification, type FormInstance } from "element-plus";
 import { v4 as uuidv4 } from "uuid";
 import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { getConfig, getConfigNames, saveConfig } from "../../store/config";
+import { getConfig, getGroupEnv, saveConfig } from "../../store/config";
 
 const { t } = useI18n();
 
 const emits = defineEmits(["update:visible", "postClose"]);
 const props = defineProps({
 	id: String,
+	configId: String,
 	maxSort: {
 		type: Number,
 		default: 0,
@@ -53,6 +54,15 @@ const form = reactive({
 });
 
 const onSave = async () => {
+	if (!props.configId) {
+		ElNotification({
+			title: props.title,
+			message: t("envGroup.error.selectConfig"),
+			position: "bottom-right",
+			type: "error",
+		});
+		return;
+	}
 	if (!form.name) {
 		ElNotification({
 			title: props.title,
@@ -62,9 +72,7 @@ const onSave = async () => {
 		});
 		return;
 	}
-	const configNames = await getConfigNames();
-	console.log("configNames = ", configNames);
-	if (configNames?.includes(form.name)) {
+	if (await checkGroupEnvNameExists(props.configId, form.name)) {
 		ElNotification({
 			title: props.title,
 			message: t("envGroup.error.nameExists"),
@@ -73,7 +81,10 @@ const onSave = async () => {
 		});
 		return;
 	}
-	const save = await saveConfig(form);
+	const storeConfig = await getConfig(props.configId);
+	storeConfig.groupEnvs?.push(form);
+	console.log("Config === ", storeConfig);
+	const save = await saveConfig(storeConfig);
 	if (save) {
 		ElNotification({
 			title: props.title,
@@ -98,13 +109,30 @@ const closeDialog = () => {
 	emits("postClose");
 };
 
+const checkGroupEnvNameExists = async (configId: string, groupEnvName: string) => {
+	const result = await getConfig(configId).then((config) => {
+		if (config.groupEnvs) {
+			return config.groupEnvs.map((group) => group.name).includes(groupEnvName);
+		}
+		return false;
+	});
+	return result;
+};
+
+const getConfigEnvGroup = async (configId: string, groupId: string) => {
+	await getGroupEnv(configId, groupId).then((groupEnv) => {
+		if (groupEnv) {
+			form.id = groupEnv.id;
+			form.name = groupEnv.name;
+			form.note = groupEnv.note || "";
+			form.sort = groupEnv.sort;
+		}
+	});
+};
+
 watch(props, async (newValue, _oldValue) => {
-	if (newValue.id) {
-		const storeConfig = await getConfig(newValue.id);
-		form.id = storeConfig.id;
-		form.name = storeConfig.name;
-		form.note = storeConfig.note as string;
-		form.sort = storeConfig.sort;
+	if (newValue.id && newValue.configId) {
+		await getConfigEnvGroup(newValue.configId, newValue.id);
 	} else {
 		form.id = uuidv4();
 		form.name = "";

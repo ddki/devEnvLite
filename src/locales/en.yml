@@ -16,6 +16,7 @@ settings:
   save: Save
 
 config:
+  text: Config
   import-config: Import Config
   new-config: New Config
   edit-config: Edit Config
@@ -35,7 +36,9 @@ config:
     nameExists: Name has already been.
 
 envGroup:
+  text: Environment Group
   new: New Group
+  edit: Edit Group
   id: Group's Identifier
   name: Group's Name
   note: Group's Note

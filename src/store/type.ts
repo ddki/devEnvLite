@@ -24,7 +24,7 @@ interface GroupEnv {
 	name: string;
 	note?: string;
 	sort: number;
-	envs: Env[];
+	envs?: Env[];
 }
 
 interface Env {

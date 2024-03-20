@@ -2,54 +2,62 @@
 	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
 		<div class="flex flex-row flex-2 justify-start items-center">
 			<el-button type="primary" @click="newGroupEnv">{{ t('envGroup.new') }}</el-button>
-			<EditGroupEnvModal />
+			<EditGroupEnvModal v-model:visible="editGroupEnvModalVisible" :title="editGroupEnvModalTitle" :id="editGroupEnvId"
+				:configId="props.configId" @postClose="postCloseEditConfigModal" />
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
-			<p class="h-60">配置1</p>
-			<p class="h-60">配置1</p>
-			<p class="h-60">配置1</p>
-			<p class="h-60">配置1</p>
-			<p class="h-60">配置1</p>
+			<p v-for="item in groupEnvsState" :key="item.id">
+				{{ item.name }}
+			</p>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-import { getConfig } from "../../store/config";
-import { reactive, ref, watch } from "vue";
 import { ElNotification } from "element-plus";
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { getGroupEnvs } from "../../store/config";
 import EditGroupEnvModal from "./EditGroupEnvModal.vue";
 
-
 const props = defineProps({
-	configId: String
+	configId: String,
 });
 
 const { t } = useI18n();
-const storeConfig = props.configId ? await getConfig(props.configId) : null;
-const editGroupEnvModal = ref(false);
+const editGroupEnvModalVisible = ref(false);
+const editGroupEnvModalTitle = ref("");
+const editGroupEnvId = ref("");
 
-
-let groupEnvsState = reactive<GroupEnv[]>([]);
+const groupEnvsState = ref<GroupEnv[]>([]);
 
 const newGroupEnv = () => {
-	if (storeConfig) {
-
-	} else {
-		ElNotification({
-			title: t("envGroup.new"),
-			message: t("envGroup.error.selectConfig"),
-			position: "bottom-right",
-			type: "warning"
-		})
-	}
+	editGroupEnvModalVisible.value = true;
+	editGroupEnvModalTitle.value = t("envGroup.new");
+	ElNotification({
+		title: t("envGroup.new"),
+		message: t("envGroup.error.selectConfig"),
+		position: "bottom-right",
+		type: "warning",
+	});
 };
 
-watch(props, async (newValue, oldValue) => {
-	if (props.configId) {
-		const storeConfig = await getConfig(props.configId);
-		groupEnvsState = storeConfig.groupEnvs || [];
+const loadStore = async (configId: string | undefined) => {
+	if (configId) {
+		const storeGroupEnvs = await getGroupEnvs(configId);
+		console.log("loadStore configId, storeconfig =", configId, storeGroupEnvs);
+		groupEnvsState.value = storeGroupEnvs || [];
 	}
-})
+	console.log("groupEnv loadStore env: ", groupEnvsState);
+};
+
+const postCloseEditConfigModal = async () => {
+	await loadStore(props.configId);
+};
+
+await loadStore(props.configId);
+
+watch(props, async (newValue, _oldValue) => {
+	await loadStore(newValue.configId);
+});
 </script>

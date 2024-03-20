@@ -1,5 +1,5 @@
-import { Store } from "@tauri-apps/plugin-store";
 import { BaseDirectory, remove } from "@tauri-apps/plugin-fs";
+import { Store } from "@tauri-apps/plugin-store";
 
 const activeConfigStore = new Store("active-config.json");
 
@@ -68,6 +68,21 @@ const getConfigs = async (ids: string[]): Promise<Config[]> => {
 	return configs;
 };
 
+const getGroupEnvs = async (configId: string): Promise<GroupEnv[]> => {
+	const config = await getConfig(configId);
+	return config.groupEnvs || [];
+};
+
+const getGroupEnv = async (configId: string, groupEnvId: string): Promise<GroupEnv | null> => {
+	const groupEnvs = await getGroupEnvs(configId);
+	for (const item of groupEnvs) {
+		if (item.id === groupEnvId) {
+			return item;
+		}
+	}
+	return null;
+};
+
 const saveConfig = async (config: Config): Promise<boolean> => {
 	const path = `config/${config.id}.json`;
 	const store = new Store(path);
@@ -110,6 +125,8 @@ export {
 	pushConfigName,
 	getConfig,
 	getConfigs,
+	getGroupEnvs,
+	getGroupEnv,
 	saveConfig,
 	deleteConfig,
 };

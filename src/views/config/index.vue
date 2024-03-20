@@ -10,8 +10,8 @@
 					@contextmenu="onContextMenu($event, item)">
 					<li
 						:class="`text-ellipsis text-nowrap overflow-hidden py-1 cursor-pointer hover:bg-blue-200 flex flex-row justify-start items-center ${item.activeClass}`">
-						<el-icon v-if="item.isActive">
-							<CircleCheck />
+						<el-icon v-if="item.isActive" class="mr-1">
+							<CircleCheck class="text-red-500" />
 						</el-icon>
 						<span>{{ item?.name }}</span>
 					</li>
@@ -24,12 +24,12 @@
 </template>
 
 <script setup lang="ts">
-import { invoke } from "@tauri-apps/api/core";
-import { nextTick, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { ElNotification } from "element-plus";
 import { CircleCheck } from "@element-plus/icons-vue";
 import ContextMenu from "@imengyu/vue3-context-menu";
+import { invoke } from "@tauri-apps/api/core";
+import { ElNotification } from "element-plus";
+import { nextTick, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { deleteConfig, getConfigs, setActiveConfigId } from "../../store/config";
 import EditConfigModal from "./EditConfigModal.vue";
 
@@ -40,7 +40,7 @@ interface ConfigData extends Config {
 
 const props = defineProps({
 	activeConfigId: String,
-	selectedConfigId: String
+	selectedConfigId: String,
 });
 
 const emits = defineEmits(["update:activeConfigId", "update:selectedConfigId"]);
@@ -60,6 +60,8 @@ const loadStore = async () => {
 		.map((item) => {
 			if (item.id === props.activeConfigId) {
 				item.isActive = true;
+			}
+			if (item.id === props.selectedConfigId) {
 				item.activeClass = "active";
 			}
 			return item;
@@ -71,7 +73,6 @@ const loadStore = async () => {
 			return a.isActive ? -1 : 1;
 		});
 	configs.value = storeConfigs;
-	console.log("loadStore ...");
 };
 
 await loadStore();
@@ -108,10 +109,12 @@ const resetConfigsActiveClass = () => {
 };
 
 const onClickConfig = (config: ConfigData) => {
+	resetConfigsActiveClass();
+	config.activeClass = "active";
 	emits("update:selectedConfigId", config.id);
 	ElNotification({
-		title: "Config",
-		message: `选中${config.name}`,
+		title: t("config.text"),
+		message: `${config.name}`,
 		position: "bottom-right",
 		type: "info",
 	});
