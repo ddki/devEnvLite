@@ -37,11 +37,18 @@ const pushConfigName = async (name: string): Promise<void> => {
 	await activeConfigStore.save();
 };
 
-const popConfigName = async (name: string): Promise<void> => {
+const removeConfigName = async (name: string): Promise<void> => {
 	const configNames = ((await activeConfigStore.get("configNames")) as string[]) || [];
 	const newConfigNames = configNames.filter((item) => item !== name);
 	await activeConfigStore.set("configNames", newConfigNames);
 	await activeConfigStore.save();
+};
+
+const removeActiveId = async (configId: string): Promise<void> => {
+	const activeConfigId = (await activeConfigStore.get("activeConfigId")) as string;
+	if (configId === activeConfigId) {
+		await setActiveConfigId("");
+	}
 };
 
 const getConfig = async (id: string): Promise<Config> => {
@@ -83,6 +90,25 @@ const getGroupEnv = async (configId: string, groupEnvId: string): Promise<GroupE
 	return null;
 };
 
+const getEnvs = async (configId: string, groupEnvId: string): Promise<Env[]> => {
+	const groupEnv = await getGroupEnv(configId, groupEnvId);
+	return groupEnv?.envs || [];
+};
+
+const getEnv = async (
+	configId: string,
+	groupEnvId: string,
+	envKey: string,
+): Promise<Env | null> => {
+	const envs = await getEnvs(configId, groupEnvId);
+	for (const env of envs) {
+		if (env.key === envKey) {
+			return env;
+		}
+	}
+	return null;
+};
+
 const saveConfig = async (config: Config): Promise<boolean> => {
 	const path = `config/${config.id}.json`;
 	const store = new Store(path);
@@ -92,7 +118,7 @@ const saveConfig = async (config: Config): Promise<boolean> => {
 		await store.set("name", config.name);
 		await store.set("note", config.note);
 		await store.set("sort", config.sort);
-		await store.set("groupEnvs", config.groupEnvs || []);
+		await store.set("groupEnvs", converterGroupEnvs(config.id, config.groupEnvs));
 		await store.save();
 
 		await pushConfigName(config.name);
@@ -100,10 +126,77 @@ const saveConfig = async (config: Config): Promise<boolean> => {
 	return load;
 };
 
+const converterGroupEnvs = (configId: string, groupEnvs: GroupEnv[] | undefined): GroupEnv[] => {
+	if (groupEnvs) {
+		return groupEnvs.map((item) => {
+			item.configId = configId;
+			if (item.envs) {
+				const newEnvs = item.envs.map((env) => {
+					env.groupId = item.id;
+					return env;
+				});
+				item.envs = newEnvs;
+			} else {
+				item.envs = [];
+			}
+			return item;
+		});
+	}
+	return [];
+};
+
+const saveEnvToGroup = async (configId: string, groupEnvId: string, env: Env): Promise<boolean> => {
+	const config = await getConfig(configId);
+	const groups = await getGroupEnvs(configId);
+	const group = await getGroupEnv(configId, groupEnvId);
+	if (group) {
+		const envs = group?.envs || [];
+		envs.push(env);
+		group.envs = envs;
+	} else {
+		return false;
+	}
+	const newGroups = groups.map((item) => {
+		if (item.id === group?.id) {
+			return group;
+		}
+		return item;
+	});
+	config.groupEnvs = newGroups;
+	return await saveConfig(config);
+};
+
+const deleteEnv = async (
+	configId: string,
+	groupEnvId: string,
+	envKey: string,
+): Promise<boolean> => {
+	const config = await getConfig(configId);
+	const groups = await getGroupEnvs(configId);
+	const group = await getGroupEnv(configId, groupEnvId);
+	if (group) {
+		const newEnvs = (group.envs || []).filter((item) => item.key !== envKey);
+		group.envs = newEnvs;
+	} else {
+		return false;
+	}
+	const newGroups = groups.map((item) => {
+		if (item.id === group?.id) {
+			return group;
+		}
+		return item;
+	});
+	config.groupEnvs = newGroups;
+	return await saveConfig(config);
+};
+
 const deleteConfig = async (config: Config): Promise<void> => {
-	const path = `config\\${config.id}.json`;
+	const path = `config/${config.id}.json`;
 	await remove(path, { baseDir: BaseDirectory.AppData });
-	await popConfigName(config.name);
+	// 移除名称
+	await removeConfigName(config.name);
+	// 移除激活ID
+	await removeActiveId(config.id);
 };
 
 const loadConfig = async (store: Store, config: Config): Promise<boolean> => {
@@ -127,6 +220,10 @@ export {
 	getConfigs,
 	getGroupEnvs,
 	getGroupEnv,
+	getEnvs,
+	getEnv,
 	saveConfig,
+	saveEnvToGroup,
 	deleteConfig,
+	deleteEnv,
 };

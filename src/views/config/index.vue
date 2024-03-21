@@ -19,8 +19,8 @@
 			</ul>
 		</div>
 	</div>
-	<EditConfigModal :id="configId" :title="editConfigModalTitle" v-model:visible="editConfigModalVisible"
-		@postClose="postCloseEditConfigModal" />
+	<EditConfigModal :id="configId" :title="editConfigModalTitle" :operate="editConfigModalOperate"
+		v-model:visible="editConfigModalVisible" @postClose="postCloseEditConfigModal" />
 </template>
 
 <script setup lang="ts">
@@ -51,6 +51,7 @@ const configs = ref<ConfigData[]>([]);
 const configId = ref("");
 const editConfigModalVisible = ref(false);
 const editConfigModalTitle = ref(t("config.new-config"));
+const editConfigModalOperate = ref("new");
 
 const loadStore = async () => {
 	const configIds = (await invoke("get_config_ids")) as string[];
@@ -77,12 +78,13 @@ const loadStore = async () => {
 
 await loadStore();
 
-const importConfig = async () => {};
+const importConfig = async () => { };
 
 const newConfig = () => {
 	nextTick(() => {
 		configId.value = "";
 		editConfigModalTitle.value = t("config.new-config");
+		editConfigModalOperate.value = "new";
 		editConfigModalVisible.value = true;
 	});
 };
@@ -93,6 +95,7 @@ const editConfig = (config: ConfigData) => {
 	config.activeClass = "active";
 	configId.value = config.id;
 	editConfigModalTitle.value = t("config.edit-config");
+	editConfigModalOperate.value = "edit";
 	editConfigModalVisible.value = true;
 };
 

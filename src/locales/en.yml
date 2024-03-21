@@ -43,16 +43,30 @@ envGroup:
   name: Group's Name
   note: Group's Note
   sort: Group's Sort
+  context-menu:
+    addEnv: Add Environment Variable
+    check: Check
+    apply: Apply
+    modify: Modify
+    delete: Delete
   error:
     selectConfig: Please select a configuration first.
     nameNotEmpty: Name is not empty.
     nameExists: Name has already been.
 
 env:
+  text: Environment Variable
+  new: New Environment Variable
+  edit: Edit Environment Variable
   key: Key
   value: Value
-  description: Description
+  note: Description
   sort: Serial Number
+  error:
+    selectGroup: Please select a group first.
+    keyNotEmpty: Key is not empty.
+    valueNotEmpty: Value is not empty.
+    keyExists: Key has already been.
 
 save: Save
 close: Close

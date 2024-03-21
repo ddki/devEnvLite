@@ -7,7 +7,6 @@ import { createI18n } from "vue-i18n";
 import "./styles/tailwind.css";
 
 import App from "./App.vue";
-import Toast from "./components/Toast/index";
 import { getSetting } from "./store/setting";
 import "./styles/main.css";
 import { disableContextMenu, disableRefresh } from "./utils/Webview";
@@ -22,7 +21,6 @@ const i18n = createI18n({
 const app = createApp(App);
 app.use(i18n);
 app.use(ContextMenu);
-app.use(Toast);
 app.mount("#main");
 
 // disableRefresh();

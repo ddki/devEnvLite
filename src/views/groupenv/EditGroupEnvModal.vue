@@ -43,10 +43,12 @@ const props = defineProps({
 	},
 	title: String,
 	visible: Boolean,
+	operate: String,
 });
 
 const formRef = ref<FormInstance>();
 const form = reactive({
+	configId: props.configId || "",
 	id: "",
 	name: "",
 	note: "",

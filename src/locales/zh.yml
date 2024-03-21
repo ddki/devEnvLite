@@ -43,16 +43,30 @@ envGroup:
   name: 分组名称
   note: 分组描述
   sort: 分组序号
+  context-menu:
+    addEnv: 添加环境变量
+    check: 检查
+    apply: 应用
+    modify: 修改
+    delete: 删除
   error:
     selectConfig: 请先选择一个配置
     nameNotEmpty: 名称不能为空
     nameExists: 名称已经存在
 
 env:
+  text: 环境变量
+  new: 新增环境变量
+  edit: 编辑环境变量
   key: 键
   value: 值
-  description: 描述
+  note: 描述
   sort: 序号
+  error:
+    selectGroup: 请先选择一个分组
+    keyNotEmpty: 键不能为空
+    valueNotEmpty: 值不能为空
+    keyExists: 键已经存在
 
 save: 保存
 close: 关闭

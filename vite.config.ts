@@ -7,6 +7,8 @@ import { defineConfig } from "vite";
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import tailwind from "tailwindcss"
+import autoprefixer from "autoprefixer"
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -23,6 +25,11 @@ export default defineConfig(async () => ({
       resolvers: [ElementPlusResolver()],
     }),
 	],
+	css: {
+		postcss: {
+			plugins: [tailwind(), autoprefixer()]
+		}
+	},
 
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
 	//

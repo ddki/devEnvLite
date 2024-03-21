@@ -20,6 +20,7 @@ interface Config {
 }
 
 interface GroupEnv {
+	configId: string;
 	id: string;
 	name: string;
 	note?: string;
@@ -28,8 +29,9 @@ interface GroupEnv {
 }
 
 interface Env {
+	groupId: string;
 	key: string;
 	value: string;
-	sort: null;
+	sort: number;
 	note?: string;
 }

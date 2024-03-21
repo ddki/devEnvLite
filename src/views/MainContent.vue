@@ -2,8 +2,6 @@
 	<main class="grid grid-cols-[25dvw_minmax(40dvh,_1fr)] p-2 sm:gap-x-2 md:gap-x-4">
 		<Config v-model:activeConfigId="activeConfigId" v-model:selectedConfigId="selectedConfigId" />
 		<GroupEnv v-model:configId="selectedConfigId" />
-		{{ activeConfigId }} <br>
-		{{ selectedConfigId }}
 	</main>
 </template>
 
