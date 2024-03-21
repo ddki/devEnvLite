@@ -1,6 +1,9 @@
 <template>
 	<el-dialog v-model="props.visible" :title="props.title" @close="closeDialog" width="32rem" v-if="props.visible">
-		<el-form ref="formRef" :model="form" label-position="right" label-width="auto">
+		<el-form ref="envFormRef" :model="form" label-position="right" label-width="auto">
+			<el-form-item prop="groupId" :label="t('envGroup.id')">
+				<el-input v-model="form.groupId" clearable :placeholder="t('envGroup.id')" readonly />
+			</el-form-item>
 			<el-form-item prop="key" :label="t('env.key')">
 				<el-input v-model="form.key" clearable :placeholder="t('env.key')" />
 			</el-form-item>
@@ -35,22 +38,31 @@ const { t } = useI18n();
 const emits = defineEmits(["update:visible", "postClose"]);
 const props = defineProps({
 	envKey: String,
-	configId: String,
-	groupId: String,
+	configId: {
+		type: String,
+		required: true,
+	},
+	groupId: {
+		type: String,
+		required: true,
+	},
 	maxSort: {
 		type: Number,
 		default: 0,
 	},
 	title: String,
 	visible: Boolean,
-	operate: String,
+	operate: {
+		type: String,
+		required: true,
+	},
 });
 
 console.log("env props = ", props);
 
-const formRef = ref<FormInstance>();
+const envFormRef = ref<FormInstance>();
 const form = reactive({
-	groupId: props.groupId || "",
+	groupId: props.groupId,
 	key: props.envKey || "",
 	value: "",
 	note: "",
@@ -58,7 +70,7 @@ const form = reactive({
 });
 
 const onSave = async () => {
-	if (!props.configId || !props.groupId) {
+	if (!props.configId || !form.groupId) {
 		ElNotification({
 			title: props.title,
 			message: t("env.error.selectGroup"),
@@ -76,7 +88,10 @@ const onSave = async () => {
 		});
 		return;
 	}
-	if (await checkGroupEnvsKeyExists(props.configId, props.groupId, form.key)) {
+	if (
+		props.operate === "new" &&
+		(await checkGroupEnvsKeyExists(props.configId, form.groupId, form.key))
+	) {
 		ElNotification({
 			title: props.title,
 			message: t("env.error.keyExists"),
@@ -85,7 +100,8 @@ const onSave = async () => {
 		});
 		return;
 	}
-	const save = await saveEnvToGroup(props.configId, props.groupId, form);
+	console.log("form: ", form);
+	const save = await saveEnvToGroup(props.configId, form);
 	if (save) {
 		ElNotification({
 			title: props.title,
@@ -125,6 +141,7 @@ const checkGroupEnvsKeyExists = async (configId: string, groupId: string, envKey
 const loadStoreEnv = async (configId: string, groupId: string, envKey: string) => {
 	await getEnv(configId, groupId, envKey).then((env) => {
 		if (env) {
+			form.groupId = env.groupId;
 			form.key = env.key;
 			form.value = env.value;
 			form.note = env.note || "";
@@ -137,6 +154,7 @@ watch(props, async (newValue, _oldValue) => {
 	if (newValue.envKey && newValue.configId && newValue.groupId) {
 		await loadStoreEnv(newValue.configId, newValue.groupId, newValue.envKey);
 	} else {
+		form.groupId = newValue.groupId;
 		form.key = "";
 		form.value = "";
 		form.note = "";

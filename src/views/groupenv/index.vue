@@ -28,17 +28,20 @@
 </template>
 
 <script setup lang="ts">
+import ContextMenu from "@imengyu/vue3-context-menu";
 import { ElNotification, type ElTree } from "element-plus";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import ContextMenu from "@imengyu/vue3-context-menu";
 import { deleteEnv, getGroupEnvs } from "../../store/config";
-import EditGroupEnvModal from "./EditGroupEnvModal.vue";
-import EditEnvModal from "./EditEnvModal.vue";
 import { getConfig, saveConfig } from "../../store/config";
+import EditEnvModal from "./EditEnvModal.vue";
+import EditGroupEnvModal from "./EditGroupEnvModal.vue";
 
 const props = defineProps({
-	configId: String,
+	configId: {
+		type: String,
+		required: true,
+	},
 });
 
 const { t } = useI18n();
@@ -61,15 +64,18 @@ const groupEnvsTreeProps = {
 };
 
 const newGroupEnv = () => {
+	if (!props.configId) {
+		ElNotification({
+			title: t("envGroup.new"),
+			message: t("envGroup.error.selectConfig"),
+			position: "bottom-right",
+			type: "warning",
+		});
+		return;
+	}
 	editGroupEnvModalVisible.value = true;
 	editGroupEnvModalTitle.value = t("envGroup.new");
 	editGroupEnvModalOperate.value = "new";
-	ElNotification({
-		title: t("envGroup.new"),
-		message: t("envGroup.error.selectConfig"),
-		position: "bottom-right",
-		type: "warning",
-	});
 };
 
 const editGroupEnv = (groupEnvId: string) => {

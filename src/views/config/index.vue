@@ -5,6 +5,7 @@
 			<el-button type="primary" @click="newConfig">{{ t('config.new-config') }}</el-button>
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
+			<span class="text-slate-500" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText")}}</span>
 			<ul class="menu bg-base-200 w-full rounded-box">
 				<div v-for="item in configs" :key="item?.id" @click="onClickConfig(item)"
 					@contextmenu="onContextMenu($event, item)">
@@ -78,7 +79,7 @@ const loadStore = async () => {
 
 await loadStore();
 
-const importConfig = async () => { };
+const importConfig = async () => {};
 
 const newConfig = () => {
 	nextTick(() => {

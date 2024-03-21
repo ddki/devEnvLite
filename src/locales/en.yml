@@ -16,6 +16,7 @@ settings:
   save: Save
 
 config:
+  emptyText: Click on "New Config" to create a new configuration.
   text: Config
   import-config: Import Config
   new-config: New Config

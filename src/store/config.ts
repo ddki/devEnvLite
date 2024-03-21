@@ -80,14 +80,16 @@ const getGroupEnvs = async (configId: string): Promise<GroupEnv[]> => {
 	return config.groupEnvs || [];
 };
 
-const getGroupEnv = async (configId: string, groupEnvId: string): Promise<GroupEnv | null> => {
+const getGroupEnv = async (configId: string, groupEnvId: string): Promise<GroupEnv> => {
 	const groupEnvs = await getGroupEnvs(configId);
-	for (const item of groupEnvs) {
-		if (item.id === groupEnvId) {
-			return item;
+	if (groupEnvs.length > 0) {
+		for (const item of groupEnvs) {
+			if (item.id === groupEnvId) {
+				return item;
+			}
 		}
 	}
-	return null;
+	return {} as GroupEnv;
 };
 
 const getEnvs = async (configId: string, groupEnvId: string): Promise<Env[]> => {
@@ -114,11 +116,20 @@ const saveConfig = async (config: Config): Promise<boolean> => {
 	const store = new Store(path);
 	const load = await loadConfig(store, config);
 	if (load) {
-		await store.set("id", config.id);
-		await store.set("name", config.name);
-		await store.set("note", config.note);
-		await store.set("sort", config.sort);
-		await store.set("groupEnvs", converterGroupEnvs(config.id, config.groupEnvs));
+		const storeConfig = await getConfig(config.id);
+		if (storeConfig) {
+			await store.set("id", storeConfig.id);
+			await store.set("name", config.name);
+			await store.set("note", config.note);
+			await store.set("sort", config.sort);
+			await store.set("groupEnvs", converterGroupEnvs(storeConfig.id, config.groupEnvs));
+		} else {
+			await store.set("id", config.id);
+			await store.set("name", config.name);
+			await store.set("note", config.note);
+			await store.set("sort", config.sort);
+			await store.set("groupEnvs", converterGroupEnvs(config.id, config.groupEnvs));
+		}
 		await store.save();
 
 		await pushConfigName(config.name);
@@ -145,25 +156,58 @@ const converterGroupEnvs = (configId: string, groupEnvs: GroupEnv[] | undefined)
 	return [];
 };
 
-const saveEnvToGroup = async (configId: string, groupEnvId: string, env: Env): Promise<boolean> => {
-	const config = await getConfig(configId);
-	const groups = await getGroupEnvs(configId);
-	const group = await getGroupEnv(configId, groupEnvId);
-	if (group) {
-		const envs = group?.envs || [];
-		envs.push(env);
-		group.envs = envs;
+const saveGroupEnvToConfig = async (groupEnv: GroupEnv): Promise<boolean> => {
+	const config = await getConfig(groupEnv.configId);
+	const groups = await getGroupEnvs(groupEnv.configId);
+	const group = await getGroupEnv(groupEnv.configId, groupEnv.id);
+	console.log("saveGroupEnvToConfig: groups, group:", groups, group);
+	if (group?.id) {
+		// 存在，更新
+		const newGroups = groups.map((item) => {
+			if (item.id === groupEnv.id) {
+				item.name = groupEnv.name;
+				item.note = groupEnv.note;
+				item.sort = groupEnv.sort;
+				item.envs = groupEnv.envs;
+			}
+			return item;
+		});
+		console.log("saveGroupEnvToConfig: ", newGroups);
+		config.groupEnvs = newGroups;
 	} else {
-		return false;
+		// 不存在，添加
+		groups.push(groupEnv);
+		config.groupEnvs = groups;
 	}
-	const newGroups = groups.map((item) => {
-		if (item.id === group?.id) {
-			return group;
-		}
-		return item;
-	});
-	config.groupEnvs = newGroups;
 	return await saveConfig(config);
+};
+
+const saveEnvToGroup = async (configId: string, env: Env): Promise<boolean> => {
+	console.log("saveEnvToGroup param: ", configId, env);
+	const storeEnvs = await getEnvs(configId, env.groupId);
+	const storeEnv = await getEnv(configId, env.groupId, env.key);
+	const group = await getGroupEnv(configId, env.groupId);
+	console.log("saveEnvToGroup envs, storeEnv, group: ", storeEnvs, storeEnv, group);
+	if (storeEnv?.key) {
+		// 存在，更新
+		const newEnvs = storeEnvs.map((item) => {
+			if (item.key === env.key) {
+				item.value = env.value;
+				item.note = env.note;
+				item.sort = env.sort;
+			}
+			return item;
+		});
+		group.envs = newEnvs;
+		console.log("saveEnvToGroup newEnvs:", newEnvs);
+	} else {
+		// 不存在，添加
+		storeEnvs.push(env);
+		group.envs = storeEnvs;
+		console.log("saveEnvToGroup envs:", storeEnvs);
+	}
+	console.log("saveEnvToGroup group:", group);
+	return await saveGroupEnvToConfig(group);
 };
 
 const deleteEnv = async (
@@ -186,6 +230,14 @@ const deleteEnv = async (
 		}
 		return item;
 	});
+	config.groupEnvs = newGroups;
+	return await saveConfig(config);
+};
+
+const deleteGroupEnv = async (configId: string, groupId: string): Promise<boolean> => {
+	const config = await getConfig(configId);
+	const groups = await getGroupEnvs(configId);
+	const newGroups = groups.filter((item) => item.id !== groupId);
 	config.groupEnvs = newGroups;
 	return await saveConfig(config);
 };
@@ -223,7 +275,9 @@ export {
 	getEnvs,
 	getEnv,
 	saveConfig,
+	saveGroupEnvToConfig,
 	saveEnvToGroup,
 	deleteConfig,
+	deleteGroupEnv,
 	deleteEnv,
 };

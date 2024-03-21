@@ -16,6 +16,7 @@ settings:
   save: 保存
 
 config:
+  emptyText: 点击“新增配置”创建一个配置吧
   text: 配置
   import-config: 导入配置
   new-config: 新增配置

@@ -1,8 +1,11 @@
 <template>
 	<el-dialog v-model="props.visible" :title="props.title" @close="closeDialog" width="32rem" v-if="props.visible">
-		<el-form ref="formRef" :model="form" label-position="right" label-width="auto">
+		<el-form ref="groupEnvFormRef" :model="form" label-position="right" label-width="auto">
+			<el-form-item prop="configId" :label="t('config.id')">
+				<el-input v-model="form.configId" clearable :placeholder="t('config.id')" readonly />
+			</el-form-item>
 			<el-form-item prop="id" :label="t('envGroup.id')">
-				<el-input v-model="form.id" clearable :placeholder="t('envGroup.id')" />
+				<el-input v-model="form.id" clearable :placeholder="t('envGroup.id')" readonly />
 			</el-form-item>
 			<el-form-item prop="name" :label="t('envGroup.name')">
 				<el-input v-model="form.name" clearable :placeholder="t('envGroup.name')" />
@@ -29,26 +32,32 @@ import { ElNotification, type FormInstance } from "element-plus";
 import { v4 as uuidv4 } from "uuid";
 import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { getConfig, getGroupEnv, saveConfig } from "../../store/config";
+import { getConfig, getGroupEnv, saveGroupEnvToConfig } from "../../store/config";
 
 const { t } = useI18n();
 
 const emits = defineEmits(["update:visible", "postClose"]);
 const props = defineProps({
 	id: String,
-	configId: String,
+	configId: {
+		type: String,
+		required: true,
+	},
 	maxSort: {
 		type: Number,
 		default: 0,
 	},
 	title: String,
 	visible: Boolean,
-	operate: String,
+	operate: {
+		type: String,
+		required: true,
+	},
 });
 
-const formRef = ref<FormInstance>();
+const groupEnvFormRef = ref<FormInstance>();
 const form = reactive({
-	configId: props.configId || "",
+	configId: props.configId,
 	id: "",
 	name: "",
 	note: "",
@@ -56,7 +65,7 @@ const form = reactive({
 });
 
 const onSave = async () => {
-	if (!props.configId) {
+	if (!form.configId) {
 		ElNotification({
 			title: props.title,
 			message: t("envGroup.error.selectConfig"),
@@ -74,7 +83,7 @@ const onSave = async () => {
 		});
 		return;
 	}
-	if (await checkGroupEnvNameExists(props.configId, form.name)) {
+	if (props.operate === "new" && (await checkGroupEnvNameExists(props.configId, form.name))) {
 		ElNotification({
 			title: props.title,
 			message: t("envGroup.error.nameExists"),
@@ -83,10 +92,7 @@ const onSave = async () => {
 		});
 		return;
 	}
-	const storeConfig = await getConfig(props.configId);
-	storeConfig.groupEnvs?.push(form);
-	console.log("Config === ", storeConfig);
-	const save = await saveConfig(storeConfig);
+	const save = await saveGroupEnvToConfig(form);
 	if (save) {
 		ElNotification({
 			title: props.title,
@@ -125,6 +131,7 @@ const getConfigEnvGroup = async (configId: string, groupId: string) => {
 	await getGroupEnv(configId, groupId).then((groupEnv) => {
 		if (groupEnv) {
 			form.id = groupEnv.id;
+			form.configId = groupEnv.configId;
 			form.name = groupEnv.name;
 			form.note = groupEnv.note || "";
 			form.sort = groupEnv.sort;
@@ -137,6 +144,7 @@ watch(props, async (newValue, _oldValue) => {
 		await getConfigEnvGroup(newValue.configId, newValue.id);
 	} else {
 		form.id = uuidv4();
+		form.configId = newValue.configId;
 		form.name = "";
 		form.note = "";
 		form.sort = newValue.maxSort + 1;

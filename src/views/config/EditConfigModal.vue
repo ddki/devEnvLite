@@ -1,8 +1,8 @@
 <template>
 	<el-dialog v-model="props.visible" :title="props.title" @close="closeDialog" width="32rem" v-if="props.visible">
-		<el-form ref="formRef" :model="form" label-position="right" label-width="auto">
+		<el-form ref="configFormRef" :model="form" label-position="right" label-width="auto">
 			<el-form-item prop="id" :label="t('config.id')">
-				<el-input v-model="form.id" clearable :placeholder="t('config.id')" />
+				<el-input v-model="form.id" clearable :placeholder="t('config.id')" readonly />
 			</el-form-item>
 			<el-form-item prop="name" :label="t('config.name')">
 				<el-input v-model="form.name" clearable :placeholder="t('config.name')" />
@@ -42,10 +42,13 @@ const props = defineProps({
 	},
 	title: String,
 	visible: Boolean,
-	operate: String,
+	operate: {
+		type: String,
+		required: true,
+	},
 });
 
-const formRef = ref<FormInstance>();
+const configFormRef = ref<FormInstance>();
 const form = reactive({
 	id: "",
 	name: "",
@@ -65,7 +68,7 @@ const onSave = async () => {
 	}
 	const configNames = await getConfigNames();
 	console.log("configNames = ", configNames);
-	if (configNames?.includes(form.name)) {
+	if (props.operate === "new" && configNames?.includes(form.name)) {
 		ElNotification({
 			title: props.title,
 			message: t("config.error.nameExists"),
