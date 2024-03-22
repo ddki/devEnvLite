@@ -122,7 +122,9 @@ const saveConfig = async (config: Config): Promise<boolean> => {
 			await store.set("name", config.name);
 			await store.set("note", config.note);
 			await store.set("sort", config.sort);
-			await store.set("groupEnvs", converterGroupEnvs(storeConfig.id, config.groupEnvs));
+			const groupEnvs = converterGroupEnvs(storeConfig.id, config.groupEnvs || storeConfig.groupEnvs);
+			console.log("[saveConfig()] groupEnvs: ", groupEnvs);
+			await store.set("groupEnvs", groupEnvs);
 		} else {
 			await store.set("id", config.id);
 			await store.set("name", config.name);
@@ -242,13 +244,14 @@ const deleteGroupEnv = async (configId: string, groupId: string): Promise<boolea
 	return await saveConfig(config);
 };
 
-const deleteConfig = async (config: Config): Promise<void> => {
-	const path = `config/${config.id}.json`;
+const deleteConfig = async (id: string): Promise<void> => {
+	const path = `config/${id}.json`;
 	await remove(path, { baseDir: BaseDirectory.AppData });
+	const storeConfig = await getConfig(id);
 	// 移除名称
-	await removeConfigName(config.name);
+	await removeConfigName(storeConfig.name);
 	// 移除激活ID
-	await removeActiveId(config.id);
+	await removeActiveId(storeConfig.id);
 };
 
 const loadConfig = async (store: Store, config: Config): Promise<boolean> => {

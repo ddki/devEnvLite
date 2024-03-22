@@ -7,7 +7,7 @@
 		</div>
 		<div>
 			<el-button type="primary" @click="openSettings">{{ t('header.setting') }}</el-button>
-			<SettingModal v-model:visible="settingsModalVisible" :title="t('header.setting')" />
+			<SettingModal v-model:visible="settingsModalVisible" :title="t('header.setting')" @callBack="reloadPage" />
 		</div>
 	</header>
 
@@ -33,4 +33,9 @@ const onCollate = () => {
 const openSettings = () => {
 	settingsModalVisible.value = true;
 };
+
+const reloadPage = () => {
+	console.log("reloadPage...")
+	window.location.reload;
+}
 </script>

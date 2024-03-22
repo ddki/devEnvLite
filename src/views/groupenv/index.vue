@@ -7,18 +7,21 @@
 				@postClose="postCloseEditConfigModal" />
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
-			<el-tree ref="groupEnvsTreeRef" :data="groupEnvsState" :props="groupEnvsTreeProps" node-key="id"
-				@node-click="onClickNode" @node-contextmenu="nodeContextMenu">
+			<el-tree ref="groupEnvsTreeRef" :data="groupEnvsState" :props="groupEnvsTreeProps"
+				:default-expanded-keys="[editGroupEnvId]" node-key="id" @node-contextmenu="nodeContextMenu">
 				<template #default="{ node, data }">
 					<div class="flex flex-row justify-between w-full">
 						<span>{{ node.label || data.key }}</span>
 						<span v-if="isGroupNode(data)">
-							分组
+							<a>{{ t("envGroup.text") }}/{{ data.envs.length }}</a>
 						</span>
 						<span v-if="!isGroupNode(data)">
-							环境变量
+							<a>{{ t("env.text") }}</a>
 						</span>
 					</div>
+				</template>
+				<template #empty>
+					<span>{{ t("envGroup.emptyText") }}</span>
 				</template>
 			</el-tree>
 		</div>
@@ -79,27 +82,24 @@ const newGroupEnv = () => {
 };
 
 const editGroupEnv = (groupEnvId: string) => {
+	if (!props.configId) {
+		ElNotification({
+			title: t("envGroup.edit"),
+			message: t("envGroup.error.selectConfig"),
+			position: "bottom-right",
+			type: "warning",
+		});
+		return;
+	}
 	editGroupEnvModalVisible.value = true;
 	editGroupEnvModalTitle.value = t("envGroup.edit");
 	editGroupEnvModalOperate.value = "edit";
 	editGroupEnvId.value = groupEnvId;
-	ElNotification({
-		title: t("envGroup.edit"),
-		message: t("envGroup.error.selectConfig"),
-		position: "bottom-right",
-		type: "warning",
-	});
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const onClickNode = (obj: any, node: any, treeNode: any, evnet: PointerEvent) => {
-	// console.log(obj, node, treeNode, evnet);
-	ElNotification({
-		title: t("envGroup.text"),
-		message: `选中了${obj.name || obj.key}`,
-		position: "bottom-right",
-		type: "success",
-	});
+	console.log(obj, node, treeNode, evnet);
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>

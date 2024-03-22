@@ -45,6 +45,7 @@ export default defineConfig(async () => ({
 		},
 	},
 	build: {
+		target: "esnext",
 		rollupOptions: {
 			input: {
 				index: fileURLToPath(new URL("./index.html", import.meta.url)),

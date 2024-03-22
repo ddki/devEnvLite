@@ -1,5 +1,5 @@
 <template>
-	<el-dialog v-model="props.visible" :title="props.title" @close="closeDialog" width="32rem">
+	<el-dialog v-model="props.visible" :title="props.title" @close="closeDialog" width="32rem" v-if="props.visible">
 		<el-form :model="settingForm" label-position="right" label-width="auto">
 			<el-form-item :label="t('settings.language')">
 				<el-select v-model="settingForm.language" :placeholder="t('settings.language')">
@@ -50,7 +50,7 @@ const props = defineProps({
 const appVersion = await getVersion();
 const { t } = useI18n();
 
-const emits = defineEmits(["update:visible"]);
+const emits = defineEmits(["callBack", "update:visible"]);
 
 const languageList = [
 	{
@@ -83,6 +83,7 @@ const onSave = async () => {
 	});
 	if (save) {
 		emits("update:visible", false);
+		emits("callBack");
 		ElNotification({
 			title: t("header.setting"),
 			message: t("save") + t("success"),

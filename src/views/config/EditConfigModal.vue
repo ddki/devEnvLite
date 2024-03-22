@@ -5,10 +5,10 @@
 				<el-input v-model="form.id" clearable :placeholder="t('config.id')" readonly />
 			</el-form-item>
 			<el-form-item prop="name" :label="t('config.name')">
-				<el-input v-model="form.name" clearable :placeholder="t('config.name')" />
+				<el-input v-model.trim="form.name" clearable :placeholder="t('config.name')" />
 			</el-form-item>
 			<el-form-item prop="note" :label="t('config.note')">
-				<el-input v-model="form.note" clearable :placeholder="t('config.note')" />
+				<el-input v-model.trim="form.note" clearable :placeholder="t('config.note')" />
 			</el-form-item>
 			<el-form-item prop="sort" :label="t('config.sort')">
 				<el-input v-model="form.sort" clearable :placeholder="t('config.sort')" />
@@ -27,9 +27,9 @@
 <script setup lang="ts">
 import { ElNotification, type FormInstance } from "element-plus";
 import { v4 as uuidv4 } from "uuid";
-import { reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { getConfig, getConfigNames, saveConfig } from "../../store/config";
+import { deleteConfig, getConfig, getConfigNames, saveConfig } from "../../store/config";
 
 const { t } = useI18n();
 
@@ -46,6 +46,20 @@ const props = defineProps({
 		type: String,
 		required: true,
 	},
+});
+
+onMounted(() => {
+	if (props.operate === "edit" && !props.id) {
+		ElNotification({
+			title: props.title,
+			message: t("config.error.missId"),
+			position: "bottom-right",
+			type: "error",
+		});
+	}
+	if (props.operate === "new") {
+		configFormRef.value?.resetFields();
+	}
 });
 
 const configFormRef = ref<FormInstance>();
@@ -76,6 +90,9 @@ const onSave = async () => {
 			type: "error",
 		});
 		return;
+	}
+	if (props.operate === "edit" && props.id) {
+		await deleteConfig(props.id);
 	}
 	const save = await saveConfig(form);
 	if (save) {

@@ -5,10 +5,10 @@
 				<el-input v-model="form.groupId" clearable :placeholder="t('envGroup.id')" readonly />
 			</el-form-item>
 			<el-form-item prop="key" :label="t('env.key')">
-				<el-input v-model="form.key" clearable :placeholder="t('env.key')" />
+				<el-input v-model.trim="form.key" clearable :placeholder="t('env.key')" />
 			</el-form-item>
 			<el-form-item prop="value" :label="t('env.value')">
-				<el-input v-model="form.value" clearable :placeholder="t('env.value')" />
+				<el-input v-model.trim="form.value" clearable :placeholder="t('env.value')" />
 			</el-form-item>
 			<el-form-item prop="note" :label="t('env.note')">
 				<el-input v-model="form.note" clearable :placeholder="t('env.note')" />
@@ -29,9 +29,9 @@
 
 <script setup lang="ts">
 import { ElNotification, type FormInstance } from "element-plus";
-import { reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { getEnv, getGroupEnv, saveEnvToGroup } from "../../store/config";
+import { deleteEnv, getEnv, getGroupEnv, saveEnvToGroup } from "../../store/config";
 
 const { t } = useI18n();
 
@@ -56,6 +56,20 @@ const props = defineProps({
 		type: String,
 		required: true,
 	},
+});
+
+onMounted(() => {
+	if (props.operate === "edit" && !props.envKey) {
+		ElNotification({
+			title: props.title,
+			message: t("env.error.missKey"),
+			position: "bottom-right",
+			type: "error",
+		});
+	}
+	if (props.operate === "new") {
+		envFormRef.value?.resetFields();
+	}
 });
 
 console.log("env props = ", props);
@@ -99,6 +113,9 @@ const onSave = async () => {
 			type: "error",
 		});
 		return;
+	}
+	if (props.operate === "edit" && props.envKey) {
+		await deleteEnv(props.configId, props.groupId, props.envKey);
 	}
 	console.log("form: ", form);
 	const save = await saveEnvToGroup(props.configId, form);

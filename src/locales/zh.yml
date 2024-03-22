@@ -35,8 +35,10 @@ config:
   error:
     nameNotEmpty: 名称不能为空
     nameExists: 名称已经存在
+    missId: 缺失配置唯一标识
 
 envGroup:
+  emptyText: 点击“新增分组”创建一个配置分组吧
   text: 分组
   new: 新增分组
   edit: 编辑分组
@@ -54,6 +56,7 @@ envGroup:
     selectConfig: 请先选择一个配置
     nameNotEmpty: 名称不能为空
     nameExists: 名称已经存在
+    missId: 缺失分组唯一标识
 
 env:
   text: 环境变量
@@ -68,6 +71,7 @@ env:
     keyNotEmpty: 键不能为空
     valueNotEmpty: 值不能为空
     keyExists: 键已经存在
+    missKey: 缺失键
 
 save: 保存
 close: 关闭

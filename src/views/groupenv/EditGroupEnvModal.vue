@@ -8,10 +8,10 @@
 				<el-input v-model="form.id" clearable :placeholder="t('envGroup.id')" readonly />
 			</el-form-item>
 			<el-form-item prop="name" :label="t('envGroup.name')">
-				<el-input v-model="form.name" clearable :placeholder="t('envGroup.name')" />
+				<el-input v-model.trim="form.name" clearable :placeholder="t('envGroup.name')" />
 			</el-form-item>
 			<el-form-item prop="note" :label="t('envGroup.note')">
-				<el-input v-model="form.note" clearable :placeholder="t('envGroup.note')" />
+				<el-input v-model.trim="form.note" clearable :placeholder="t('envGroup.note')" />
 			</el-form-item>
 			<el-form-item prop="sort" :label="t('envGroup.sort')">
 				<el-input v-model="form.sort" clearable :placeholder="t('envGroup.sort')" />
@@ -32,7 +32,8 @@ import { ElNotification, type FormInstance } from "element-plus";
 import { v4 as uuidv4 } from "uuid";
 import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { getConfig, getGroupEnv, saveGroupEnvToConfig } from "../../store/config";
+import { deleteGroupEnv, getConfig, getGroupEnv, saveGroupEnvToConfig } from "../../store/config";
+import { onMounted } from "vue";
 
 const { t } = useI18n();
 
@@ -53,6 +54,20 @@ const props = defineProps({
 		type: String,
 		required: true,
 	},
+});
+
+onMounted(() => {
+	if (props.operate === "edit" && !props.id) {
+		ElNotification({
+			title: props.title,
+			message: t("envGroup.error.missId"),
+			position: "bottom-right",
+			type: "error",
+		});
+	}
+	if (props.operate === "new") {
+		groupEnvFormRef.value?.resetFields();
+	}
 });
 
 const groupEnvFormRef = ref<FormInstance>();
@@ -91,6 +106,9 @@ const onSave = async () => {
 			type: "error",
 		});
 		return;
+	}
+	if (props.operate === "edit" && props.id) {
+		await deleteGroupEnv(props.configId, props.id);
 	}
 	const save = await saveGroupEnvToConfig(form);
 	if (save) {

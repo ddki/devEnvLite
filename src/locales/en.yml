@@ -18,9 +18,9 @@ settings:
 config:
   emptyText: Click on "New Config" to create a new configuration.
   text: Config
-  import-config: Import Config
-  new-config: New Config
-  edit-config: Edit Config
+  import-config: Import
+  new-config: New
+  edit-config: Edit
   id: Config's Unique Identifier
   name: Config's Name
   note: Config's Note
@@ -35,8 +35,10 @@ config:
   error:
     nameNotEmpty: Name is not empty.
     nameExists: Name has already been.
+    missId: Missing config's unique identifier.
 
 envGroup:
+  emptyText: Click on "New Group" to create a new group for configuration.
   text: Environment Group
   new: New Group
   edit: Edit Group
@@ -54,6 +56,7 @@ envGroup:
     selectConfig: Please select a configuration first.
     nameNotEmpty: Name is not empty.
     nameExists: Name has already been.
+    missId: Missing group unique identifier.
 
 env:
   text: Environment Variable
@@ -68,6 +71,7 @@ env:
     keyNotEmpty: Key is not empty.
     valueNotEmpty: Value is not empty.
     keyExists: Key has already been.
+    missKey: Missing key.
 
 save: Save
 close: Close

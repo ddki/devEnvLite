@@ -5,7 +5,7 @@
 			<el-button type="primary" @click="newConfig">{{ t('config.new-config') }}</el-button>
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
-			<span class="text-slate-500" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText")}}</span>
+			<span class="text-slate-500" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
 			<ul class="menu bg-base-200 w-full rounded-box">
 				<div v-for="item in configs" :key="item?.id" @click="onClickConfig(item)"
 					@contextmenu="onContextMenu($event, item)">
@@ -28,7 +28,6 @@
 import { CircleCheck } from "@element-plus/icons-vue";
 import ContextMenu from "@imengyu/vue3-context-menu";
 import { invoke } from "@tauri-apps/api/core";
-import { ElNotification } from "element-plus";
 import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { deleteConfig, getConfigs, setActiveConfigId } from "../../store/config";
@@ -116,12 +115,6 @@ const onClickConfig = (config: ConfigData) => {
 	resetConfigsActiveClass();
 	config.activeClass = "active";
 	emits("update:selectedConfigId", config.id);
-	ElNotification({
-		title: t("config.text"),
-		message: `${config.name}`,
-		position: "bottom-right",
-		type: "info",
-	});
 };
 
 // 右键菜单
@@ -160,7 +153,7 @@ const onContextMenu = (e: MouseEvent, config: ConfigData) => {
 			{
 				label: t("config.context-menu.delete"),
 				onClick: async () => {
-					await deleteConfig(config);
+					await deleteConfig(config.id);
 					await loadStore();
 				},
 			},

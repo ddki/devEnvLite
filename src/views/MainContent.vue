@@ -6,8 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { onUnmounted } from "vue";
+import { ref, onMounted } from "vue";
 import { getActiveConfig } from "../store/config";
 import Config from "./config/index.vue";
 import GroupEnv from "./groupenv/index.vue";
@@ -15,7 +14,7 @@ import GroupEnv from "./groupenv/index.vue";
 const activeConfigId = ref("");
 const selectedConfigId = ref("");
 
-onUnmounted(async () => {
+onMounted(async () => {
 	const activeConfig = await getActiveConfig();
 	activeConfigId.value = activeConfig.activeConfigId;
 	selectedConfigId.value = activeConfigId.value;
