@@ -1,7 +1,4 @@
-body {
-	margin: 0;
-	padding: 0;
-}
+@import url(./index.css);
 
 #main {
 	height: 100dvh;

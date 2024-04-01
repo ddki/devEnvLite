@@ -1,5 +1,5 @@
 <template>
-	<footer class="flex flex-row justify-center items-center pl-2 pr-2 bg-white">
+	<footer class="flex flex-row justify-center items-center px-2">
 		<span class="mr-6">Version: <span>V{{ appVersion }}</span></span>
 		<span class="mr-6">License: <a target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0</a></span>
 		<span>Power by: <a target="_blank" href="https://tauri.app/">Tauri</a></span>

@@ -24,9 +24,9 @@
 		</el-form>
 		<template #footer>
 			<div class="dialog-footer">
-				<el-button type="primary" @click="onSave">
+				<Button @click="onSave">
 					{{ t('save') }}
-				</el-button>
+				</Button>
 			</div>
 		</template>
 	</el-dialog>
@@ -34,10 +34,12 @@
 
 <script setup lang="ts">
 import { getVersion } from "@tauri-apps/api/app";
-import { ElNotification } from "element-plus";
 import { reactive } from "vue";
 import { useI18n } from "vue-i18n";
-import { getSetting, saveSetting } from "../../store/setting";
+import Button from "@/components/ui/button/Button.vue";
+import { useToast } from '@/components/ui/toast/use-toast'
+import { getSetting, saveSetting } from "@/store/setting";
+
 
 const props = defineProps({
 	title: String,
@@ -49,6 +51,7 @@ const props = defineProps({
 
 const appVersion = await getVersion();
 const { t } = useI18n();
+const { toast } = useToast()
 
 const emits = defineEmits(["callBack", "update:visible"]);
 
@@ -84,18 +87,14 @@ const onSave = async () => {
 	if (save) {
 		emits("update:visible", false);
 		emits("callBack");
-		ElNotification({
+		toast({
 			title: t("header.setting"),
-			message: t("save") + t("success"),
-			position: "bottom-right",
-			type: "success",
+			description: t("save") + t("success")
 		});
 	} else {
-		ElNotification({
+		toast({
 			title: t("header.setting"),
-			message: t("save") + t("failure"),
-			position: "bottom-right",
-			type: "error",
+			description: t("save") + t("failure")
 		});
 	}
 };
@@ -118,4 +117,3 @@ const closeDialog = () => {
 	padding: 0.2rem 0;
 }
 </style>
-../../store/setting

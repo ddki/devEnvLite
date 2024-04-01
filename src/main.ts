@@ -4,7 +4,6 @@ import messages from "@intlify/unplugin-vue-i18n/messages";
 import "element-plus/dist/index.css";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
-import "./styles/tailwind.css";
 
 import App from "./App.vue";
 import { getSetting } from "./store/setting";

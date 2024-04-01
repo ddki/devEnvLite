@@ -1,35 +1,43 @@
 <template>
 	<Suspense>
-		<template #default>
-			<el-config-provider :locale="locale">
-				<Header />
-				<Main />
-				<Footer />
-			</el-config-provider>
-		</template>
+		<div class="grid grid-rows-[10dvh_86dvh_4dvh] grid-cols-1 h-dvh">
+			<Header />
+			<main class="border">
+				<ResizablePanelGroup id="main-panel-group" direction="horizontal">
+					<ResizablePanel id="main-panel-search" :default-size="25">
+						<Config v-model:activeConfigId="activeConfigId" v-model:selectedConfigId="selectedConfigId" />
+					</ResizablePanel>
+					<ResizableHandle />
+					<ResizablePanel id="main-panel-content-view" :default-size="75">
+						<GroupEnv v-model:configId="selectedConfigId" />
+					</ResizablePanel>
+				</ResizablePanelGroup>
+			</main>
+			<Footer />
+		</div>
 	</Suspense>
 </template>
 
 
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
-import { ElConfigProvider } from "element-plus";
-import { ref } from "vue";
-import Header from "./views/Header.vue";
-import Main from "./views/MainContent.vue";
-import Footer from "./views/Footer.vue";
+import { onMounted, ref } from "vue";
+import { ResizablePanel, ResizableHandle, ResizablePanelGroup } from "@/components/ui/resizable";
+import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
+import { getActiveConfig } from "@/store/index";
+import Config from "@/views/config/index.vue";
+import GroupEnv from "@/views/groupenv/index.vue";
 
-import en from "element-plus/dist/locale/en.mjs";
-import zhCn from "element-plus/dist/locale/zh-cn.mjs";
-import { getSetting } from "./store/setting";
+const activeConfigId = ref("");
+const selectedConfigId = ref("");
 
-const locale = ref(en);
-
-getSetting().then((res) => {
-	if (res.language === "zh") {
-		locale.value = zhCn;
-	}
+onMounted(async () => {
+	const activeConfig = await getActiveConfig();
+	activeConfigId.value = activeConfig.activeConfigId;
+	selectedConfigId.value = activeConfigId.value;
 });
+
 
 invoke("close_splashscreen");
 </script>
