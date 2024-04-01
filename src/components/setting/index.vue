@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -8,9 +8,9 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -18,16 +18,16 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@/components/ui/select'
-import { useToast } from '@/components/ui/toast/use-toast'
-import { getSetting, saveSetting } from '@/store'
-import { getVersion } from '@tauri-apps/api/app';
-import { reactive, ref } from 'vue'
-import { useI18n } from 'vue-i18n';
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/toast/use-toast";
+import { getSetting, saveSetting } from "@/store";
+import { getVersion } from "@tauri-apps/api/app";
+import { reactive, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 const appVersion = await getVersion();
 const { t } = useI18n();
-const { toast } = useToast()
+const { toast } = useToast();
 
 const languageList = [
 	{
@@ -52,7 +52,6 @@ const settingData = reactive({
 const open = ref(false);
 
 const onSave = async () => {
-	console.log('save...')
 	const save = await saveSetting({
 		language: settingData.language,
 		homeDir: settingData.homeDir,
@@ -64,12 +63,12 @@ const onSave = async () => {
 		open.value = false;
 		toast({
 			title: t("header.setting"),
-			description: t("save") + t("success")
+			description: t("save") + t("success"),
 		});
 	} else {
 		toast({
 			title: t("header.setting"),
-			description: t("save") + t("failure")
+			description: t("save") + t("failure"),
 		});
 	}
 };

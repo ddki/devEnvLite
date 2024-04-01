@@ -1,7 +1,7 @@
 <template>
 	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
 		<div class="flex flex-row flex-2 justify-start items-center">
-			<el-button type="primary" @click="newGroupEnv">{{ t('envGroup.new') }}</el-button>
+			<Button type="primary" @click="newGroupEnv">{{ t('envGroup.new') }}</Button>
 			<EditGroupEnvModal v-model:visible="editGroupEnvModalVisible" :title="editGroupEnvModalTitle"
 				:operate="editGroupEnvModalOperate" :id="editGroupEnvId" :configId="props.configId"
 				@postClose="postCloseEditConfigModal" />
@@ -31,12 +31,13 @@
 </template>
 
 <script setup lang="ts">
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast/use-toast";
+import { deleteEnv, getConfig, getGroupEnvs, saveConfig } from "@/store";
 import ContextMenu from "@imengyu/vue3-context-menu";
-import { ElNotification, type ElTree } from "element-plus";
+import type { ElTree } from "element-plus";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { deleteEnv, getGroupEnvs } from "../../store/config";
-import { getConfig, saveConfig } from "../../store/config";
 import EditEnvModal from "./EditEnvModal.vue";
 import EditGroupEnvModal from "./EditGroupEnvModal.vue";
 
@@ -48,6 +49,7 @@ const props = defineProps({
 });
 
 const { t } = useI18n();
+const { toast } = useToast();
 const groupEnvsTreeRef = ref<InstanceType<typeof ElTree>>();
 
 const editGroupEnvModalVisible = ref(false);
@@ -68,11 +70,9 @@ const groupEnvsTreeProps = {
 
 const newGroupEnv = () => {
 	if (!props.configId) {
-		ElNotification({
+		toast({
 			title: t("envGroup.new"),
-			message: t("envGroup.error.selectConfig"),
-			position: "bottom-right",
-			type: "warning",
+			description: t("envGroup.error.selectConfig"),
 		});
 		return;
 	}
@@ -83,11 +83,9 @@ const newGroupEnv = () => {
 
 const editGroupEnv = (groupEnvId: string) => {
 	if (!props.configId) {
-		ElNotification({
+		toast({
 			title: t("envGroup.edit"),
-			message: t("envGroup.error.selectConfig"),
-			position: "bottom-right",
-			type: "warning",
+			description: t("envGroup.error.selectConfig"),
 		});
 		return;
 	}
@@ -95,11 +93,6 @@ const editGroupEnv = (groupEnvId: string) => {
 	editGroupEnvModalTitle.value = t("envGroup.edit");
 	editGroupEnvModalOperate.value = "edit";
 	editGroupEnvId.value = groupEnvId;
-};
-
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-const onClickNode = (obj: any, node: any, treeNode: any, evnet: PointerEvent) => {
-	console.log(obj, node, treeNode, evnet);
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>

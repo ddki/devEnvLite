@@ -1,8 +1,8 @@
 <template>
 	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
-		<div class="flex flex-row flex-2 justify-start items-center">
-			<el-button type="primary" @click="importConfig">{{ t('config.import-config') }}</el-button>
-			<el-button type="primary" @click="newConfig">{{ t('config.new-config') }}</el-button>
+		<div class="flex flex-row flex-2 justify-start items-center gap-2">
+			<Button @click="importConfig">{{ t('config.import-config') }}</Button>
+			<Button @click="newConfig">{{ t('config.new-config') }}</Button>
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
 			<span class="text-slate-500" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
@@ -10,10 +10,8 @@
 				<div v-for="item in configs" :key="item?.id" @click="onClickConfig(item)"
 					@contextmenu="onContextMenu($event, item)">
 					<li
-						:class="`text-ellipsis text-nowrap overflow-hidden py-1 cursor-pointer hover:bg-blue-200 flex flex-row justify-start items-center ${item.activeClass}`">
-						<el-icon v-if="item.isActive" class="mr-1">
-							<CircleCheck class="text-red-500" />
-						</el-icon>
+						:class="`text-ellipsis text-nowrap overflow-hidden py-1 cursor-pointer hover:bg-blue-200 flex flex-row justify-start items-center gap-2 ${item.activeClass}`">
+						<CircleCheckBig v-if="item.isActive" />
 						<span>{{ item?.name }}</span>
 					</li>
 				</div>
@@ -25,12 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import { CircleCheck } from "@element-plus/icons-vue";
+import { Button } from "@/components/ui/button";
+import { deleteConfig, getConfigs, setActiveConfigId } from "@/store/config";
 import ContextMenu from "@imengyu/vue3-context-menu";
 import { invoke } from "@tauri-apps/api/core";
+import { CircleCheckBig } from "lucide-vue-next";
 import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { deleteConfig, getConfigs, setActiveConfigId } from "../../store/config";
 import EditConfigModal from "./EditConfigModal.vue";
 
 interface ConfigData extends Config {
@@ -172,9 +171,5 @@ watch(
 </script>
 
 <style>
-.active {
-	padding: .5rem;
-	color: var(--el-color-white);
-	background-color: var(--el-color-primary);
-}
+
 </style>
