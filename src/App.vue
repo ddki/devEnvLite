@@ -4,11 +4,11 @@
 			<Header />
 			<main class="border">
 				<ResizablePanelGroup direction="horizontal" class="px-2">
-					<ResizablePanel :default-size="25">
+					<ResizablePanel :default-size="30">
 						<Config v-model:activeConfigId="activeConfigId" v-model:selectedConfigId="selectedConfigId" />
 					</ResizablePanel>
 					<ResizableHandle />
-					<ResizablePanel :default-size="75">
+					<ResizablePanel :default-size="70">
 						<GroupEnv v-model:configId="selectedConfigId" />
 					</ResizablePanel>
 				</ResizablePanelGroup>

@@ -1,28 +1,27 @@
 <script setup lang="ts">
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useI18n } from "vue-i18n";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { deleteConfig, getConfig, getConfigNames, saveConfig } from "@/store";
-import { reactive, onMounted } from "vue";
 import { v4 as uuidv4 } from "uuid";
+import { onMounted, reactive } from "vue";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const { toast } = useToast();
 
 interface Prop {
-	triggerText: string,
-	id?: string,
-	maxSort?: number,
-	operate: "edit" | "new"
+	id?: string;
+	maxSort?: number;
+	operate: "edit" | "new";
 }
 const props = withDefaults(defineProps<Prop>(), {
-	maxSort: 0
+	maxSort: 0,
 });
 
-const emit = defineEmits(["callback"])
+const emit = defineEmits(["callback"]);
 
 const configData = reactive({
 	id: "",
@@ -36,14 +35,13 @@ const onClear = () => {
 	configData.name = "";
 	configData.note = "";
 	configData.sort = props.maxSort + 1;
-}
+};
 
 const onSave = async () => {
 	if (!configData.name) {
 		toast({
-			title: props.triggerText,
 			description: t("config.error.nameNotEmpty"),
-			variant: 'destructive',
+			variant: "destructive",
 		});
 		return;
 	}
@@ -51,9 +49,8 @@ const onSave = async () => {
 	console.log("configNames = ", configNames);
 	if (props.operate === "new" && configNames?.includes(configData.name)) {
 		toast({
-			title: props.triggerText,
 			description: t("config.error.nameExists"),
-			variant: 'destructive',
+			variant: "destructive",
 		});
 		return;
 	}
@@ -62,16 +59,11 @@ const onSave = async () => {
 	}
 	const save = await saveConfig(configData);
 	if (save) {
-		toast({
-			title: props.triggerText,
-			description: t("save") + t("success")
-		});
 		emit("callback");
 	} else {
 		toast({
-			title: props.triggerText,
 			description: t("save") + t("failure"),
-			variant: 'destructive',
+			variant: "destructive",
 		});
 	}
 };
@@ -92,9 +84,7 @@ onMounted(async () => {
 <template>
 	<Popover>
 		<PopoverTrigger as-child>
-			<Button variant="outline">
-				{{ props.triggerText }}
-			</Button>
+			<slot />
 		</PopoverTrigger>
 		<PopoverContent>
 			<div class="grid gap-4">

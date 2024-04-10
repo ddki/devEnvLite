@@ -22,6 +22,7 @@ import {
 import { useToast } from "@/components/ui/toast/use-toast";
 import { getSetting, saveSetting } from "@/store";
 import { getVersion } from "@tauri-apps/api/app";
+import { Settings } from "lucide-vue-next";
 import { reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -61,14 +62,11 @@ const onSave = async () => {
 	});
 	if (save) {
 		open.value = false;
-		toast({
-			title: t("header.setting"),
-			description: t("save") + t("success"),
-		});
 	} else {
 		toast({
 			title: t("header.setting"),
 			description: t("save") + t("failure"),
+			variant: "destructive",
 		});
 	}
 };
@@ -77,7 +75,9 @@ const onSave = async () => {
 <template>
 	<Dialog v-model:open="open">
 		<DialogTrigger as-child>
-			<Button>{{ t('header.setting') }}</Button>
+			<Button variant="ghost" size="icon">
+				<Settings />
+			</Button>
 		</DialogTrigger>
 		<DialogContent class="sm:max-w-[425px]">
 			<DialogHeader>
