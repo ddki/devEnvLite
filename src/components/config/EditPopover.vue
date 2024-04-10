@@ -1,0 +1,130 @@
+<script setup lang="ts">
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { useI18n } from "vue-i18n";
+import { useToast } from "@/components/ui/toast/use-toast";
+import { deleteConfig, getConfig, getConfigNames, saveConfig } from "@/store";
+import { reactive, onMounted } from "vue";
+import { v4 as uuidv4 } from "uuid";
+
+const { t } = useI18n();
+const { toast } = useToast();
+
+interface Prop {
+	triggerText: string,
+	id?: string,
+	maxSort?: number,
+	operate: "edit" | "new"
+}
+const props = withDefaults(defineProps<Prop>(), {
+	maxSort: 0
+});
+
+const emit = defineEmits(["callback"])
+
+const configData = reactive({
+	id: "",
+	name: "",
+	note: "",
+	sort: 0,
+});
+
+const onClear = () => {
+	configData.id = uuidv4();
+	configData.name = "";
+	configData.note = "";
+	configData.sort = props.maxSort + 1;
+}
+
+const onSave = async () => {
+	if (!configData.name) {
+		toast({
+			title: props.triggerText,
+			description: t("config.error.nameNotEmpty"),
+			variant: 'destructive',
+		});
+		return;
+	}
+	const configNames = await getConfigNames();
+	console.log("configNames = ", configNames);
+	if (props.operate === "new" && configNames?.includes(configData.name)) {
+		toast({
+			title: props.triggerText,
+			description: t("config.error.nameExists"),
+			variant: 'destructive',
+		});
+		return;
+	}
+	if (props.operate === "edit" && props.id) {
+		await deleteConfig(props.id);
+	}
+	const save = await saveConfig(configData);
+	if (save) {
+		toast({
+			title: props.triggerText,
+			description: t("save") + t("success")
+		});
+		emit("callback");
+	} else {
+		toast({
+			title: props.triggerText,
+			description: t("save") + t("failure"),
+			variant: 'destructive',
+		});
+	}
+};
+
+onMounted(async () => {
+	if (props.operate === "edit" && props.id) {
+		const storeConfig = await getConfig(props.id);
+		configData.id = storeConfig.id;
+		configData.name = storeConfig.name;
+		configData.note = storeConfig.note as string;
+		configData.sort = storeConfig.sort;
+	} else {
+		onClear();
+	}
+});
+</script>
+
+<template>
+	<Popover>
+		<PopoverTrigger as-child>
+			<Button variant="outline">
+				{{ props.triggerText }}
+			</Button>
+		</PopoverTrigger>
+		<PopoverContent>
+			<div class="grid gap-4">
+				<div class="grid gap-2">
+					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="id">{{ t('config.id') }}</Label>
+						<Input v-model="configData.id" type="text" :placeholder="t('config.id')" class="col-span-2 h-8" readonly />
+					</div>
+					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="name">{{ t('config.name') }}</Label>
+						<Input v-model.trim="configData.name" type="text" :placeholder="t('config.name')" class="col-span-2 h-8" />
+					</div>
+					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="note">{{ t('config.note') }}</Label>
+						<Input v-model="configData.note" type="text" :placeholder="t('config.note')" class="col-span-2 h-8" />
+					</div>
+					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="sort">{{ t('config.sort') }}</Label>
+						<Input v-model="configData.sort" type="text" :placeholder="t('config.sort')" class="col-span-2 h-8" />
+					</div>
+				</div>
+				<div class="grid grid-cols-2 gap-4">
+					<Button variant="secondary" @click="onClear">
+						{{ t("clear") }}
+					</Button>
+					<Button @click="onSave">
+						{{ t("save") }}
+					</Button>
+				</div>
+			</div>
+		</PopoverContent>
+	</Popover>
+</template>

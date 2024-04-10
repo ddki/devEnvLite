@@ -1,36 +1,66 @@
 <template>
 	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
 		<div class="flex flex-row flex-2 justify-start items-center gap-2">
-			<Button @click="importConfig">{{ t('config.import-config') }}</Button>
-			<Button @click="newConfig">{{ t('config.new-config') }}</Button>
+			<Button variant="outline" @click="importConfig">{{ t('config.import-config') }}</Button>
+			<EditPopover :triggerText="t('config.new-config')" operate="new" @callback="loadStore" />
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
 			<span class="text-slate-500" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
-			<ul class="menu bg-base-200 w-full rounded-box">
-				<div v-for="item in configs" :key="item?.id" @click="onClickConfig(item)"
+			<div class="grid grid-cols-[1fr_3rem] items-center" v-for="item in configs" :key="item?.id">
+				<div class="flex flex-row gap-2 h-full items-center hover:bg-secondary" @click="onClickConfig(item)"
 					@contextmenu="onContextMenu($event, item)">
-					<li
-						:class="`text-ellipsis text-nowrap overflow-hidden py-1 cursor-pointer hover:bg-blue-200 flex flex-row justify-start items-center gap-2 ${item.activeClass}`">
-						<CircleCheckBig v-if="item.isActive" />
-						<span>{{ item?.name }}</span>
-					</li>
+					<CircleCheckBig v-if="item.isActive" />
+					<span>{{ item?.name }}</span>
 				</div>
-			</ul>
+				<DropdownMenu>
+					<DropdownMenuTrigger>
+						<Ellipsis />
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem @click="dropdownMenuActive(item)">
+							<CircleCheckBig class="mr-2 h-4 w-4" />
+							<span>{{ t("config.context-menu.active") }}</span>
+						</DropdownMenuItem>
+						<DropdownMenuItem @click="dropdownMenuCheck(item)">
+							<SearchCheck class="mr-2 h-4 w-4" />
+							<span>{{ t("config.context-menu.check") }}</span>
+						</DropdownMenuItem>
+						<DropdownMenuItem @click="dropdownMenuApply(item)">
+							<Laugh class="mr-2 h-4 w-4" />
+							<span>{{ t("config.context-menu.apply") }}</span>
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem>
+							<Pencil class="mr-2 h-4 w-4" />
+							<EditPopover :triggerText="t('config.context-menu.modify')" operate="edit" :id="item.id" @callback="loadStore" />
+						</DropdownMenuItem>
+						<DropdownMenuItem @click="dropdownMenuDelete(item)">
+							<Trash2 class="mr-2 h-4 w-4" />
+							<span>{{ t("config.context-menu.delete") }}</span>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
 		</div>
 	</div>
-	<EditConfigModal :id="configId" :title="editConfigModalTitle" :operate="editConfigModalOperate"
-		v-model:visible="editConfigModalVisible" @postClose="postCloseEditConfigModal" />
 </template>
 
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { deleteConfig, getConfigs, setActiveConfigId } from "@/store/config";
 import ContextMenu from "@imengyu/vue3-context-menu";
 import { invoke } from "@tauri-apps/api/core";
-import { CircleCheckBig } from "lucide-vue-next";
-import { nextTick, ref, watch } from "vue";
+import { CircleCheckBig, Ellipsis, SearchCheck, Laugh, Pencil, Trash2 } from "lucide-vue-next";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import EditConfigModal from "./EditConfigModal.vue";
+import EditPopover from "@/components/config/EditPopover.vue";
 
 interface ConfigData extends Config {
 	activeClass?: string;
@@ -48,9 +78,6 @@ const { t } = useI18n();
 
 const configs = ref<ConfigData[]>([]);
 const configId = ref("");
-const editConfigModalVisible = ref(false);
-const editConfigModalTitle = ref(t("config.new-config"));
-const editConfigModalOperate = ref("new");
 
 const loadStore = async () => {
 	const configIds = (await invoke("get_config_ids")) as string[];
@@ -77,30 +104,13 @@ const loadStore = async () => {
 
 await loadStore();
 
-const importConfig = async () => {};
-
-const newConfig = () => {
-	nextTick(() => {
-		configId.value = "";
-		editConfigModalTitle.value = t("config.new-config");
-		editConfigModalOperate.value = "new";
-		editConfigModalVisible.value = true;
-	});
-};
+const importConfig = async () => { };
 
 const editConfig = (config: ConfigData) => {
 	console.log("edit config: ", config);
 	resetConfigsActiveClass();
 	config.activeClass = "active";
 	configId.value = config.id;
-	editConfigModalTitle.value = t("config.edit-config");
-	editConfigModalOperate.value = "edit";
-	editConfigModalVisible.value = true;
-};
-
-const postCloseEditConfigModal = async () => {
-	await loadStore();
-	configId.value = "";
 };
 
 const resetConfigsActiveClass = () => {
@@ -115,6 +125,28 @@ const onClickConfig = (config: ConfigData) => {
 	config.activeClass = "active";
 	emits("update:selectedConfigId", config.id);
 };
+
+// 激活
+const dropdownMenuActive = async (config: ConfigData) => {
+	await setActiveConfigId(config.id);
+	emits("update:activeConfigId", config.id);
+}
+
+// 检查
+const dropdownMenuCheck = (config: ConfigData) => {
+
+}
+
+// 应用
+const dropdownMenuApply = (config: ConfigData) => {
+
+}
+
+// 删除
+const dropdownMenuDelete = async (config: ConfigData) => {
+	await deleteConfig(config.id);
+	await loadStore();
+}
 
 // 右键菜单
 const onContextMenu = (e: MouseEvent, config: ConfigData) => {
@@ -170,6 +202,4 @@ watch(
 );
 </script>
 
-<style>
-
-</style>
+<style></style>

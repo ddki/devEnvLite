@@ -75,6 +75,7 @@ env:
 
 save: Save
 close: Close
+clear: Clear
 success: Successed
 failure: Failed
 version: Version
