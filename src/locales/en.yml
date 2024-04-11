@@ -66,6 +66,9 @@ env:
   value: Value
   note: Description
   sort: Serial Number
+  context-menu:
+    apply: Apply
+    delete: Delete
   error:
     selectGroup: Please select a group first.
     keyNotEmpty: Key is not empty.

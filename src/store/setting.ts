@@ -1,4 +1,5 @@
 import { Store } from "@tauri-apps/plugin-store";
+import type { Setting } from "./type";
 
 const store = new Store("settings.json");
 

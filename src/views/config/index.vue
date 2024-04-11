@@ -2,12 +2,12 @@
 	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
 		<div class="flex flex-row flex-2 justify-center items-center gap-2">
 			<Button variant="outline" @click="importConfig">
-				<Import class="mr-2" />
+				<Import class="mr-2 h-6 w-6" />
 				{{ t("config.import-config") }}
 			</Button>
 			<EditPopover operate="new" @callback="loadStore">
 				<Button variant="outline">
-					<FilePlus class="mr-2" />
+					<FilePlus class="mr-2 h-6 w-6" />
 					{{ t("config.new-config") }}
 				</Button>
 			</EditPopover>
@@ -15,11 +15,11 @@
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
 			<span class="text-slate-500" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
 			<div class="grid grid-cols-[1fr_5rem] items-center" v-for="item in configs" :key="item?.id">
-				<div class="flex flex-row gap-2 h-full items-center hover:bg-secondary" @click="onClickConfig(item)">
+				<div :class="`flex flex-row gap-2 h-full items-center pl-2 hover:bg-secondary rounded-md ${item.activeClass}`" @click="onClickConfig(item)">
 					<CircleCheckBig v-if="item.isActive" />
 					<span>{{ item?.name }}</span>
 				</div>
-				<div class="grid grid-flow-col gap-2">
+				<div class="grid grid-flow-col">
 					<EditPopover operate="edit" :id="item.id" @callback="loadStore">
 						<Button variant="ghost" size="icon">
 							<Pencil class="h-4 w-4" />
@@ -27,7 +27,9 @@
 					</EditPopover>
 					<DropdownMenu>
 						<DropdownMenuTrigger>
-							<Ellipsis />
+							<Button variant="ghost" size="icon">
+								<Ellipsis class="h-4 w-4" />
+							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
 							<DropdownMenuItem @click="dropdownMenuActive(item)">
@@ -55,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import EditPopover from "@/components/config/EditPopover.vue";
+import { EditPopover } from "@/components/config";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -64,6 +66,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteConfig, getConfigs, setActiveConfigId } from "@/store/config";
+import type { Config } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import {
 	CircleCheckBig,
@@ -104,13 +107,13 @@ const loadStore = async () => {
 				item.isActive = true;
 			}
 			if (item.id === props.selectedConfigId) {
-				item.activeClass = "active";
+				item.activeClass = "bg-secondary";
 			}
 			return item;
 		})
 		.sort((a, b) => {
 			if (a.isActive === b.isActive) {
-				return b.sort - a.sort;
+				return a.sort - b.sort;
 			}
 			return a.isActive ? -1 : 1;
 		});
@@ -130,7 +133,7 @@ const resetConfigsActiveClass = () => {
 
 const onClickConfig = (config: ConfigData) => {
 	resetConfigsActiveClass();
-	config.activeClass = "active";
+	config.activeClass = "bg-secondary";
 	emits("update:selectedConfigId", config.id);
 };
 
@@ -161,5 +164,3 @@ watch(
 	},
 );
 </script>
-
-<style></style>

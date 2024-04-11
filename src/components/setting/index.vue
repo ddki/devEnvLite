@@ -1,3 +1,74 @@
+<template>
+	<Dialog v-model:open="open">
+		<DialogTrigger as-child>
+			<Button variant="ghost" size="icon">
+				<Settings />
+			</Button>
+		</DialogTrigger>
+		<DialogContent class="sm:max-w-[425px]">
+			<DialogHeader>
+				<DialogTitle>{{ t('header.setting') }}</DialogTitle>
+				<DialogDescription>
+				</DialogDescription>
+			</DialogHeader>
+			<div class="grid gap-4 py-4">
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label for="language" class="text-right">
+						{{ t('settings.language') }}
+					</Label>
+					<Select v-model="settingData.language">
+						<SelectTrigger class="col-span-3">
+							<SelectValue :placeholder="t('settings.language')" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								<SelectItem v-for="(item, index) in languageList" :key="index" :value="item.value">
+									{{ item.label }}
+								</SelectItem>
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label class="text-right">
+						{{ t('settings.home-dir') }}
+					</Label>
+					<Input v-model="settingData.homeDir" class="col-span-3" />
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label class="text-right">
+						{{ t('settings.cache-dir') }}
+					</Label>
+					<Input v-model="settingData.cacheDir" class="col-span-3" />
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label class="text-right">
+						{{ t('settings.data-dir') }}
+					</Label>
+					<Input v-model="settingData.dataDir" class="col-span-3" />
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label class="text-right">
+						{{ t('settings.env-backup-dir') }}
+					</Label>
+					<Input v-model="settingData.envBackupDir" class="col-span-3" />
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label class="text-right">
+						{{ t('version') }}
+					</Label>
+					<Badge>{{ appVersion }}</Badge>
+				</div>
+			</div>
+			<DialogFooter>
+				<Button type="submit" @click="onSave">
+					{{ t('save') }}
+				</Button>
+			</DialogFooter>
+		</DialogContent>
+	</Dialog>
+</template>
+
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
 import {
@@ -71,74 +142,3 @@ const onSave = async () => {
 	}
 };
 </script>
-
-<template>
-	<Dialog v-model:open="open">
-		<DialogTrigger as-child>
-			<Button variant="ghost" size="icon">
-				<Settings />
-			</Button>
-		</DialogTrigger>
-		<DialogContent class="sm:max-w-[425px]">
-			<DialogHeader>
-				<DialogTitle>{{ t('header.setting') }}</DialogTitle>
-				<DialogDescription>
-				</DialogDescription>
-			</DialogHeader>
-			<div class="grid gap-4 py-4">
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="language" class="text-right">
-						{{ t('settings.language') }}
-					</Label>
-					<Select v-model="settingData.language">
-						<SelectTrigger class="col-span-3">
-							<SelectValue :placeholder="t('settings.language')" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectGroup>
-								<SelectItem v-for="(item, index) in languageList" :key="index" :value="item.value">
-									{{ item.label }}
-								</SelectItem>
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label class="text-right">
-						{{ t('settings.home-dir') }}
-					</Label>
-					<Input v-model="settingData.homeDir" class="col-span-3" />
-				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label class="text-right">
-						{{ t('settings.cache-dir') }}
-					</Label>
-					<Input v-model="settingData.cacheDir" class="col-span-3" />
-				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label class="text-right">
-						{{ t('settings.data-dir') }}
-					</Label>
-					<Input v-model="settingData.dataDir" class="col-span-3" />
-				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label class="text-right">
-						{{ t('settings.env-backup-dir') }}
-					</Label>
-					<Input v-model="settingData.envBackupDir" class="col-span-3" />
-				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label class="text-right">
-						{{ t('version') }}
-					</Label>
-					<Badge>{{ appVersion }}</Badge>
-				</div>
-			</div>
-			<DialogFooter>
-				<Button type="submit" @click="onSave">
-					{{ t('save') }}
-				</Button>
-			</DialogFooter>
-		</DialogContent>
-	</Dialog>
-</template>

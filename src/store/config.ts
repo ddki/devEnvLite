@@ -1,5 +1,6 @@
 import { BaseDirectory, remove } from "@tauri-apps/plugin-fs";
 import { Store } from "@tauri-apps/plugin-store";
+import type { ActiveConfig, Config, GroupEnv, Env } from "./type";
 
 const activeConfigStore = new Store("active-config.json");
 

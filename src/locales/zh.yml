@@ -66,6 +66,9 @@ env:
   value: 值
   note: 描述
   sort: 序号
+  context-menu:
+    apply: 应用
+    delete: 删除
   error:
     selectGroup: 请先选择一个分组
     keyNotEmpty: 键不能为空

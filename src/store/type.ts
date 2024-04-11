@@ -34,5 +34,6 @@ interface Env {
 	value: string;
 	sort: number;
 	note?: string;
-	
 }
+
+export type { Setting, ActiveConfig, Config, GroupEnv, Env };

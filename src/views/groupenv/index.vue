@@ -1,45 +1,29 @@
 <template>
 	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
-		<div class="flex flex-row flex-2 justify-start items-center">
-			<Button type="primary" @click="newGroupEnv">{{ t('envGroup.new') }}</Button>
-			<EditGroupEnvModal v-model:visible="editGroupEnvModalVisible" :title="editGroupEnvModalTitle"
-				:operate="editGroupEnvModalOperate" :id="editGroupEnvId" :configId="props.configId"
-				@postClose="postCloseEditConfigModal" />
+		<div class="flex flex-row justify-start items-center px-2">
+			<EditGroupEnv operate="new" :configId="props.configId" @callback="loadStore(props.configId)">
+				<Button variant="outline">
+					<PlusSquare class="mr-2" />
+					{{ t("envGroup.new") }}
+				</Button>
+			</EditGroupEnv>
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
-			<el-tree ref="groupEnvsTreeRef" :data="groupEnvsState" :props="groupEnvsTreeProps"
-				:default-expanded-keys="[editGroupEnvId]" node-key="id" @node-contextmenu="nodeContextMenu">
-				<template #default="{ node, data }">
-					<div class="flex flex-row justify-between w-full">
-						<span>{{ node.label || data.key }}</span>
-						<span v-if="isGroupNode(data)">
-							<a>{{ t("envGroup.text") }}/{{ data.envs.length }}</a>
-						</span>
-						<span v-if="!isGroupNode(data)">
-							<a>{{ t("env.text") }}</a>
-						</span>
-					</div>
-				</template>
-				<template #empty>
-					<span>{{ t("envGroup.emptyText") }}</span>
-				</template>
-			</el-tree>
+			<GroupEnvView v-for="group in groupEnvsState" :key="group.id" :data="group" @callback="loadStore(group.configId)"
+				@remove="removeGroupEnv(group.configId, group.id)" @removeEnv="deleteStoreEnv" />
 		</div>
 	</div>
-	<EditEnvModal v-model:visible="editEnvModalVisible" :title="editEnvModalTitle" :operate="editEnvModalOperate"
-		:envKey="envKey" :groupId="editGroupEnvId" :configId="props.configId" @postClose="postCloseEditEnvModal" />
 </template>
 
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toast/use-toast";
-import { deleteEnv, getConfig, getGroupEnvs, saveConfig } from "@/store";
-import ContextMenu from "@imengyu/vue3-context-menu";
-import type { ElTree } from "element-plus";
+import { deleteEnv, deleteGroupEnv, getGroupEnvs } from "@/store";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import EditEnvModal from "./EditEnvModal.vue";
-import EditGroupEnvModal from "./EditGroupEnvModal.vue";
+import { EditGroupEnv } from "@/components/envs";
+import { PlusSquare } from "lucide-vue-next";
+import type { GroupEnv } from "@/store/type";
+import { GroupEnv as GroupEnvView } from "@/components/envs";
 
 const props = defineProps({
 	configId: {
@@ -48,154 +32,15 @@ const props = defineProps({
 	},
 });
 
+console.log("props[group-env-index]:", props);
+
 const { t } = useI18n();
-const { toast } = useToast();
-const groupEnvsTreeRef = ref<InstanceType<typeof ElTree>>();
-
-const editGroupEnvModalVisible = ref(false);
-const editGroupEnvModalTitle = ref("");
-const editGroupEnvModalOperate = ref("new");
-const editGroupEnvId = ref("");
-
-const editEnvModalVisible = ref(false);
-const editEnvModalTitle = ref("");
-const editEnvModalOperate = ref("new");
-const envKey = ref("");
 
 const groupEnvsState = ref<GroupEnv[]>([]);
-const groupEnvsTreeProps = {
-	children: "envs",
-	label: "name",
-};
 
-const newGroupEnv = () => {
-	if (!props.configId) {
-		toast({
-			title: t("envGroup.new"),
-			description: t("envGroup.error.selectConfig"),
-		});
-		return;
-	}
-	editGroupEnvModalVisible.value = true;
-	editGroupEnvModalTitle.value = t("envGroup.new");
-	editGroupEnvModalOperate.value = "new";
-};
-
-const editGroupEnv = (groupEnvId: string) => {
-	if (!props.configId) {
-		toast({
-			title: t("envGroup.edit"),
-			description: t("envGroup.error.selectConfig"),
-		});
-		return;
-	}
-	editGroupEnvModalVisible.value = true;
-	editGroupEnvModalTitle.value = t("envGroup.edit");
-	editGroupEnvModalOperate.value = "edit";
-	editGroupEnvId.value = groupEnvId;
-};
-
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-const nodeContextMenu = (event: MouseEvent, obj: any) => {
-	console.log(event, obj);
-	event.preventDefault();
-	if (isGroupNode(obj)) {
-		ContextMenu.showContextMenu({
-			x: event.x,
-			y: event.y,
-			items: [
-				{
-					label: t("envGroup.context-menu.addEnv"),
-					onClick: () => {
-						editEnvModalVisible.value = true;
-						editEnvModalTitle.value = t("env.new");
-						editEnvModalOperate.value = "new";
-						editGroupEnvId.value = obj.id;
-					},
-				},
-				{
-					label: t("envGroup.context-menu.check"),
-					onClick: () => {
-						// todo 调用rust
-					},
-				},
-				{
-					label: t("envGroup.context-menu.apply"),
-					onClick: () => {
-						// todo 调用rust
-					},
-				},
-				{
-					label: t("envGroup.context-menu.modify"),
-					onClick: () => {
-						editGroupEnv(obj.id);
-					},
-				},
-				{
-					label: t("envGroup.context-menu.delete"),
-					onClick: async () => {
-						removeGroupEnvs(obj.id);
-						await saveStore(props.configId);
-						await loadStore(props.configId);
-					},
-				},
-			],
-		});
-	} else {
-		ContextMenu.showContextMenu({
-			x: event.x,
-			y: event.y,
-			items: [
-				{
-					label: t("envGroup.context-menu.apply"),
-					onClick: () => {
-						// todo 调用rust
-					},
-				},
-				{
-					label: t("envGroup.context-menu.modify"),
-					onClick: () => {
-						console.log("obj == ", obj);
-						editEnvModalVisible.value = true;
-						editEnvModalTitle.value = t("env.edit");
-						editEnvModalOperate.value = "edit";
-						editGroupEnvId.value = obj.groupId;
-						envKey.value = obj.key;
-					},
-				},
-				{
-					label: t("envGroup.context-menu.delete"),
-					onClick: async () => {
-						await deleteStoreEnv(props.configId, obj.groupId, obj.key);
-						await loadStore(props.configId);
-					},
-				},
-			],
-		});
-	}
-};
-
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-const isGroupNode = (data: any): boolean => {
-	if (data.name) {
-		return true;
-	}
-	return false;
-};
-
-const removeGroupEnvs = (groupEnvId: string) => {
-	if (groupEnvsState.value) {
-		const newGroupEnvs = groupEnvsState.value.filter((item) => item.id !== groupEnvId);
-		groupEnvsState.value = newGroupEnvs;
-	}
-};
-
-const saveStore = async (configId: string | undefined) => {
-	if (configId) {
-		const storeConfig = await getConfig(configId);
-		storeConfig.groupEnvs = groupEnvsState.value;
-		await saveConfig(storeConfig);
-	}
+const removeGroupEnv = async (configId: string, groupEnvId: string) => {
+	await deleteGroupEnv(configId, groupEnvId);
+	await loadStore(configId);
 };
 
 const deleteStoreEnv = async (
@@ -205,6 +50,7 @@ const deleteStoreEnv = async (
 ) => {
 	if (configId && groupId && envKey) {
 		await deleteEnv(configId, groupId, envKey);
+		await loadStore(configId);
 	}
 };
 
@@ -213,14 +59,6 @@ const loadStore = async (configId: string | undefined) => {
 		const storeGroupEnvs = await getGroupEnvs(configId);
 		groupEnvsState.value = storeGroupEnvs || [];
 	}
-};
-
-const postCloseEditConfigModal = async () => {
-	await loadStore(props.configId);
-};
-
-const postCloseEditEnvModal = async () => {
-	await loadStore(props.configId);
 };
 
 await loadStore(props.configId);
