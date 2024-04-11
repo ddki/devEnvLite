@@ -9,21 +9,21 @@
 			</EditGroupEnv>
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
-			<GroupEnvView v-for="group in groupEnvsState" :key="group.id" :data="group" @callback="loadStore(group.configId)"
-				@remove="removeGroupEnv(group.configId, group.id)" @removeEnv="deleteStoreEnv" />
+			<GroupEnvView v-for="group in groupEnvsState" :data="group" @callback="loadStore(group.configId)"
+				@remove="removeGroupEnv" @removeEnv="deleteStoreEnv" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { EditGroupEnv } from "@/components/envs";
+import { GroupEnv as GroupEnvView } from "@/components/envs";
 import { Button } from "@/components/ui/button";
 import { deleteEnv, deleteGroupEnv, getGroupEnvs } from "@/store";
+import type { GroupEnv } from "@/store/type";
+import { PlusSquare } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { EditGroupEnv } from "@/components/envs";
-import { PlusSquare } from "lucide-vue-next";
-import type { GroupEnv } from "@/store/type";
-import { GroupEnv as GroupEnvView } from "@/components/envs";
 
 const props = defineProps({
 	configId: {
@@ -43,11 +43,8 @@ const removeGroupEnv = async (configId: string, groupEnvId: string) => {
 	await loadStore(configId);
 };
 
-const deleteStoreEnv = async (
-	configId: string | undefined,
-	groupId: string | undefined,
-	envKey: string | undefined,
-) => {
+const deleteStoreEnv = async (configId: string, groupId: string, envKey: string) => {
+	console.log("deleteStoreEnv: ", configId, groupId, envKey);
 	if (configId && groupId && envKey) {
 		await deleteEnv(configId, groupId, envKey);
 		await loadStore(configId);
@@ -57,6 +54,7 @@ const deleteStoreEnv = async (
 const loadStore = async (configId: string | undefined) => {
 	if (configId) {
 		const storeGroupEnvs = await getGroupEnvs(configId);
+		console.log("storeGroupEnvs : ", storeGroupEnvs);
 		groupEnvsState.value = storeGroupEnvs || [];
 	}
 };

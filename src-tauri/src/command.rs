@@ -1,6 +1,6 @@
 use std::fs;
 
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, Runtime};
 
 #[tauri::command]
 pub fn close_splashscreen(app: AppHandle) {
@@ -57,4 +57,76 @@ pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, bool> {
 		}
 	}
 	Ok(config_ids)
+}
+
+/// collate environment variables
+#[tauri::command]
+pub async fn collate_envs<R: Runtime>(
+	app: tauri::AppHandle<R>,
+	window: tauri::Window<R>,
+) -> Result<(), String> {
+	Ok(())
+}
+
+/// backup environment variables
+#[tauri::command]
+pub async fn backup_envs<R: Runtime>(
+	app: tauri::AppHandle<R>,
+	window: tauri::Window<R>,
+) -> Result<(), String> {
+	Ok(())
+}
+
+/// recover environment variables
+#[tauri::command]
+pub async fn recover_envs<R: Runtime>(
+	app: tauri::AppHandle<R>,
+	window: tauri::Window<R>,
+) -> Result<(), String> {
+	Ok(())
+}
+
+/// environment variables apply to system
+#[tauri::command]
+pub async fn env_apply<R: Runtime>(
+	app: tauri::AppHandle<R>,
+	window: tauri::Window<R>,
+) -> Result<(), String> {
+	Ok(())
+}
+
+/// group environment variables apply to system
+#[tauri::command]
+pub async fn group_env_apply<R: Runtime>(
+	app: tauri::AppHandle<R>,
+	window: tauri::Window<R>,
+) -> Result<(), String> {
+	Ok(())
+}
+
+/// group environment variables check from system
+#[tauri::command]
+pub async fn group_env_check<R: Runtime>(
+	app: tauri::AppHandle<R>,
+	window: tauri::Window<R>,
+) -> Result<(), String> {
+	Ok(())
+}
+
+/// config check from system
+#[tauri::command]
+pub async fn config_check<R: Runtime>(
+	app: tauri::AppHandle<R>,
+	window: tauri::Window<R>,
+) -> Result<(), String> {
+	Ok(())
+}
+
+/// config apply to system
+#[tauri::command]
+pub async fn config_apply<R: Runtime>(
+	app: tauri::AppHandle<R>,
+	window: tauri::Window<R>,
+) -> Result<(), String> {
+	Ok(())
 }

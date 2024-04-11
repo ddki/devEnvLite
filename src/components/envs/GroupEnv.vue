@@ -1,14 +1,20 @@
 <template>
-	<div class="grid">
-		<div class="grid grid-flow-col gap-2 items-center">
-			<Group class="h-4 w-4" />
-			<span>{{ props.data.name }}</span>
-			<div>
-				<ItemEnv v-for="env in props.data.envs" :key="env.key" :configId="props.data.configId" :data="env"
-					@callback="emit('callback')" @remove="removeEnv(env.key)"></ItemEnv>
+	<div class="grid grid-flow-col grid-cols-1 gap-2 justify-between items-center px-2 hover:bg-secondary rounded-md">
+		<div class="grid grid-flow-col gap-2 justify-start items-center" @click="showItems = showItems ? false : true">
+			<PanelBottomClose class="h-4 w-4" v-if="showItems === true" />
+			<PanelBottomOpen class="h-4 w-4" v-else />
+			<div class="grid grid-flow-col gap-2 w-full justify-start items-center">
+				<span>{{ props.data.name }}</span>
+				<span class="text-ellipsis text-nowrap overflow-hidden">{{ props.data.note }}</span>
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
+			<EditItemEnv operate="new" :configId="props.data.configId" :groupId="props.data.id"
+				@callback="editItemEnvCallback">
+				<Button variant="ghost" size="icon">
+					<PlusSquare class="mr-2 h-4 w-4" />
+				</Button>
+			</EditItemEnv>
 			<EditGroupEnv operate="edit" :configId="props.data.configId" :id="props.data.id" @callback="emit('callback')">
 				<Button variant="ghost" size="icon">
 					<Pencil class="h-4 w-4" />
@@ -21,25 +27,25 @@
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent>
-					<DropdownMenuItem @click="dropdownMenuAddEnv(props)">
-						<PlusSquare class="mr-2 h-4 w-4" />
-						<span>{{ t("envGroup.context-menu.addEnv") }}</span>
-					</DropdownMenuItem>
-					<DropdownMenuItem @click="dropdownMenuCheck(props)">
+					<DropdownMenuItem @click="dropdownMenuCheck(props.data)">
 						<SearchCheck class="mr-2 h-4 w-4" />
 						<span>{{ t("envGroup.context-menu.check") }}</span>
 					</DropdownMenuItem>
-					<DropdownMenuItem @click="dropdownMenuApply(props)">
+					<DropdownMenuItem @click="dropdownMenuApply(props.data)">
 						<Laugh class="mr-2 h-4 w-4" />
 						<span>{{ t("envGroup.context-menu.apply") }}</span>
 					</DropdownMenuItem>
-					<DropdownMenuItem @click="dropdownMenuDelete(props)">
-						<Trash2 class="mr-2 h-4 w-4" />
-						<span>{{ t("envGroup.context-menu.delete") }}</span>
+					<DropdownMenuItem @click="dropdownMenuDelete(props.data)">
+						<Trash2 class="mr-2 h-4 w-4 text-destructive" />
+						<span class="text-destructive">{{ t("envGroup.context-menu.delete") }}</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
 		</div>
+	</div>
+	<div class="grid grid-flow-row items-center px-4" v-if="showItems">
+		<ItemEnv v-for="env in props.data.envs" :configId="props.data.configId" :data="env" @callback="emit('callback')"
+			@remove="removeEnv(env.key)"></ItemEnv>
 	</div>
 </template>
 
@@ -51,36 +57,60 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { defineProps, defineEmits } from "vue";
-import { Group, Pencil, Ellipsis, SearchCheck, Laugh, Trash2, PlusSquare } from "lucide-vue-next";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import type { GroupEnv } from "@/store/type";
+import { invoke } from "@tauri-apps/api/core";
+import {
+	Ellipsis,
+	Laugh,
+	PanelBottomClose,
+	PanelBottomOpen,
+	Pencil,
+	PlusSquare,
+	SearchCheck,
+	Trash2,
+} from "lucide-vue-next";
+import { defineEmits, defineProps, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { EditGroupEnv } from ".";
+import { EditGroupEnv, EditItemEnv } from ".";
 import { ItemEnv } from ".";
 
 interface Props {
-	data: GroupEnv
+	data: GroupEnv;
 }
 const props = defineProps<Props>();
-const emit = defineEmits(["callback", "remove", "removeEnv"]);
+const emit = defineEmits<{
+	(e: "callback"): void;
+	(e: "remove", configId: string, groupId: string): void;
+	(e: "removeEnv", configId: string, groupId: string, envKey: string): void;
+}>();
 
 const { t } = useI18n();
 
+const showItems = ref(false);
+
+const editItemEnvCallback = () => {
+	showItems.value = true;
+	emit("callback");
+};
 const removeEnv = (envKey: string) => {
-	emit("removeEnv", { configId: props.data.configId, groupId: props.data.id, envKey: envKey })
-}
-// 添加环境变量
-const dropdownMenuAddEnv = (data: GroupEnv) => { };
+	emit("removeEnv", props.data.configId, props.data.id, envKey);
+};
 
 // 检查
-const dropdownMenuCheck = (data: GroupEnv) => { };
+const dropdownMenuCheck = async (data: GroupEnv) => {
+	// todo
+	await invoke("group_env_check");
+};
 
 // 应用
-const dropdownMenuApply = (data: GroupEnv) => { };
+const dropdownMenuApply = async (data: GroupEnv) => {
+	// todo
+	await invoke("group_env_apply");
+};
 
 // 删除
 const dropdownMenuDelete = (data: GroupEnv) => {
-	emit("remove", { id: data.id })
+	emit("remove", data.configId, data.id);
 };
-
 </script>

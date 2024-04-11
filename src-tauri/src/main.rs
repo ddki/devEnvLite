@@ -41,7 +41,15 @@ fn main() {
 		})
 		.invoke_handler(tauri::generate_handler![
 			command::close_splashscreen,
-			command::get_config_ids
+			command::get_config_ids,
+			command::collate_envs,
+			command::backup_envs,
+			command::recover_envs,
+			command::env_apply,
+			command::group_env_apply,
+			command::group_env_check,
+			command::config_check,
+			command::config_apply,
 		])
 		.run(tauri::generate_context!())
 		.expect("error while running tauri application");

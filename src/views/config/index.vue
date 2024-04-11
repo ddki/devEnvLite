@@ -1,6 +1,6 @@
 <template>
 	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
-		<div class="flex flex-row flex-2 justify-center items-center gap-2">
+		<div class="flex flex-row flex-2 justify-start items-center gap-2">
 			<Button variant="outline" @click="importConfig">
 				<Import class="mr-2 h-6 w-6" />
 				{{ t("config.import-config") }}
@@ -13,9 +13,11 @@
 			</EditPopover>
 		</div>
 		<div class="sm:mt-1 md:mt-2 overflow-auto">
-			<span class="text-slate-500" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
-			<div class="grid grid-cols-[1fr_5rem] items-center" v-for="item in configs" :key="item?.id">
-				<div :class="`flex flex-row gap-2 h-full items-center pl-2 hover:bg-secondary rounded-md ${item.activeClass}`" @click="onClickConfig(item)">
+			<span class="text-secondary" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
+			<div
+				:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.activeClass}`"
+				v-for="item in configs">
+				<div class="flex flex-row gap-2 h-full items-center pl-2" @click="onClickConfig(item)">
 					<CircleCheckBig v-if="item.isActive" />
 					<span>{{ item?.name }}</span>
 				</div>
@@ -45,8 +47,8 @@
 								<span>{{ t("config.context-menu.apply") }}</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem @click="dropdownMenuDelete(item)">
-								<Trash2 class="mr-2 h-4 w-4" />
-								<span>{{ t("config.context-menu.delete") }}</span>
+								<Trash2 class="mr-2 h-4 w-4 text-destructive" />
+								<span class="text-destructive">{{ t("config.context-menu.delete") }}</span>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -144,10 +146,16 @@ const dropdownMenuActive = async (config: ConfigData) => {
 };
 
 // 检查
-const dropdownMenuCheck = (config: ConfigData) => {};
+const dropdownMenuCheck = async (config: ConfigData) => {
+	// todo
+	await invoke("config_check");
+};
 
 // 应用
-const dropdownMenuApply = (config: ConfigData) => {};
+const dropdownMenuApply = async (config: ConfigData) => {
+	// todo
+	await invoke("config_apply");
+};
 
 // 删除
 const dropdownMenuDelete = async (config: ConfigData) => {

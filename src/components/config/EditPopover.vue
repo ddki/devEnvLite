@@ -3,7 +3,7 @@
 		<PopoverTrigger as-child>
 			<slot />
 		</PopoverTrigger>
-		<PopoverContent>
+		<PopoverContent class="w-84">
 			<div class="grid gap-4">
 				<div class="grid gap-2">
 					<div class="grid grid-cols-3 items-center gap-4">
@@ -16,11 +16,11 @@
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="note">{{ t('config.note') }}</Label>
-						<Input v-model="data.note" type="text" :placeholder="t('config.note')" class="col-span-2 h-8" />
+						<Textarea v-model="data.note" :placeholder="t('config.note')" class="col-span-2 h-8" />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="sort">{{ t('config.sort') }}</Label>
-						<Input v-model="data.sort" type="text" :placeholder="t('config.sort')" class="col-span-2 h-8" />
+						<Input v-model="data.sort" type="number" :placeholder="t('config.sort')" class="col-span-2 h-8" />
 					</div>
 				</div>
 				<div class="grid grid-cols-2 gap-4">
@@ -41,6 +41,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { deleteConfig, getConfig, getConfigNames, saveConfig } from "@/store";
 import { v4 as uuidv4 } from "uuid";
@@ -103,6 +104,9 @@ const onSave = async () => {
 			description: t("save") + t("failure"),
 			variant: "destructive",
 		});
+	}
+	if (props.operate === "new") {
+		onClear();
 	}
 };
 
