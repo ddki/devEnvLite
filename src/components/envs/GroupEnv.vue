@@ -5,7 +5,7 @@
 			<PanelBottomOpen class="h-4 w-4" v-else />
 			<div class="grid grid-flow-col gap-2 w-full justify-start items-center">
 				<span>{{ props.data.name }}</span>
-				<span class="text-ellipsis text-nowrap overflow-hidden">{{ props.data.note }}</span>
+				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-sm">{{ props.data.note }}</span>
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
@@ -57,7 +57,6 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import type { GroupEnv } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import {

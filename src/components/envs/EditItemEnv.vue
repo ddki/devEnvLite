@@ -16,7 +16,7 @@
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="value">{{ t('env.value') }}</Label>
-						<Input v-model.trim="data.value" type="text" :placeholder="t('env.value')" class="col-span-2 h-8" />
+						<Textarea v-model.trim="data.value" :placeholder="t('env.value')" class="col-span-2 h-8" />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="note">{{ t('env.note') }}</Label>
@@ -59,7 +59,7 @@ const { toast } = useToast();
 interface Prop {
 	configId: string;
 	groupId: string;
-	key?: string;
+	envKey?: string;
 	maxSort?: number;
 	operate: "edit" | "new";
 }
@@ -71,7 +71,7 @@ const emit = defineEmits(["callback"]);
 
 const data = reactive({
 	groupId: props.groupId,
-	key: props.key as string,
+	key: props.envKey as string,
 	value: "",
 	note: "",
 	sort: 0,
@@ -110,8 +110,8 @@ const onSave = async () => {
 		});
 		return;
 	}
-	if (props.operate === "edit" && props.key) {
-		await deleteEnv(props.configId, props.groupId, props.key);
+	if (props.operate === "edit" && props.envKey) {
+		await deleteEnv(props.configId, props.groupId, props.envKey);
 	}
 	const save = await saveEnvToGroup(props.configId, data);
 	if (save) {
@@ -128,7 +128,7 @@ const onSave = async () => {
 };
 
 const checkGroupEnvsKeyExists = async (configId: string, groupId: string, envKey: string) => {
-	if (props.key === envKey) {
+	if (props.envKey === envKey) {
 		return false;
 	}
 	const result = await getGroupEnv(configId, groupId).then((group) => {
@@ -141,8 +141,8 @@ const checkGroupEnvsKeyExists = async (configId: string, groupId: string, envKey
 };
 
 onMounted(async () => {
-	if (props.operate === "edit" && props.configId && props.groupId && props.key) {
-		await getEnv(props.configId, props.groupId, props.key).then((env) => {
+	if (props.operate === "edit" && props.configId && props.groupId && props.envKey) {
+		await getEnv(props.configId, props.groupId, props.envKey).then((env) => {
 			if (env) {
 				data.groupId = env.groupId;
 				data.key = env.key;
@@ -157,8 +157,8 @@ onMounted(async () => {
 });
 
 watch(props, async (newValue, _oldValue) => {
-	if (newValue.operate === "edit" && newValue.configId && newValue.groupId && newValue.key) {
-		await getEnv(newValue.configId, newValue.groupId, newValue.key).then((env) => {
+	if (newValue.operate === "edit" && newValue.configId && newValue.groupId && newValue.envKey) {
+		await getEnv(newValue.configId, newValue.groupId, newValue.envKey).then((env) => {
 			if (env) {
 				data.groupId = env.groupId;
 				data.key = env.key;

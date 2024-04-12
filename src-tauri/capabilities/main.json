@@ -31,8 +31,6 @@
 		"store:allow-load",
 		"store:allow-clear",
 		"store:allow-delete",
-		"store:allow-values",
-		"window-state:allow-save-window-state",
-		"window-state:allow-restore-window-state"
+		"store:allow-values"
 	]
 }

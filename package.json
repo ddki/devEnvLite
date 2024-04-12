@@ -11,8 +11,6 @@
 		"commit": "git-cz"
 	},
 	"dependencies": {
-		"@element-plus/icons-vue": "^2.3.1",
-		"@imengyu/vue3-context-menu": "^1.4.0",
 		"@tauri-apps/api": "2.0.0-beta.6",
 		"@tauri-apps/plugin-fs": "2.0.0-beta.2",
 		"@tauri-apps/plugin-process": "2.0.0-beta.2",
@@ -23,15 +21,14 @@
 		"@vueuse/core": "^10.9.0",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.0",
-		"element-plus": "^2.6.3",
-		"lucide-vue-next": "^0.366.0",
-		"radix-vue": "^1.6.2",
+		"lucide-vue-next": "^0.367.0",
+		"radix-vue": "^1.7.0",
 		"tailwind-merge": "^2.2.2",
 		"tailwindcss-animate": "^1.0.7",
 		"uuid": "^9.0.1",
 		"vee-validate": "^4.12.6",
 		"vue": "^3.4.21",
-		"vue-i18n": "^9.11.0",
+		"vue-i18n": "^9.11.1",
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
@@ -47,16 +44,14 @@
 		"czg": "^1.9.1",
 		"husky": "^9.0.11",
 		"lint-staged": "^15.2.2",
-		"oxlint": "^0.2.16",
+		"oxlint": "^0.2.17",
 		"postcss": "^8.4.38",
 		"release-it": "^17.1.1",
 		"shadcn-vue": "^0.10.3",
 		"tailwindcss": "^3.4.3",
-		"typescript": "^5.4.4",
-		"unplugin-auto-import": "^0.17.5",
-		"unplugin-vue-components": "^0.26.0",
+		"typescript": "^5.4.5",
 		"vite": "^5.2.8",
-		"vue-tsc": "^2.0.11"
+		"vue-tsc": "^2.0.12"
 	},
 	"lint-staged": {
 		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,html,vue,css,md}": [

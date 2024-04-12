@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri_plugin_log::{Target, TargetKind};
-use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
 pub mod command;
 
@@ -22,7 +21,6 @@ fn main() {
 		.plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
 			println!("{}, {argv:?}, {cwd}", app.package_info().name);
 		}))
-		.plugin(tauri_plugin_window_state::Builder::default().build())
 		.plugin(tauri_plugin_store::Builder::default().build())
 		.plugin(tauri_plugin_fs::init())
 		.plugin(tauri_plugin_shell::init())
@@ -33,10 +31,6 @@ fn main() {
 			// #[cfg(desktop)]
 			// app.handle()
 			// 	.plugin(tauri_plugin_updater::Builder::new().build())?;
-			// 将所有打开窗口的状态保存到磁盘
-			let _ = app.handle().save_window_state(StateFlags::all());
-			// 还不能使用 https://github.com/tauri-apps/plugins-workspace/pull/1065
-			// window.restore_state(StateFlags::all());
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![

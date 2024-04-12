@@ -1,6 +1,6 @@
 <template>
-	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
-		<div class="flex flex-row flex-2 justify-start items-center gap-2">
+	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
+		<div class="flex flex-row flex-2 justify-start items-center gap-2 border-b px-2">
 			<Button variant="outline" @click="importConfig">
 				<Import class="mr-2 h-6 w-6" />
 				{{ t("config.import-config") }}
@@ -12,49 +12,51 @@
 				</Button>
 			</EditPopover>
 		</div>
-		<div class="sm:mt-1 md:mt-2 overflow-auto">
-			<span class="text-secondary" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
-			<div
-				:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.activeClass}`"
-				v-for="item in configs">
-				<div class="flex flex-row gap-2 h-full items-center pl-2" @click="onClickConfig(item)">
-					<CircleCheckBig v-if="item.isActive" />
-					<span>{{ item?.name }}</span>
-				</div>
-				<div class="grid grid-flow-col">
-					<EditPopover operate="edit" :id="item.id" @callback="loadStore">
-						<Button variant="ghost" size="icon">
-							<Pencil class="h-4 w-4" />
-						</Button>
-					</EditPopover>
-					<DropdownMenu>
-						<DropdownMenuTrigger>
+		<ScrollArea class="h-full w-full p-2">
+			<div class="sm:mt-1 md:mt-2 overflow-auto">
+				<span class="text-secondary" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
+				<div
+					:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.activeClass}`"
+					v-for="item in configs">
+					<div class="flex flex-row gap-2 h-full items-center pl-2" @click="onClickConfig(item)">
+						<CircleCheckBig v-if="item.isActive" />
+						<span>{{ item?.name }}</span>
+					</div>
+					<div class="grid grid-flow-col">
+						<EditPopover operate="edit" :id="item.id" @callback="loadStore">
 							<Button variant="ghost" size="icon">
-								<Ellipsis class="h-4 w-4" />
+								<Pencil class="h-4 w-4" />
 							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent>
-							<DropdownMenuItem @click="dropdownMenuActive(item)">
-								<CircleCheckBig class="mr-2 h-4 w-4" />
-								<span>{{ t("config.context-menu.active") }}</span>
-							</DropdownMenuItem>
-							<DropdownMenuItem @click="dropdownMenuCheck(item)">
-								<SearchCheck class="mr-2 h-4 w-4" />
-								<span>{{ t("config.context-menu.check") }}</span>
-							</DropdownMenuItem>
-							<DropdownMenuItem @click="dropdownMenuApply(item)">
-								<Laugh class="mr-2 h-4 w-4" />
-								<span>{{ t("config.context-menu.apply") }}</span>
-							</DropdownMenuItem>
-							<DropdownMenuItem @click="dropdownMenuDelete(item)">
-								<Trash2 class="mr-2 h-4 w-4 text-destructive" />
-								<span class="text-destructive">{{ t("config.context-menu.delete") }}</span>
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+						</EditPopover>
+						<DropdownMenu>
+							<DropdownMenuTrigger>
+								<Button variant="ghost" size="icon">
+									<Ellipsis class="h-4 w-4" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent>
+								<DropdownMenuItem @click="dropdownMenuActive(item)">
+									<CircleCheckBig class="mr-2 h-4 w-4" />
+									<span>{{ t("config.context-menu.active") }}</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem @click="dropdownMenuCheck(item)">
+									<SearchCheck class="mr-2 h-4 w-4" />
+									<span>{{ t("config.context-menu.check") }}</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem @click="dropdownMenuApply(item)">
+									<Laugh class="mr-2 h-4 w-4" />
+									<span>{{ t("config.context-menu.apply") }}</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem @click="dropdownMenuDelete(item)">
+									<Trash2 class="mr-2 h-4 w-4 text-destructive" />
+									<span class="text-destructive">{{ t("config.context-menu.delete") }}</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</div>
 				</div>
 			</div>
-		</div>
+		</ScrollArea>
 	</div>
 </template>
 
@@ -67,6 +69,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { deleteConfig, getConfigs, setActiveConfigId } from "@/store/config";
 import type { Config } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
@@ -124,7 +127,7 @@ const loadStore = async () => {
 
 await loadStore();
 
-const importConfig = async () => {};
+const importConfig = async () => { };
 
 const resetConfigsActiveClass = () => {
 	configs.value = configs.value.map((item) => {

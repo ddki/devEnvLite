@@ -4,6 +4,10 @@ header:
   recover: 恢复
   setting: 设置
   theme: 主题
+  description:
+    collate: 环境变量值升序排序
+    backup: 备份当前系统环境变量
+    recover: 从备份中恢复系统环境变量
 
 settings:
   theme: 主题

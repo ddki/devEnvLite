@@ -13,20 +13,30 @@
 		"windows": [
 			{
 				"title": "DevEnvLite",
+				"label": "splashscreen",
+				"url": "splashscreen.html",
+				"width": 1200,
+				"height": 800,
+				"visible": true,
+				"center": true,
+				"shadow": true,
+				"fullscreen": false
+			},
+			{
+				"title": "DevEnvLite",
 				"label": "main",
 				"url": "index.html",
 				"width": 1200,
 				"height": 800,
-				"visible": true,
+				"visible": false,
 				"resizable": true,
 				"center": true,
 				"shadow": true,
-				"focus": true,
 				"fullscreen": false
 			}
 		],
 		"security": {
-			"csp": null
+			"csp": "default-src 'self'; connect-src ipc: http://ipc.localhost"
 		}
 	},
 	"bundle": {

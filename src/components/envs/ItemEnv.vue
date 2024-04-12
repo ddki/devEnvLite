@@ -2,10 +2,13 @@
 	<div class="grid grid-flow-col justify-between px-2 hover:bg-secondary rounded-md">
 		<div class="grid grid-flow-col gap-2 justify-start items-center">
 			<TerminalSquare class="h-4 w-4" />
-			<span>{{ props.data.key }}</span>
+			<div class="grid grid-flow-col gap-2 w-full justify-start items-center">
+				<span>{{ props.data.key }}</span>
+				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-sm">{{ props.data.note }}</span>
+			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
-			<EditItemEnv operate="edit" :configId="props.configId" :groupId="props.data.groupId" :key="props.data.key"
+			<EditItemEnv operate="edit" :configId="props.configId" :groupId="props.data.groupId" :env-key="props.data.key"
 				@callback="emit('callback')">
 				<Button variant="ghost" size="icon">
 					<Pencil class="h-4 w-4" />

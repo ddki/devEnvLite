@@ -4,6 +4,10 @@ header:
   recover: Recover
   setting: Setting
   theme: Theme
+  description:
+    collate: Sort environment variable values in ascending order.
+    backup: Backup current system environment variables.
+    recover: Recover system environment variables from backups.
 
 settings:
   theme: Theme

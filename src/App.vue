@@ -1,9 +1,9 @@
 <template>
 	<Suspense>
-		<div class="grid grid-rows-[3.5rem_1fr_2rem] grid-cols-1 h-dvh">
+		<div class="grid grid-rows-[3.5rem_1fr_1.5rem] grid-cols-1 h-dvh overflow-hidden">
 			<Header />
-			<main class="border">
-				<ResizablePanelGroup direction="horizontal" class="px-2">
+			<main class="border overflow-auto">
+				<ResizablePanelGroup direction="horizontal">
 					<ResizablePanel :default-size="30">
 						<Config v-model:activeConfigId="activeConfigId" v-model:selectedConfigId="selectedConfigId" />
 					</ResizablePanel>
@@ -40,5 +40,7 @@ onMounted(async () => {
 	selectedConfigId.value = activeConfigId.value;
 });
 
-invoke("close_splashscreen");
+setTimeout(async () => {
+	await invoke("close_splashscreen");
+}, 5000);
 </script>

@@ -90,6 +90,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { getSetting, saveSetting } from "@/store";
 import { getVersion } from "@tauri-apps/api/app";

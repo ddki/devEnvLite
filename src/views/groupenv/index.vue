@@ -1,6 +1,6 @@
 <template>
-	<div class="grid sm:grid-rows-[2rem_minmax(0,_1fr)] md:grid-rows-[3rem_minmax(0,_1fr)] overflow-auto">
-		<div class="flex flex-row justify-start items-center px-2">
+	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
+		<div class="flex flex-row justify-start items-center px-2 border-b">
 			<EditGroupEnv operate="new" :configId="props.configId" @callback="loadStore(props.configId)">
 				<Button variant="outline">
 					<PlusSquare class="mr-2" />
@@ -8,10 +8,12 @@
 				</Button>
 			</EditGroupEnv>
 		</div>
-		<div class="sm:mt-1 md:mt-2 overflow-auto">
-			<GroupEnvView v-for="group in groupEnvsState" :data="group" @callback="loadStore(group.configId)"
-				@remove="removeGroupEnv" @removeEnv="deleteStoreEnv" />
-		</div>
+		<ScrollArea class="h-full w-full p-2">
+			<div class="sm:mt-1 md:mt-2 overflow-auto">
+				<GroupEnvView v-for="group in groupEnvsState" :data="group" @callback="loadStore(group.configId)"
+					@remove="removeGroupEnv" @removeEnv="deleteStoreEnv" />
+			</div>
+		</ScrollArea>
 	</div>
 </template>
 
@@ -19,6 +21,7 @@
 import { EditGroupEnv } from "@/components/envs";
 import { GroupEnv as GroupEnvView } from "@/components/envs";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { deleteEnv, deleteGroupEnv, getGroupEnvs } from "@/store";
 import type { GroupEnv } from "@/store/type";
 import { PlusSquare } from "lucide-vue-next";
