@@ -40,7 +40,5 @@ onMounted(async () => {
 	selectedConfigId.value = activeConfigId.value;
 });
 
-setTimeout(async () => {
-	await invoke("close_splashscreen");
-}, 5000);
+await invoke("close_splashscreen");
 </script>

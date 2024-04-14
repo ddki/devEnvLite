@@ -9,7 +9,7 @@
 			</EditGroupEnv>
 		</div>
 		<ScrollArea class="h-full w-full p-2">
-			<div class="sm:mt-1 md:mt-2 overflow-auto">
+			<div class="grid grid-flow-row gap-2 overflow-auto">
 				<GroupEnvView v-for="group in groupEnvsState" :data="group" @callback="loadStore(group.configId)"
 					@remove="removeGroupEnv" @removeEnv="deleteStoreEnv" />
 			</div>

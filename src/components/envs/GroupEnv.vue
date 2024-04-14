@@ -5,7 +5,9 @@
 			<PanelBottomOpen class="h-4 w-4" v-else />
 			<div class="grid grid-flow-col gap-2 w-full justify-start items-center">
 				<span>{{ props.data.name }}</span>
-				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-sm">{{ props.data.note }}</span>
+				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
+					{{ props.data.note }}
+				</span>
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
@@ -43,7 +45,7 @@
 			</DropdownMenu>
 		</div>
 	</div>
-	<div class="grid grid-flow-row items-center px-4" v-if="showItems">
+	<div class="grid grid-flow-row items-center gap-1" v-if="showItems">
 		<ItemEnv v-for="env in props.data.envs" :configId="props.data.configId" :data="env" @callback="emit('callback')"
 			@remove="removeEnv(env.key)"></ItemEnv>
 	</div>

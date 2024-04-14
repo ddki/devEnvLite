@@ -70,9 +70,10 @@ env:
   value: Value
   note: Description
   sort: Serial Number
-  context-menu:
-    apply: Apply
-    delete: Delete
+  copy-context-menu:
+    copyKeyValue: Copy key and value
+    copyKey: Copy key
+    copyValue: Copy value
   error:
     selectGroup: Please select a group first.
     keyNotEmpty: Key is not empty.

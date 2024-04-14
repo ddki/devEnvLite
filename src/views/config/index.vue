@@ -18,9 +18,15 @@
 				<div
 					:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.activeClass}`"
 					v-for="item in configs">
-					<div class="flex flex-row gap-2 h-full items-center pl-2" @click="onClickConfig(item)">
-						<CircleCheckBig v-if="item.isActive" />
-						<span>{{ item?.name }}</span>
+					<div class="flex flex-row gap-2 h-full items-center p-2" @click="onClickConfig(item)">
+						<CircleCheckBig class="text-destructive" v-if="item.isActive" />
+						<File />
+						<div class="grid grid-flow-row w-full justify-start items-center">
+							<span>{{ item.name }}</span>
+							<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
+								{{ item.note }}
+							</span>
+						</div>
 					</div>
 					<div class="grid grid-flow-col">
 						<EditPopover operate="edit" :id="item.id" @callback="loadStore">
@@ -76,6 +82,7 @@ import { invoke } from "@tauri-apps/api/core";
 import {
 	CircleCheckBig,
 	Ellipsis,
+	File,
 	FilePlus,
 	Import,
 	Laugh,
@@ -127,7 +134,7 @@ const loadStore = async () => {
 
 await loadStore();
 
-const importConfig = async () => { };
+const importConfig = async () => {};
 
 const resetConfigsActiveClass = () => {
 	configs.value = configs.value.map((item) => {

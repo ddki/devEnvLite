@@ -22,6 +22,7 @@ fn main() {
 			println!("{}, {argv:?}, {cwd}", app.package_info().name);
 		}))
 		.plugin(tauri_plugin_store::Builder::default().build())
+		.plugin(tauri_plugin_clipboard_manager::init())
 		.plugin(tauri_plugin_fs::init())
 		.plugin(tauri_plugin_shell::init())
 		.on_window_event(|_window, event| match event {

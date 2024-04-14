@@ -8,6 +8,9 @@ dependencies:
   '@tauri-apps/api':
     specifier: 2.0.0-beta.6
     version: 2.0.0-beta.6
+  '@tauri-apps/plugin-clipboard-manager':
+    specifier: 2.1.0-beta.0
+    version: 2.1.0-beta.0
   '@tauri-apps/plugin-fs':
     specifier: 2.0.0-beta.2
     version: 2.0.0-beta.2
@@ -1500,6 +1503,12 @@ packages:
       '@tauri-apps/cli-win32-ia32-msvc': 2.0.0-beta.11
       '@tauri-apps/cli-win32-x64-msvc': 2.0.0-beta.11
     dev: true
+
+  /@tauri-apps/plugin-clipboard-manager@2.1.0-beta.0:
+    resolution: {integrity: sha512-ySIo5NG58a7r9FheG3BO2tfNGoBHQD8J1bY8z8UpafkzgsVnEdlELBMrnx9FKlcM+y5Bbshnf+AJEOjp73/9nA==}
+    dependencies:
+      '@tauri-apps/api': 2.0.0-beta.6
+    dev: false
 
   /@tauri-apps/plugin-fs@2.0.0-beta.2:
     resolution: {integrity: sha512-jqeRBrm0h9QUoep5OzHx5R0vgFCYVAmZIy45jJpR7hHvnEgUwDU8JLUUVPvWniq6tUtxjwr1V/a0Hm9pE9V+NQ==}

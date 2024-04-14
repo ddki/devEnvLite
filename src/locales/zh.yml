@@ -70,9 +70,10 @@ env:
   value: 值
   note: 描述
   sort: 序号
-  context-menu:
-    apply: 应用
-    delete: 删除
+  copy-context-menu:
+    copyKeyValue: 复制键值
+    copyKey: 复制键
+    copyValue: 复制值
   error:
     selectGroup: 请先选择一个分组
     keyNotEmpty: 键不能为空
