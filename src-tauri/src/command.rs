@@ -1,6 +1,8 @@
-use std::fs;
+use std::{collections::HashSet, fs};
 
 use tauri::{AppHandle, Manager, Runtime};
+
+use crate::environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType};
 
 #[tauri::command]
 pub fn close_splashscreen(app: AppHandle) {
@@ -59,74 +61,135 @@ pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, bool> {
 	Ok(config_ids)
 }
 
+#[tauri::command]
+pub async fn get_keys<R: Runtime>(
+	scopes: Vec<String>,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
+) -> Result<HashSet<String>, String> {
+	println!("get_keys: scopes: {:?}", scopes);
+	let mut keys = HashSet::new();
+	if scopes.contains(&EnvironmentVarsType::SYSTEM.to_string()) {
+		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
+		keys.extend(manager.inner().get_keys().unwrap());
+	}
+	if scopes.contains(&EnvironmentVarsType::USER.to_string()) {
+		let manager = get_environment_vars_manager(&EnvironmentVarsType::USER);
+		keys.extend(manager.inner().get_keys().unwrap());
+	}
+	Ok(keys)
+}
+
 /// collate environment variables
 #[tauri::command]
 pub async fn collate_envs<R: Runtime>(
-	app: tauri::AppHandle<R>,
-	window: tauri::Window<R>,
+	keys: Vec<String>,
+	scopes: Vec<String>,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
 ) -> Result<(), String> {
+	println!("collate_envs: keys: {:?}, scopes: {:?}", keys, scopes);
+	if scopes.contains(&EnvironmentVarsType::SYSTEM.to_string()) {
+		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
+		manager.inner().collate(keys.clone());
+	}
+	if scopes.contains(&EnvironmentVarsType::USER.to_string()) {
+		let manager = get_environment_vars_manager(&EnvironmentVarsType::USER);
+		manager.inner().collate(keys.clone());
+	}
 	Ok(())
 }
 
 /// backup environment variables
 #[tauri::command]
 pub async fn backup_envs<R: Runtime>(
-	app: tauri::AppHandle<R>,
-	window: tauri::Window<R>,
+	backup_name: String,
+	folder: String,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
 ) -> Result<(), String> {
+	println!(
+		"backup_envs: backup_name: {:?}, folder: {:?}",
+		backup_name, folder
+	);
 	Ok(())
 }
 
 /// recover environment variables
 #[tauri::command]
 pub async fn recover_envs<R: Runtime>(
-	app: tauri::AppHandle<R>,
-	window: tauri::Window<R>,
+	file: String,
+	name: String,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
 ) -> Result<(), String> {
+	println!("recover_envs: file: {:?}, name: {:?}", file, name);
 	Ok(())
 }
 
 /// environment variables apply to system
 #[tauri::command]
 pub async fn env_apply<R: Runtime>(
-	app: tauri::AppHandle<R>,
-	window: tauri::Window<R>,
+	env_key: String,
+	env_value: String,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
 ) -> Result<(), String> {
+	println!(
+		"env_apply: env_key: {:?}, env_value: {:?}",
+		env_key, env_value
+	);
 	Ok(())
 }
 
 /// group environment variables apply to system
 #[tauri::command]
 pub async fn group_env_apply<R: Runtime>(
-	app: tauri::AppHandle<R>,
-	window: tauri::Window<R>,
+	config_id: String,
+	group_id: String,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
 ) -> Result<(), String> {
+	println!(
+		"group_env_apply: config_id: {:?}, group_id: {:?}",
+		config_id, group_id
+	);
 	Ok(())
 }
 
 /// group environment variables check from system
 #[tauri::command]
 pub async fn group_env_check<R: Runtime>(
-	app: tauri::AppHandle<R>,
-	window: tauri::Window<R>,
+	config_id: String,
+	group_id: String,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
 ) -> Result<(), String> {
+	println!(
+		"group_env_check: config_id: {:?}, group_id: {:?}",
+		config_id, group_id
+	);
 	Ok(())
 }
 
 /// config check from system
 #[tauri::command]
 pub async fn config_check<R: Runtime>(
-	app: tauri::AppHandle<R>,
-	window: tauri::Window<R>,
+	config_id: String,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
 ) -> Result<(), String> {
+	println!("config_check: config_id: {:?}", config_id);
 	Ok(())
 }
 
 /// config apply to system
 #[tauri::command]
 pub async fn config_apply<R: Runtime>(
-	app: tauri::AppHandle<R>,
-	window: tauri::Window<R>,
+	config_id: String,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
 ) -> Result<(), String> {
+	println!("config_apply: config_id: {:?}", config_id);
 	Ok(())
 }

@@ -38,6 +38,7 @@ fn main() {
 		.invoke_handler(tauri::generate_handler![
 			command::close_splashscreen,
 			command::get_config_ids,
+			command::get_keys,
 			command::collate_envs,
 			command::backup_envs,
 			command::recover_envs,

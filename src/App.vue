@@ -14,22 +14,22 @@
 				</ResizablePanelGroup>
 			</main>
 			<Footer />
+			<Toaster />
 		</div>
 	</Suspense>
-	<Toaster />
 </template>
 
 
 <script setup lang="ts">
 import Footer from "@/components/Footer.vue";
-import Header from "@/components/Header.vue";
+import { Header } from "@/components/header";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Toaster } from "@/components/ui/toast";
 import { getActiveConfig } from "@/store/index";
 import Config from "@/views/config/index.vue";
 import GroupEnv from "@/views/groupenv/index.vue";
 import { invoke } from "@tauri-apps/api/core";
-import { onMounted, ref } from "vue";
+import { onBeforeMount, onMounted, ref } from "vue";
 
 const activeConfigId = ref("");
 const selectedConfigId = ref("");
@@ -40,5 +40,7 @@ onMounted(async () => {
 	selectedConfigId.value = activeConfigId.value;
 });
 
-await invoke("close_splashscreen");
+onBeforeMount(async () => {
+	await invoke("close_splashscreen");
+});
 </script>

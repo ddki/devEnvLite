@@ -1,13 +1,24 @@
 header:
-  collate: 一键整理
-  backup: 备份
-  recover: 恢复
+  collate:
+    text: 一键整理
+    description: 环境变量值升序排序
+    env-scope: 范围
+    env-scopes:
+      system: 系统
+      user: 用户
+    env-keys: 键
+  backup:
+    text: 备份
+    description: 备份当前系统环境变量
+    folder: 备份路径
+    name: 名称
+  recover:
+    text: 恢复
+    description: 从备份中恢复系统环境变量
+    file: 文件路径
+    name: 名称
   setting: 设置
   theme: 主题
-  description:
-    collate: 环境变量值升序排序
-    backup: 备份当前系统环境变量
-    recover: 从备份中恢复系统环境变量
 
 settings:
   theme: 主题

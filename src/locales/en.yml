@@ -1,13 +1,24 @@
 header:
-  collate: Collate
-  backup: Backup
-  recover: Recover
+  collate:
+    text: Collate
+    description: Sort environment variable values in ascending order.
+    env-scope: Scope
+    env-scopes:
+      system: System
+      user: User
+    env-keys: Keys
+  backup:
+    text: Backup
+    description: Backup current system environment variables.
+    folder: Backup Folder
+    name: Backup Name
+  recover:
+    text: Recover
+    description: Recover current system environment variables.
+    file: Recover File Path
+    name: Recover Name
   setting: Setting
   theme: Theme
-  description:
-    collate: Sort environment variable values in ascending order.
-    backup: Backup current system environment variables.
-    recover: Recover system environment variables from backups.
 
 settings:
   theme: Theme
