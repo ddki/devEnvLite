@@ -4,6 +4,7 @@
 use tauri_plugin_log::{Target, TargetKind};
 
 pub mod command;
+pub mod environment_vars;
 
 fn main() {
 	tauri::Builder::default()
