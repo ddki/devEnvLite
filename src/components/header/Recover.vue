@@ -12,15 +12,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { invoke } from "@tauri-apps/api/core";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
 const open = ref(false);
 
-const name = ref();
-const file = ref();
+const name = ref("");
+const file = ref("");
+
+const init = () => {
+	name.value = "";
+	file.value = "";
+};
+
 const onRecover = async () => {
 	await invoke("recover_envs", { file: file.value, name: name.value })
 		.then((res) => {
@@ -31,10 +37,16 @@ const onRecover = async () => {
 		});
 	open.value = false;
 };
+
+watch(open, (newValue) => {
+	if (!newValue) {
+		init();
+	}
+});
 </script>
 
 <template>
-	<Dialog :open="open">
+	<Dialog v-model:open="open">
 		<DialogTrigger as-child>
 			<Button @click="open = true">{{ t('header.recover.text') }}</Button>
 		</DialogTrigger>
@@ -60,9 +72,6 @@ const onRecover = async () => {
 				</div>
 			</div>
 			<DialogFooter>
-				<Button variant="secondary" @click="open = false">
-					{{ t("close") }}
-				</Button>
 				<Button @click="onRecover">
 					{{ t('header.recover.text') }}
 				</Button>

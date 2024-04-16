@@ -5,6 +5,7 @@ use tauri_plugin_log::{Target, TargetKind};
 
 pub mod command;
 pub mod environment_vars;
+pub mod error;
 
 fn main() {
 	tauri::Builder::default()
@@ -29,7 +30,7 @@ fn main() {
 		.on_window_event(|_window, event| match event {
 			_ => {}
 		})
-		.setup(|app| {
+		.setup(|_app| {
 			// #[cfg(desktop)]
 			// app.handle()
 			// 	.plugin(tauri_plugin_updater::Builder::new().build())?;

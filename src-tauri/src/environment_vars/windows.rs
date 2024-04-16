@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 
+use anyhow::Ok;
 use winreg::{
 	enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE},
 	RegKey,
@@ -23,7 +24,7 @@ impl WindowEnvironmentVars {
 }
 
 impl EnvironmentVars for WindowEnvironmentVars {
-	fn get_keys(&self) -> Option<HashSet<String>> {
+	fn get_keys(&self) -> anyhow::Result<HashSet<String>> {
 		println!(
 			"{:?}, {}",
 			self.env_type,
@@ -35,126 +36,128 @@ impl EnvironmentVars for WindowEnvironmentVars {
 			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
 			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY).unwrap();
 			let mut keys = HashSet::new();
-			for (name, value) in cur_ver.enum_values().map(|x| x.unwrap()) {
-				println!("{} = {:?}", name, value);
+			for (name, _value) in cur_ver.enum_values().map(|x| x.unwrap()) {
+				// println!("{} = {:?}", name, value);
 				keys.insert(name);
 			}
-			Some(keys)
+			Ok(keys)
 		} else {
 			// 用户环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_CURRENT_USER);
 			let cur_ver = hklm.open_subkey(USER_SUB_HKEY).unwrap();
 			let mut keys = HashSet::new();
-			for (name, value) in cur_ver.enum_values().map(|x| x.unwrap()) {
-				println!("{} = {:?}", name, value);
+			for (name, _value) in cur_ver.enum_values().map(|x| x.unwrap()) {
+				// println!("{} = {:?}", name, value);
 				keys.insert(name);
 			}
-			Some(keys)
+			Ok(keys)
 		}
 	}
 
-	fn get_value(&self, key: &str) -> Option<String> {
+	fn get_value(&self, key: &str) -> anyhow::Result<String> {
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY).unwrap();
-			Some(cur_ver.get_value(key).unwrap())
+			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY)?;
+			Ok(cur_ver.get_value(key)?)
 		} else {
 			// 用户环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_CURRENT_USER);
-			let cur_ver = hklm.open_subkey(USER_SUB_HKEY).unwrap();
-			Some(cur_ver.get_value(key).unwrap())
+			let cur_ver = hklm.open_subkey(USER_SUB_HKEY)?;
+			Ok(cur_ver.get_value(key)?)
 		}
 	}
 
-	fn set(&self, key: &str, value: &str) -> bool {
+	fn set(&self, key: &str, value: &str) -> anyhow::Result<()> {
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY).unwrap();
-			match cur_ver.set_value(key, &value) {
-				Ok(_) => true,
-				Err(_) => false,
-			}
+			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY)?;
+			cur_ver.set_value(key, &value)?;
+			Ok(())
 		} else {
 			// 用户环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_CURRENT_USER);
-			let cur_ver = hklm.open_subkey(USER_SUB_HKEY).unwrap();
-			match cur_ver.set_value(key, &value) {
-				Ok(_) => true,
-				Err(_) => false,
-			}
+			let cur_ver = hklm.open_subkey(USER_SUB_HKEY)?;
+			cur_ver.set_value(key, &value)?;
+			Ok(())
 		}
 	}
 
-	fn remove_key(&self, key: &str) -> bool {
+	fn remove_key(&self, key: &str) -> anyhow::Result<()> {
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY).unwrap();
-			match cur_ver.delete_subkey(key) {
-				Ok(_) => true,
-				Err(_) => false,
-			}
+			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY)?;
+			cur_ver.delete_subkey(key)?;
+			Ok(())
 		} else {
 			// 用户环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_CURRENT_USER);
-			let cur_ver = hklm.open_subkey(USER_SUB_HKEY).unwrap();
-			match cur_ver.delete_subkey(key) {
-				Ok(_) => true,
-				Err(_) => false,
-			}
+			let cur_ver = hklm.open_subkey(USER_SUB_HKEY)?;
+			cur_ver.delete_subkey(key)?;
+			Ok(())
 		}
 	}
 
-	fn remove_keys(&self, keys: Vec<String>) -> bool {
-		let mut count = 0;
+	fn remove_keys(&self, keys: Vec<String>) -> anyhow::Result<()> {
 		for key in &keys {
-			if self.remove_key(&key) {
-				count += 1;
-			}
+			self.remove_key(&key)?;
 		}
-		count == keys.len()
+		Ok(())
 	}
 
-	fn collate(&self, keys: Vec<String>) {
+	fn collate(&self, keys: Vec<String>) -> anyhow::Result<()> {
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY).unwrap();
+			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY)?;
 			for (key, value) in cur_ver
 				.enum_values()
 				.map(|x| x.unwrap())
 				.filter(|x| keys.contains(&x.0))
 			{
-				let _ = cur_ver.set_value(key, &self.sort_value(&value.to_string()));
+				let sort_value = self.sort_value(&value.to_string());
+				println!(
+					"collate: sort_value = {:?}",
+					sort_value.as_ref().unwrap().clone()
+				);
+				let _ = cur_ver.set_value(key, &sort_value.unwrap().clone());
 			}
+			Ok(())
 		} else {
 			// 用户环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_CURRENT_USER);
-			let cur_ver = hklm.open_subkey(USER_SUB_HKEY).unwrap();
+			let cur_ver = hklm.open_subkey(USER_SUB_HKEY)?;
 			for (key, value) in cur_ver
 				.enum_values()
 				.map(|x| x.unwrap())
 				.filter(|x| keys.contains(&x.0))
 			{
-				let _ = cur_ver.set_value(key, &self.sort_value(&value.to_string()));
+				let sort_value = &self.sort_value(&value.to_string());
+				println!(
+					"collate: sort_value = {:?}",
+					sort_value.as_ref().unwrap().clone()
+				);
+				let _ = cur_ver.set_value(key, &sort_value.as_ref().unwrap().clone());
 			}
+			Ok(())
 		}
 	}
 
-	fn sort_value(&self, value: &str) -> String {
-		let mut values: Vec<&str> = value.split(VALUE_SPLITOR).collect();
-		values.sort();
-		values.join(VALUE_SPLITOR)
+	fn sort_value(&self, value: &str) -> anyhow::Result<String> {
+		let mut values: Vec<&str> = value.split(VALUE_SPLITOR).filter(|a| a.len() > 0).collect();
+		values.sort_by(|a, b| a.to_uppercase().cmp(&b.to_uppercase()));
+		let sort_value = values.join(VALUE_SPLITOR);
+		Ok(sort_value)
 	}
 }

@@ -1,16 +1,17 @@
 pub mod linux;
 pub mod windows;
 
+use anyhow::Result;
 use std::collections::HashSet;
 
 pub trait EnvironmentVars {
-	fn get_keys(&self) -> Option<HashSet<String>>;
-	fn get_value(&self, key: &str) -> Option<String>;
-	fn set(&self, key: &str, value: &str) -> bool;
-	fn remove_key(&self, key: &str) -> bool;
-	fn remove_keys(&self, keys: Vec<String>) -> bool;
-	fn collate(&self, keys: Vec<String>);
-	fn sort_value(&self, value: &str) -> String;
+	fn get_keys(&self) -> Result<HashSet<String>>;
+	fn get_value(&self, key: &str) -> Result<String>;
+	fn set(&self, key: &str, value: &str) -> Result<()>;
+	fn remove_key(&self, key: &str) -> Result<()>;
+	fn remove_keys(&self, keys: Vec<String>) -> Result<()>;
+	fn collate(&self, keys: Vec<String>) -> Result<()>;
+	fn sort_value(&self, value: &str) -> Result<String>;
 }
 
 #[cfg(target_os = "windows")]
@@ -51,8 +52,8 @@ pub enum EnvironmentVarsType {
 impl std::fmt::Display for EnvironmentVarsType {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			EnvironmentVarsType::SYSTEM => write!(f, "USER"),
-			EnvironmentVarsType::USER => write!(f, "SYSTEM"),
+			EnvironmentVarsType::SYSTEM => write!(f, "SYSTEM"),
+			EnvironmentVarsType::USER => write!(f, "USER"),
 		}
 	}
 }

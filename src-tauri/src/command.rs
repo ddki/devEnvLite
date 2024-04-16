@@ -2,7 +2,10 @@ use std::{collections::HashSet, fs};
 
 use tauri::{AppHandle, Manager, Runtime};
 
-use crate::environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType};
+use crate::{
+	environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType},
+	error::AppError,
+};
 
 #[tauri::command]
 pub fn close_splashscreen(app: AppHandle) {
@@ -16,7 +19,7 @@ pub fn close_splashscreen(app: AppHandle) {
 }
 
 #[tauri::command]
-pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, bool> {
+pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, AppError> {
 	let app_config_dir = app.path().app_config_dir().unwrap();
 	let app_cache_dir = app.path().app_cache_dir().unwrap();
 	let app_data_dir = app.path().app_data_dir().unwrap();
@@ -66,7 +69,7 @@ pub async fn get_keys<R: Runtime>(
 	scopes: Vec<String>,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<HashSet<String>, String> {
+) -> Result<Vec<String>, AppError> {
 	println!("get_keys: scopes: {:?}", scopes);
 	let mut keys = HashSet::new();
 	if scopes.contains(&EnvironmentVarsType::SYSTEM.to_string()) {
@@ -77,7 +80,10 @@ pub async fn get_keys<R: Runtime>(
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::USER);
 		keys.extend(manager.inner().get_keys().unwrap());
 	}
-	Ok(keys)
+	let mut sort_keys: Vec<String> = keys.iter().cloned().collect();
+	sort_keys.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+	println!("get_keys: keys: {:?}", sort_keys);
+	Ok(sort_keys)
 }
 
 /// collate environment variables
@@ -87,15 +93,15 @@ pub async fn collate_envs<R: Runtime>(
 	scopes: Vec<String>,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
 	println!("collate_envs: keys: {:?}, scopes: {:?}", keys, scopes);
 	if scopes.contains(&EnvironmentVarsType::SYSTEM.to_string()) {
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
-		manager.inner().collate(keys.clone());
+		manager.inner().collate(keys.clone())?;
 	}
 	if scopes.contains(&EnvironmentVarsType::USER.to_string()) {
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::USER);
-		manager.inner().collate(keys.clone());
+		manager.inner().collate(keys.clone())?;
 	}
 	Ok(())
 }
@@ -107,7 +113,7 @@ pub async fn backup_envs<R: Runtime>(
 	folder: String,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
 	println!(
 		"backup_envs: backup_name: {:?}, folder: {:?}",
 		backup_name, folder
@@ -122,7 +128,7 @@ pub async fn recover_envs<R: Runtime>(
 	name: String,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
 	println!("recover_envs: file: {:?}, name: {:?}", file, name);
 	Ok(())
 }
@@ -134,7 +140,7 @@ pub async fn env_apply<R: Runtime>(
 	env_value: String,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
 	println!(
 		"env_apply: env_key: {:?}, env_value: {:?}",
 		env_key, env_value
@@ -149,7 +155,7 @@ pub async fn group_env_apply<R: Runtime>(
 	group_id: String,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
 	println!(
 		"group_env_apply: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
@@ -164,7 +170,7 @@ pub async fn group_env_check<R: Runtime>(
 	group_id: String,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
 	println!(
 		"group_env_check: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
@@ -178,7 +184,7 @@ pub async fn config_check<R: Runtime>(
 	config_id: String,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
 	println!("config_check: config_id: {:?}", config_id);
 	Ok(())
 }
@@ -189,7 +195,7 @@ pub async fn config_apply<R: Runtime>(
 	config_id: String,
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
 	println!("config_apply: config_id: {:?}", config_id);
 	Ok(())
 }

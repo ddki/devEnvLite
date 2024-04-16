@@ -1057,6 +1057,7 @@ dependencies = [
 name = "devenvlite"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
  "log 0.4.21",
  "rustfmt",
  "serde",
@@ -1071,6 +1072,7 @@ dependencies = [
  "tauri-plugin-single-instance",
  "tauri-plugin-store",
  "tauri-plugin-updater",
+ "thiserror",
  "winreg 0.52.0",
 ]
 

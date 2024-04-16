@@ -1,10 +1,7 @@
 <template>
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
 		<div class="flex flex-row flex-2 justify-start items-center gap-2 border-b px-2">
-			<Button variant="outline" @click="importConfig">
-				<Import class="mr-2 h-6 w-6" />
-				{{ t("config.import-config") }}
-			</Button>
+			<ImportDialog />
 			<EditPopover operate="new" @callback="loadStore">
 				<Button variant="outline">
 					<FilePlus class="mr-2 h-6 w-6" />
@@ -67,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { EditPopover } from "@/components/config";
+import { EditPopover, ImportDialog } from "@/components/config";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -84,7 +81,6 @@ import {
 	Ellipsis,
 	File,
 	FilePlus,
-	Import,
 	Laugh,
 	Pencil,
 	SearchCheck,
@@ -133,8 +129,6 @@ const loadStore = async () => {
 };
 
 await loadStore();
-
-const importConfig = async () => {};
 
 const resetConfigsActiveClass = () => {
 	configs.value = configs.value.map((item) => {

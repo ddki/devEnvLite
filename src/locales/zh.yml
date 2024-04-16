@@ -2,11 +2,15 @@ header:
   collate:
     text: 一键整理
     description: 环境变量值升序排序
-    env-scope: 范围
+    env-scope:
+      text: 范围
+      description: 整理范围
     env-scopes:
       system: 系统
       user: 用户
-    env-keys: 键
+    env-keys:
+      text: 键
+      description: 请勾选需要整理的环境变量
     error:
       keysNotEmpty: 键不能为空
       scopesNotEmpty: 范围不能为空
@@ -42,7 +46,24 @@ settings:
 config:
   emptyText: 点击“新增配置”创建一个配置吧
   text: 配置
-  import-config: 导入配置
+  import-config:
+    text: 导入配置
+    description: 导入你的配置
+    types:
+      env:
+        text: 系统环境变量
+        description: 读取系统环境变量并创建配置
+        name: 配置名称
+      file:
+        text: 文件
+        description: 读取配置文件并创建配置
+        file: 文件路径
+        name: 配置名称
+      url:
+        text: 网络链接
+        description: 获取网络配置并创建配置
+        url: 链接地址
+        name: 配置名称
   new-config: 新增配置
   edit-config: 编辑配置
   id: 配置唯一标识

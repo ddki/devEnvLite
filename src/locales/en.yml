@@ -2,11 +2,15 @@ header:
   collate:
     text: Collate
     description: Sort environment variable values in ascending order.
-    env-scope: Scope
+    env-scope:
+      text: Scope
+      description: Collate the scope.
     env-scopes:
       system: System
       user: User
-    env-keys: Keys
+    env-keys:
+      text: Keys
+      description: Please select the environment variables that you want to collate.
     error:
       keysNotEmpty: Keys is not empty.
       scopesNotEmpty: Scopes is not empty.
@@ -42,7 +46,24 @@ settings:
 config:
   emptyText: Click on "New Config" to create a new configuration.
   text: Config
-  import-config: Import
+  import-config:
+    text: Import Config
+    description: Import your configuration.
+    types:
+      env:
+        text: From System Environment Variables
+        description: Read system environment variables and create configuration.
+        name: Configuration Name
+      file:
+        text: From Local File
+        description: Read the configuration file and create a configuration.
+        file: File Path
+        name: Configuration Name
+      url:
+        text: From URL
+        description: Get network configuration and create configuration.
+        url: Url
+        name: Configuration Name
   new-config: New
   edit-config: Edit
   id: Config's Unique Identifier

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
+import { ListCheckbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -10,15 +11,15 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { ListCheckbox } from "@/components/ui/checkbox";
 import { invoke } from "@tauri-apps/api/core";
-import { ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "../ui/toast/use-toast";
 
 interface CheckInfo {
 	label: string;
 	value: string;
+	checked: boolean;
 }
 
 const { t } = useI18n();
@@ -29,24 +30,24 @@ const scopes = ref([]);
 const keys = ref([]);
 const keyList = ref<CheckInfo[]>([]);
 
-const scopesList: CheckInfo[] = [
-	{ label: t("header.collate.env-scopes.user"), value: "USER" },
-	{ label: t("header.collate.env-scopes.system"), value: "SYSTEM" },
-];
+let scopesList: CheckInfo[] = reactive<CheckInfo[]>([
+	{ label: t("header.collate.env-scopes.user"), value: "USER", checked: false },
+	{ label: t("header.collate.env-scopes.system"), value: "SYSTEM", checked: false },
+]);
+
+const init = () => {
+	scopesList = [
+		{ label: t("header.collate.env-scopes.user"), value: "USER", checked: false },
+		{ label: t("header.collate.env-scopes.system"), value: "SYSTEM", checked: false },
+	];
+	keyList.value = [];
+};
 
 const onCollate = async () => {
 	if (scopes.value.length === 0) {
 		toast({
 			title: t("header.collate.text"),
 			description: t("header.collate.error.scopesNotEmpty"),
-			variant: "destructive",
-		});
-		return;
-	}
-	if (keys.value.length === 0) {
-		toast({
-			title: t("header.collate.text"),
-			description: t("header.collate.error.keysNotEmpty"),
 			variant: "destructive",
 		});
 		return;
@@ -61,56 +62,74 @@ const onCollate = async () => {
 	open.value = false;
 };
 
-watch(scopes, async (newValue) => {
-	console.log("scopes == ", newValue)
-	if (newValue.length !== 0) {
-		await invoke("get_keys", { scopes: newValue as string[] })
-			.then((res) => {
-				console.log("get_keys: ", res);
-				if (res) {
-					(res as string[]).map((item) => {
-						keyList.value.push({ label: item, value: item });
-					});
-				}
-				console.log("keyList: ", keyList);
-			})
-			.catch((err) => {
-				console.error(err);
-			});
+watch(
+	scopes,
+	async (newValue, oldValue) => {
+		console.log("scopes == ", newValue, oldValue);
+		if (scopes.value.length !== 0) {
+			await invoke("get_keys", { scopes: scopes.value })
+				.then((res) => {
+					console.log("get_keys: ", res);
+					if (res) {
+						keyList.value = (res as string[]).map((item) => {
+							return { label: item, value: item, checked: false };
+						});
+					}
+					console.log("keyList: ", keyList);
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		} else {
+			keyList.value = [];
+		}
+	},
+	{
+		deep: true,
+	},
+);
+
+watch(open, (newValue) => {
+	if (!newValue) {
+		init();
 	}
 });
 </script>
 
 <template>
-	<Dialog :open="open">
+	<Dialog v-model:open="open">
 		<DialogTrigger as-child>
 			<Button @click="open = true">{{ t('header.collate.text') }}</Button>
 		</DialogTrigger>
-		<DialogContent>
+		<DialogContent class="grid-rows-[auto_minmax(0,1fr)_auto] max-h-[90dvh]">
 			<DialogHeader>
 				<DialogTitle>{{ t('header.collate.text') }}</DialogTitle>
 				<DialogDescription>
 					{{ t('header.collate.description') }}
 				</DialogDescription>
 			</DialogHeader>
-			<div class="grid gap-4 py-4">
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="name" class="text-right">
-						{{ t("header.collate.env-scope") }}
+			<div class="grid gap-4 py-4 overflow-y-auto">
+				<div class="grid grid-flow-row gap-4">
+					<Label for="name" class="text-left text-base font-bold">
+						{{ t("header.collate.env-scope.text") }}
+						<span class="text-sm text-muted-foreground font-normal">
+							{{ t("header.collate.env-scope.description") }}
+						</span>
 					</Label>
-					<ListCheckbox :items="scopesList" v-model="scopes" class="col-span-3" />
+					<ListCheckbox :items="scopesList" v-model="scopes" class="pl-4" />
 				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="username" class="text-right">
-						{{ t("header.collate.env-keys") }}
+				<div class="grid grid-flow-row gap-4">
+					<Label for="username" class="text-left text-base font-bold">
+						{{ t("header.collate.env-keys.text") }}
+						<span class="text-sm text-muted-foreground font-normal">
+							{{ t("header.collate.env-keys.description") }}
+						</span>
 					</Label>
-					<ListCheckbox :items="keyList" v-model="keys" class="col-span-3"/>
+
+					<ListCheckbox :items="keyList" v-model="keys" class="pl-4" />
 				</div>
 			</div>
 			<DialogFooter>
-				<Button variant="secondary" @click="open = false">
-					{{ t("close") }}
-				</Button>
 				<Button @click="onCollate">
 					{{ t('header.collate.text') }}
 				</Button>

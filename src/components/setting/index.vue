@@ -5,7 +5,7 @@
 				<Settings />
 			</Button>
 		</DialogTrigger>
-		<DialogContent class="sm:max-w-[425px]">
+		<DialogContent>
 			<DialogHeader>
 				<DialogTitle>{{ t('header.setting') }}</DialogTitle>
 				<DialogDescription>
@@ -70,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -90,7 +91,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { getSetting, saveSetting } from "@/store";
 import { getVersion } from "@tauri-apps/api/app";

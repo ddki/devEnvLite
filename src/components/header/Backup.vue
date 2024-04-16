@@ -13,14 +13,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { invoke } from "@tauri-apps/api/core";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const open = ref(false);
 
-const name = ref();
-const folder = ref();
+const name = ref("");
+const folder = ref("");
+
+const init = () => {
+	name.value = "";
+	folder.value = "";
+};
+
 const onBackup = async () => {
 	await invoke("backup_envs", { backupName: name.value, folder: folder.value })
 		.then((res) => {
@@ -30,6 +36,12 @@ const onBackup = async () => {
 			console.error(err);
 		});
 };
+
+watch(open, (newValue) => {
+	if (!newValue) {
+		init();
+	}
+});
 </script>
 
 <template>
@@ -60,9 +72,6 @@ const onBackup = async () => {
 				</div>
 			</div>
 			<DialogFooter>
-				<Button variant="secondary" @click="open = false">
-					{{ t("close") }}
-				</Button>
 				<Button @click="onBackup">
 					{{ t('header.backup.text') }}
 				</Button>
