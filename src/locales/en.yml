@@ -7,16 +7,25 @@ header:
       system: System
       user: User
     env-keys: Keys
+    error:
+      keysNotEmpty: Keys is not empty.
+      scopesNotEmpty: Scopes is not empty.
   backup:
     text: Backup
     description: Backup current system environment variables.
     folder: Backup Folder
     name: Backup Name
+    error:
+      folderNotEmpty: Backup folder is not empty.
+      nameNotEmpty: Backup name is not empty.
   recover:
     text: Recover
     description: Recover current system environment variables.
     file: Recover File Path
     name: Recover Name
+    error:
+      fileNotEmpty: Recover file path is not empty.
+      nameNotEmpty: Recover Name is not empty.
   setting: Setting
   theme: Theme
 

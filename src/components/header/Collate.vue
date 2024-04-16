@@ -10,28 +10,47 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import { ListCheckbox } from "@/components/ui/checkbox";
 import { invoke } from "@tauri-apps/api/core";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "../ui/toast/use-toast";
 
+interface CheckInfo {
+	label: string;
+	value: string;
+}
+
 const { t } = useI18n();
 
 const open = ref(false);
 
-const scopes = ref();
-const keys = ref();
-let selectKeys: string[] = [];
+const scopes = ref([]);
+const keys = ref([]);
+const keyList = ref<CheckInfo[]>([]);
+
+const scopesList: CheckInfo[] = [
+	{ label: t("header.collate.env-scopes.user"), value: "USER" },
+	{ label: t("header.collate.env-scopes.system"), value: "SYSTEM" },
+];
 
 const onCollate = async () => {
+	if (scopes.value.length === 0) {
+		toast({
+			title: t("header.collate.text"),
+			description: t("header.collate.error.scopesNotEmpty"),
+			variant: "destructive",
+		});
+		return;
+	}
+	if (keys.value.length === 0) {
+		toast({
+			title: t("header.collate.text"),
+			description: t("header.collate.error.keysNotEmpty"),
+			variant: "destructive",
+		});
+		return;
+	}
 	await invoke("collate_envs", { keys: keys.value, scopes: scopes.value })
 		.then((res) => {
 			console.log("collate res = ", res);
@@ -40,21 +59,25 @@ const onCollate = async () => {
 			console.error(err);
 		});
 	open.value = false;
-	toast({
-		title: t("header.collate.text"),
-		description: "哈哈哈哈哈哈哈哈哈哈哈哈",
-	});
 };
 
 watch(scopes, async (newValue) => {
-	await invoke("get_keys", { scopes: newValue })
-		.then((res) => {
-			console.log("get_keys: ", res);
-			selectKeys = res as string[];
-		})
-		.catch((err) => {
-			console.error(err);
-		});
+	console.log("scopes == ", newValue)
+	if (newValue.length !== 0) {
+		await invoke("get_keys", { scopes: newValue as string[] })
+			.then((res) => {
+				console.log("get_keys: ", res);
+				if (res) {
+					(res as string[]).map((item) => {
+						keyList.value.push({ label: item, value: item });
+					});
+				}
+				console.log("keyList: ", keyList);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+	}
 });
 </script>
 
@@ -75,41 +98,19 @@ watch(scopes, async (newValue) => {
 					<Label for="name" class="text-right">
 						{{ t("header.collate.env-scope") }}
 					</Label>
-					<Select v-model="scopes">
-						<SelectTrigger>
-							<SelectValue :placeholder="t('header.collate.env-scope')" />
-						</SelectTrigger>
-						<SelectContent class="w-full">
-							<SelectGroup>
-								<SelectItem value="USER">
-									{{ t("header.collate.env-scopes.user") }}
-								</SelectItem>
-								<SelectItem value="SYSTEM">
-									{{ t("header.collate.env-scopes.system") }}
-								</SelectItem>
-							</SelectGroup>
-						</SelectContent>
-					</Select>
+					<ListCheckbox :items="scopesList" v-model="scopes" class="col-span-3" />
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="username" class="text-right">
 						{{ t("header.collate.env-keys") }}
 					</Label>
-					<Select multiple v-model="keys">
-						<SelectTrigger>
-							<SelectValue :placeholder="t('header.collate.env-keys')" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectGroup>
-								<SelectItem v-for="envKey in selectKeys" :value="envKey">
-									{{ envKey }}
-								</SelectItem>
-							</SelectGroup>
-						</SelectContent>
-					</Select>
+					<ListCheckbox :items="keyList" v-model="keys" class="col-span-3"/>
 				</div>
 			</div>
 			<DialogFooter>
+				<Button variant="secondary" @click="open = false">
+					{{ t("close") }}
+				</Button>
 				<Button @click="onCollate">
 					{{ t('header.collate.text') }}
 				</Button>

@@ -60,6 +60,9 @@ const onRecover = async () => {
 				</div>
 			</div>
 			<DialogFooter>
+				<Button variant="secondary" @click="open = false">
+					{{ t("close") }}
+				</Button>
 				<Button @click="onRecover">
 					{{ t('header.recover.text') }}
 				</Button>

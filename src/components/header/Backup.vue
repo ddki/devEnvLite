@@ -17,7 +17,6 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-
 const open = ref(false);
 
 const name = ref();
@@ -26,7 +25,6 @@ const onBackup = async () => {
 	await invoke("backup_envs", { backupName: name.value, folder: folder.value })
 		.then((res) => {
 			console.log("Backup res = ", res);
-			open.value = false;
 		})
 		.catch((err) => {
 			console.error(err);
@@ -35,9 +33,9 @@ const onBackup = async () => {
 </script>
 
 <template>
-	<Dialog>
+	<Dialog v-model:open="open">
 		<DialogTrigger as-child>
-			<Button>{{ t('header.backup.text') }}</Button>
+			<Button @click="open = true">{{ t('header.backup.text') }}</Button>
 		</DialogTrigger>
 		<DialogContent>
 			<DialogHeader>
@@ -62,6 +60,9 @@ const onBackup = async () => {
 				</div>
 			</div>
 			<DialogFooter>
+				<Button variant="secondary" @click="open = false">
+					{{ t("close") }}
+				</Button>
 				<Button @click="onBackup">
 					{{ t('header.backup.text') }}
 				</Button>
