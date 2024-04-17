@@ -115,11 +115,11 @@ watch(open, (newValue) => {
 						<CardContent class="space-y-2">
 							<div class="grid grid-cols-4 items-center gap-2">
 								<Label for="name" class="text-right">{{ t('config.import-config.types.file.name') }}</Label>
-								<Input v-model="fileConfigName" class="col-span-3" />
+								<Input v-model="fileConfigName" type="text" class="col-span-3" />
 							</div>
 							<div class="grid grid-cols-4 items-center gap-2">
 								<Label for="name" class="text-right">{{ t('config.import-config.types.file.file') }}</Label>
-								<Input v-model="filePath" class="col-span-3" />
+								<Input v-model="filePath" type="file" class="col-span-3" />
 							</div>
 						</CardContent>
 						<CardFooter class="justify-center">
@@ -141,11 +141,11 @@ watch(open, (newValue) => {
 						<CardContent class="space-y-2">
 							<div class="grid grid-cols-4 items-center gap-2">
 								<Label for="name" class="text-right">{{ t('config.import-config.types.url.name') }}</Label>
-								<Input v-model="urlConfigName" class="col-span-3" />
+								<Input v-model="urlConfigName" type="text" class="col-span-3" />
 							</div>
 							<div class="grid grid-cols-4 items-center gap-2">
 								<Label for="name" class="text-right">{{ t('config.import-config.types.url.url') }}</Label>
-								<Input v-model="url" class="col-span-3" />
+								<Input v-model="url" type="url" class="col-span-3" />
 							</div>
 						</CardContent>
 						<CardFooter class="justify-center">

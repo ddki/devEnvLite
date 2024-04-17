@@ -1,6 +1,5 @@
-use std::collections::HashSet;
 
-use super::{EnvironmentVars, EnvironmentVarsType};
+use super::{EnvironmentVarsType};
 
 pub struct LinuxEnvironmentVars {
 	pub env_type: EnvironmentVarsType,
@@ -13,32 +12,32 @@ impl LinuxEnvironmentVars {
 	}
 }
 
-impl EnvironmentVars for LinuxEnvironmentVars {
-	fn get_keys(&self) -> anyhow::Result<HashSet<String>> {
-		todo!()
-	}
+// impl EnvironmentVars for LinuxEnvironmentVars {
+// 	fn get_keys(&self) -> anyhow::Result<HashSet<String>> {
+// 		todo!()
+// 	}
 
-	fn get_value(&self, key: &str) -> anyhow::Result<String> {
-		todo!()
-	}
+// 	fn get_value(&self, key: &str) -> anyhow::Result<String> {
+// 		todo!()
+// 	}
 
-	fn set(&self, key: &str, value: &str) -> anyhow::Result<()> {
-		todo!()
-	}
+// 	fn set(&self, key: &str, value: &str) -> anyhow::Result<()> {
+// 		todo!()
+// 	}
 
-	fn remove_key(&self, key: &str) -> anyhow::Result<()> {
-		todo!()
-	}
+// 	fn remove_key(&self, key: &str) -> anyhow::Result<()> {
+// 		todo!()
+// 	}
 
-	fn remove_keys(&self, keys: Vec<String>) -> anyhow::Result<()> {
-		todo!()
-	}
+// 	fn remove_keys(&self, keys: Vec<String>) -> anyhow::Result<()> {
+// 		todo!()
+// 	}
 
-	fn collate(&self, keys: Vec<String>) -> anyhow::Result<()> {
-		todo!()
-	}
+// 	fn collate(&self, keys: Vec<String>) -> anyhow::Result<()> {
+// 		todo!()
+// 	}
 
-	fn sort_value(&self, value: &str) -> anyhow::Result<String> {
-		todo!()
-	}
-}
+// 	fn sort_value(&self, value: &str) -> anyhow::Result<String> {
+// 		todo!()
+// 	}
+// }

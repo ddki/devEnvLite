@@ -20,7 +20,7 @@ const { t } = useI18n();
 const open = ref(false);
 
 const name = ref("");
-const file = ref("");
+const file = ref(null);
 
 const init = () => {
 	name.value = "";
@@ -68,7 +68,7 @@ watch(open, (newValue) => {
 					<Label for="username" class="text-right">
 						{{ t("header.recover.file") }}
 					</Label>
-					<Input v-model="file" class="col-span-3" />
+					<Input v-model="file" type="file" class="col-span-3" />
 				</div>
 			</div>
 			<DialogFooter>
