@@ -27,6 +27,7 @@ fn main() {
 		.plugin(tauri_plugin_clipboard_manager::init())
 		.plugin(tauri_plugin_fs::init())
 		.plugin(tauri_plugin_shell::init())
+		.plugin(tauri_plugin_dialog::init())
 		.on_window_event(|_window, event| match event {
 			_ => {}
 		})
@@ -39,6 +40,7 @@ fn main() {
 		.invoke_handler(tauri::generate_handler![
 			command::close_splashscreen,
 			command::get_config_ids,
+			command::get_envs,
 			command::get_keys,
 			command::collate_envs,
 			command::backup_envs,

@@ -15,8 +15,11 @@ import { Label } from "@/components/ui/label";
 import { invoke } from "@tauri-apps/api/core";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "../ui/toast";
 
 const { t } = useI18n();
+const { toast } = useToast();
+
 const open = ref(false);
 
 const name = ref("");
@@ -34,6 +37,11 @@ const onBackup = async () => {
 		})
 		.catch((err) => {
 			console.error(err);
+			toast({
+				title: t("config.import-config.types.env.text"),
+				description: `${t("error")} : ${err.message}`,
+				variant: "destructive",
+			});
 		});
 };
 

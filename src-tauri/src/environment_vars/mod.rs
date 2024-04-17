@@ -2,9 +2,10 @@ pub mod linux;
 pub mod windows;
 
 use anyhow::Result;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 pub trait EnvironmentVars {
+	fn read_envs(&self) -> Result<HashMap<String, String>>;
 	fn get_keys(&self) -> Result<HashSet<String>>;
 	fn get_value(&self, key: &str) -> Result<String>;
 	fn set(&self, key: &str, value: &str) -> Result<()>;

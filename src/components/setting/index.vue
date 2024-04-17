@@ -33,25 +33,29 @@
 					<Label class="text-right">
 						{{ t('settings.home-dir') }}
 					</Label>
-					<Input v-model="settingData.homeDir" class="col-span-3" />
+					<LocalFileInput type="folder" v-model="settingData.homeDir" :placeholder="t('settings.home-dir')"
+						class="col-span-3" />
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label class="text-right">
 						{{ t('settings.cache-dir') }}
 					</Label>
-					<Input v-model="settingData.cacheDir" class="col-span-3" />
+					<LocalFileInput type="folder" v-model="settingData.cacheDir" :placeholder="t('settings.cache-dir')"
+						class="col-span-3" />
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label class="text-right">
 						{{ t('settings.data-dir') }}
 					</Label>
-					<Input v-model="settingData.dataDir" class="col-span-3" />
+					<LocalFileInput type="folder" v-model="settingData.dataDir" :placeholder="t('settings.data-dir')"
+						class="col-span-3" />
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label class="text-right">
 						{{ t('settings.env-backup-dir') }}
 					</Label>
-					<Input v-model="settingData.envBackupDir" class="col-span-3" />
+					<LocalFileInput type="folder" v-model="settingData.envBackupDir" :placeholder="t('settings.env-backup-dir')"
+						class="col-span-3" />
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label class="text-right">
@@ -70,6 +74,7 @@
 </template>
 
 <script setup lang="ts">
+import { LocalFileInput } from "@/components/common/index";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -81,7 +86,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
 	Select,

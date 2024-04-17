@@ -1,6 +1,7 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use anyhow::Ok;
+
 use winreg::{
 	enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE},
 	RegKey,
@@ -24,12 +25,34 @@ impl WindowEnvironmentVars {
 }
 
 impl EnvironmentVars for WindowEnvironmentVars {
+	fn read_envs(&self) -> anyhow::Result<std::collections::HashMap<String, String>> {
+		println!("{:?}", self.env_type);
+		if self.env_type == EnvironmentVarsType::SYSTEM {
+			// 系统环境变量
+			// 打开注册表
+			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY).unwrap();
+			let mut keys = HashMap::new();
+			for (name, value) in cur_ver.enum_values().map(|x| x.unwrap()) {
+				// println!("{} = {:?}", name, value);
+				keys.insert(name, value.to_string());
+			}
+			Ok(keys)
+		} else {
+			// 用户环境变量
+			// 打开注册表
+			let hklm = RegKey::predef(HKEY_CURRENT_USER);
+			let cur_ver = hklm.open_subkey(USER_SUB_HKEY).unwrap();
+			let mut keys = HashMap::new();
+			for (name, value) in cur_ver.enum_values().map(|x| x.unwrap()) {
+				// println!("{} = {:?}", name, value);
+				keys.insert(name, value.to_string());
+			}
+			Ok(keys)
+		}
+	}
 	fn get_keys(&self) -> anyhow::Result<HashSet<String>> {
-		println!(
-			"{:?}, {}",
-			self.env_type,
-			self.env_type == EnvironmentVarsType::SYSTEM
-		);
+		println!("{:?}", self.env_type);
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
 			// 打开注册表

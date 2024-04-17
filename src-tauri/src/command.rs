@@ -1,4 +1,7 @@
-use std::{collections::HashSet, fs};
+use std::{
+	collections::{HashMap, HashSet},
+	fs,
+};
 
 use tauri::{AppHandle, Manager, Runtime};
 
@@ -62,6 +65,27 @@ pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, AppError> {
 		}
 	}
 	Ok(config_ids)
+}
+
+/// get environment variables
+#[tauri::command]
+pub fn get_envs<R: Runtime>(
+	scope: String,
+	_app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
+) -> Result<HashMap<String, String>, AppError> {
+	println!("get_envs scope: {:?}", scope);
+	if EnvironmentVarsType::SYSTEM.to_string().eq(&scope) {
+		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
+		let system_envs = manager.inner().read_envs()?;
+		return Ok(system_envs);
+	}
+	if EnvironmentVarsType::USER.to_string().eq(&scope) {
+		let manager = get_environment_vars_manager(&EnvironmentVarsType::USER);
+		let user_envs = manager.inner().read_envs()?;
+		return Ok(user_envs);
+	}
+	Ok(HashMap::new())
 }
 
 #[tauri::command]

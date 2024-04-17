@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { LocalFileInput } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -20,16 +21,26 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "../ui/toast";
 
 const { t } = useI18n();
+const { toast } = useToast();
 
-const open = ref(false);
+const dialogOpen = ref(false);
+
+const scopesList = [
+	{ label: t("env.scopes.user"), value: "USER" },
+	{ label: t("env.scopes.system"), value: "SYSTEM" },
+];
 
 const systemConfigName = ref("");
+const systemScope = ref("USER");
 const fileConfigName = ref("");
 const urlConfigName = ref("");
 const filePath = ref("");
@@ -43,11 +54,24 @@ const init = () => {
 	url.value = "";
 };
 
-const importFromSystem = () => {};
+const importFromSystem = async () => {
+	await invoke("get_envs", { scope: systemScope.value })
+		.then((res) => {
+			console.log(res);
+		})
+		.catch((err) => {
+			console.error(err);
+			toast({
+				title: t("config.import-config.types.env.text"),
+				description: `${t("error")} : ${err.message}`,
+				variant: "destructive",
+			});
+		});
+};
 const importFromFile = () => {};
 const importFromUrl = () => {};
 
-watch(open, (newValue) => {
+watch(dialogOpen, (newValue) => {
 	if (!newValue) {
 		init();
 	}
@@ -55,9 +79,9 @@ watch(open, (newValue) => {
 </script>
 
 <template>
-	<Dialog v-model:open="open">
+	<Dialog v-model:open="dialogOpen">
 		<DialogTrigger as-child>
-			<Button variant="outline" @click="open = true">
+			<Button variant="outline" @click="dialogOpen = true">
 				<Import class="mr-2 h-6 w-6" />
 				{{ t('config.import-config.text') }}
 			</Button>
@@ -92,6 +116,15 @@ watch(open, (newValue) => {
 						</CardHeader>
 						<CardContent class="space-y-2">
 							<div class="grid grid-cols-4 items-center gap-2">
+								<Label for="name" class="text-right">{{ t('config.import-config.types.env.scope') }}</Label>
+								<RadioGroup v-model="systemScope">
+									<div class="flex items-center space-x-2" v-for="item in scopesList" :key="item.value">
+										<RadioGroupItem :value="item.value" />
+										<Label for="r1">{{ item.label }}</Label>
+									</div>
+								</RadioGroup>
+							</div>
+							<div class="grid grid-cols-4 items-center gap-2">
 								<Label for="name" class="text-right">{{ t('config.import-config.types.env.name') }}</Label>
 								<Input v-model="systemConfigName" class="col-span-3" />
 							</div>
@@ -119,7 +152,8 @@ watch(open, (newValue) => {
 							</div>
 							<div class="grid grid-cols-4 items-center gap-2">
 								<Label for="name" class="text-right">{{ t('config.import-config.types.file.file') }}</Label>
-								<Input v-model="filePath" type="file" class="col-span-3" />
+								<LocalFileInput v-model="filePath" type="file" :placeholder="t('config.import-config.types.file.file')"
+									class="col-span-3" />
 							</div>
 						</CardContent>
 						<CardFooter class="justify-center">

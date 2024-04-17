@@ -58,6 +58,11 @@ const onCollate = async () => {
 		})
 		.catch((err) => {
 			console.error(err);
+			toast({
+				title: t("config.import-config.types.env.text"),
+				description: `${t("error")} : ${err.message}`,
+				variant: "destructive",
+			});
 		});
 	open.value = false;
 };

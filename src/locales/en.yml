@@ -53,6 +53,7 @@ config:
       env:
         text: From System Environment Variables
         description: Read system environment variables and create configuration.
+        scope: Scope
         name: Configuration Name
       file:
         text: From Local File
@@ -117,10 +118,17 @@ env:
     copyValue: Copy value
   error:
     selectGroup: Please select a group first.
+    checkScope: Please check a scope first.
     keyNotEmpty: Key is not empty.
     valueNotEmpty: Value is not empty.
     keyExists: Key has already been.
     missKey: Missing key.
+  scope:
+    text: Scope
+    description: Environment variable scope.
+  scopes:
+    system: System
+    user: User
 
 save: Save
 close: Close
@@ -128,3 +136,5 @@ clear: Clear
 success: Successed
 failure: Failed
 version: Version
+
+error: An error has occurred.

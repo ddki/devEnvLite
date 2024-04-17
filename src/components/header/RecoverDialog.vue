@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { LocalFileInput } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -14,13 +15,15 @@ import { Label } from "@/components/ui/label";
 import { invoke } from "@tauri-apps/api/core";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "../ui/toast";
 
 const { t } = useI18n();
+const { toast } = useToast();
 
 const open = ref(false);
 
 const name = ref("");
-const file = ref(null);
+const file = ref("");
 
 const init = () => {
 	name.value = "";
@@ -34,6 +37,11 @@ const onRecover = async () => {
 		})
 		.catch((err) => {
 			console.error(err);
+			toast({
+				title: t("config.import-config.types.env.text"),
+				description: `${t("error")} : ${err.message}`,
+				variant: "destructive",
+			});
 		});
 	open.value = false;
 };
@@ -68,7 +76,7 @@ watch(open, (newValue) => {
 					<Label for="username" class="text-right">
 						{{ t("header.recover.file") }}
 					</Label>
-					<Input v-model="file" type="file" class="col-span-3" />
+					<LocalFileInput v-model="file" type="file" :placeholder="t('header.recover.file')" class="col-span-3" />
 				</div>
 			</div>
 			<DialogFooter>

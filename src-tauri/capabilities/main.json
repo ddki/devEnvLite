@@ -38,6 +38,12 @@
 		"clipboard-manager:allow-write-image",
 		"clipboard-manager:allow-read-text",
 		"clipboard-manager:allow-read-image",
-		"clipboard-manager:allow-clear"
+		"clipboard-manager:allow-clear",
+		"dialog:default",
+		"dialog:allow-ask",
+		"dialog:allow-confirm",
+		"dialog:allow-message",
+		"dialog:allow-open",
+		"dialog:allow-save"
 	]
 }
