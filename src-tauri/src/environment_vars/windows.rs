@@ -37,7 +37,14 @@ impl EnvironmentVars for WindowEnvironmentVars {
 				// println!("{} = {:?}", name, value);
 				keys.insert(name, value.to_string());
 			}
-			Ok(keys)
+			let mut key_list: Vec<String> = keys.keys().cloned().collect();
+			key_list.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+
+			let mut return_keys = HashMap::new();
+			for item_key in key_list {
+				return_keys.insert(item_key.clone(), keys[&item_key].clone());
+			}
+			Ok(return_keys)
 		} else {
 			// 用户环境变量
 			// 打开注册表
@@ -48,7 +55,14 @@ impl EnvironmentVars for WindowEnvironmentVars {
 				// println!("{} = {:?}", name, value);
 				keys.insert(name, value.to_string());
 			}
-			Ok(keys)
+			let mut key_list: Vec<String> = keys.keys().cloned().collect();
+			key_list.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+
+			let mut return_keys = HashMap::new();
+			for item_key in key_list {
+				return_keys.insert(item_key.clone(), keys[&item_key].clone());
+			}
+			Ok(return_keys)
 		}
 	}
 	fn get_keys(&self) -> anyhow::Result<HashSet<String>> {

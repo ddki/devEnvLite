@@ -26,6 +26,7 @@ interface GroupEnv {
 	note?: string;
 	sort: number;
 	envs?: Env[];
+	envKeys?: string[];
 }
 
 interface Env {

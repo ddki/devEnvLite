@@ -1,6 +1,7 @@
 import { BaseDirectory, remove } from "@tauri-apps/plugin-fs";
 import { Store } from "@tauri-apps/plugin-store";
-import type { ActiveConfig, Config, GroupEnv, Env } from "./type";
+import { v4 as uuidv4 } from "uuid";
+import type { ActiveConfig, Config, Env, GroupEnv } from "./type";
 
 const activeConfigStore = new Store("active-config.json");
 
@@ -123,7 +124,10 @@ const saveConfig = async (config: Config): Promise<boolean> => {
 			await store.set("name", config.name);
 			await store.set("note", config.note);
 			await store.set("sort", config.sort);
-			const groupEnvs = converterGroupEnvs(storeConfig.id, config.groupEnvs || storeConfig.groupEnvs);
+			const groupEnvs = converterGroupEnvs(
+				storeConfig.id,
+				config.groupEnvs || storeConfig.groupEnvs,
+			);
 			console.log("[saveConfig()] groupEnvs: ", groupEnvs);
 			await store.set("groupEnvs", groupEnvs);
 		} else {
@@ -265,6 +269,44 @@ const loadConfig = async (store: Store, config: Config): Promise<boolean> => {
 	return load;
 };
 
+const generateEnvs = (groupId: string, envs: Map<string, string>): Env[] => {
+	if (envs) {
+		const envArray: Env[] = [];
+		let sort = 0;
+		for (const [key, value] of envs) {
+			sort += 1;
+			envArray.push({
+				groupId,
+				key,
+				value,
+				sort,
+			});
+		}
+		return envArray;
+	}
+	return [];
+};
+
+const generateConfigFromEnvs = async (
+	config: Config,
+	envs: Map<string, string>,
+): Promise<Config> => {
+	console.log("generateConfigFromEnvs config, envs", config, envs);
+	const generateConfig = {
+		...config,
+	};
+	const groupEnv: GroupEnv = {
+		configId: generateConfig.id,
+		id: uuidv4(),
+		name: "auto generate",
+		sort: 1,
+	};
+	groupEnv.envs = generateEnvs(groupEnv.id, envs);
+	generateConfig.groupEnvs = [groupEnv];
+	await saveConfig(generateConfig);
+	return generateConfig;
+};
+
 export {
 	getActiveConfig,
 	saveActiveConfig,
@@ -284,4 +326,5 @@ export {
 	deleteConfig,
 	deleteGroupEnv,
 	deleteEnv,
+	generateConfigFromEnvs,
 };

@@ -1,7 +1,7 @@
 <template>
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
 		<div class="flex flex-row flex-2 justify-start items-center gap-2 border-b px-2">
-			<ImportDialog />
+			<ImportDialog @callback="loadStore" />
 			<EditPopover operate="new" @callback="loadStore">
 				<Button variant="outline">
 					<FilePlus class="mr-2 h-6 w-6" />

@@ -23,14 +23,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { generateConfigFromEnvs } from "@/store/config";
+import type { Config } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
-import { ref, watch } from "vue";
+import { v4 as uuidv4 } from "uuid";
+import { defineEmits, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "../ui/toast";
 
 const { t } = useI18n();
 const { toast } = useToast();
+
+const emit = defineEmits(["callback"]);
 
 const dialogOpen = ref(false);
 
@@ -55,9 +60,53 @@ const init = () => {
 };
 
 const importFromSystem = async () => {
+	console.log("importFromSystem, systemConfigName: ", systemConfigName);
+	if (!systemScope.value || systemScope.value.length < 0) {
+		toast({
+			title: t("config.import-config.types.env.text"),
+			description: t("env.error.checkScope"),
+			variant: "destructive",
+		});
+		return;
+	}
+	if (!systemConfigName.value || systemConfigName.value.length < 0) {
+		toast({
+			title: t("config.import-config.types.env.text"),
+			description: t("config.error.nameNotEmpty"),
+			variant: "destructive",
+		});
+		return;
+	}
 	await invoke("get_envs", { scope: systemScope.value })
-		.then((res) => {
-			console.log(res);
+		.then(async (res) => {
+			if (res) {
+				const resMap = new Map<string, string>(Object.entries(res));
+				console.log(typeof resMap);
+				const config: Config = {
+					id: uuidv4(),
+					name: systemConfigName.value,
+					note: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
+					sort: 1,
+				};
+				await generateConfigFromEnvs(config, resMap)
+					.then(() => {
+						emit("callback");
+						toast({
+							title: t("config.import-config.types.env.text"),
+							description: `${t("config.import-config.text")}-${t(
+								"config.import-config.types.env.text",
+							)}: ${t("success")}`,
+						});
+					})
+					.catch((err) => {
+						console.error(err);
+						toast({
+							title: t("config.import-config.types.env.text"),
+							description: `${t("error")} : ${err.message}`,
+							variant: "destructive",
+						});
+					});
+			}
 		})
 		.catch((err) => {
 			console.error(err);
