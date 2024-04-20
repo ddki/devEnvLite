@@ -68,62 +68,26 @@
 
 ## :sparkles: Features ##
 
-- support multiple platforms
-  - :white_check_mark: windows
-  - :white_large_square: Linux
-  - :white_large_square: Mac
-
-- :white_check_mark: Application settings
-	- :white_check_mark: multiple languages
-	- :white_check_mark: application directories
-
-- :white_check_mark: Collate your environment variables;
-- :white_large_square: Backup your environment variables to file;
-- :white_large_square: Recover your environment variables from backup file;
-
-- :white_large_square: Manage your configurations for different environment variables
-	- :white_check_mark: create, modify, delete, active, check, apply... your configuration, part done
-	- :white_check_mark: import configuration from system environment variables
-	- :white_large_square: import configuration from file
-	- :white_large_square: import configuration from url
-
-- :white_large_square: Manage group of the configuration;
-	- :white_check_mark: part done
-
-- :white_large_square: Manage env of the configuration's group;
-	- :white_check_mark: part done
-
-
-- 多平台支持
-  - :white_check_mark: windows
-  - :white_large_square: Linux
-  - :white_large_square: Mac
-
-- :white_check_mark: 设置
-	- :white_check_mark: 多语言支持（中、英）
-	- :white_check_mark: 其他目录配置
-	- :white_large_square: 更新
-
-- :white_check_mark: 一键整理环境变量
-- :white_large_square: 备份环境变量
-- :white_large_square: 从备份恢复环境变量
-
-- :white_large_square: 管理不同配置
-	- :white_check_mark: 增删改查、激活配置
-	- :white_large_square: 应用
-	- :white_large_square: 检查应用状态
-	- :white_check_mark: 从当前系统环境变量导入配置
-	- :white_large_square: 从文件导入配置
-	- :white_large_square: 从网络导入配置
-
-- :white_large_square: 管理配置分组
-	- :white_check_mark: 增删改查
-	- :white_large_square: 应用
-	- :white_large_square: 检查应用状态
-
-- :white_large_square: 管理配置分组中的环境变量
-	- :white_check_mark: 增删改查、复制
-	- :white_large_square: 应用
+| 功能              | 功能描述                             | Windows | Linux | Mac |
+| ----------------- | ------------------------------------ | ------- | ----- | --- |
+| 多语言            | 支持中英文切换                       | ✅       | ✅     | ✅   |
+| 自动更新          |                                      | ⬜       | ⬜     | ⬜   |
+| 主题切换          | 白、黑、跟随系统主题                 | ⬜       | ⬜     | ⬜   |
+| 一键整理          | 整理当前系统中的环境变量值，升序排序 | ✅       | ⬜     | ⬜   |
+| 备份              | 备份当前环境变量                     | ⬜       | ⬜     | ⬜   |
+| 恢复备份          | 从备份文件中恢复环境变量             | ⬜       | ⬜     | ⬜   |
+| 配置-增删改查     |                                      | ✅       | ⬜     | ⬜   |
+| 配置-应用         | 将配置应用到系统                     | ⬜       | ⬜     | ⬜   |
+| 配置-检查         | 检查配置的应用情况                   | ⬜       | ⬜     | ⬜   |
+| 配置-导入-系统    | 从当前系统环境变量导入配置           | ✅       | ⬜     | ⬜   |
+| 配置-导入-文件    | 从配置文件中导入配置                 | ⬜       | ⬜     | ⬜   |
+| 配置-导入-网络    | 从网络导入配置                       | ⬜       | ⬜     | ⬜   |
+| 分组-增删改查     |                                      | ✅       | ⬜     | ⬜   |
+| 分组-应用         | 将分组下的环境变量应用到系统         | ⬜       | ⬜     | ⬜   |
+| 分组-检查         | 检查分组下的环境变量应用状态         | ⬜       | ⬜     | ⬜   |
+| 环境变量-增删改查 |                                      | ✅       | ⬜     | ⬜   |
+| 环境变量-复制     | 复制键、值、键值                     | ✅       | ⬜     | ⬜   |
+| 环境变量-应用     | 将环境变量应用到系统                 | ⬜       | ⬜     | ⬜   |
 
 ## :rocket: Technologies
 
