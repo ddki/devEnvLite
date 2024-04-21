@@ -34,7 +34,6 @@ header:
   theme: Theme
 
 settings:
-  theme: Theme
   language: Language
   home-dir: Home Directory
   cache-dir: Cache Directory
@@ -51,7 +50,7 @@ config:
     description: Import your configuration.
     types:
       env:
-        text: From System Environment Variables
+        text: From System
         description: Read system environment variables and create configuration.
         scope: Scope
         name: Configuration Name

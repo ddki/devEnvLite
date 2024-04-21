@@ -5415,6 +5415,40 @@
           ]
         },
         {
+          "type": "string",
+          "enum": [
+            "theme:default"
+          ]
+        },
+        {
+          "description": "theme:allow-get-theme -> Enables the get_theme command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "theme:allow-get-theme"
+          ]
+        },
+        {
+          "description": "theme:allow-set-theme -> Enables the set_theme command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "theme:allow-set-theme"
+          ]
+        },
+        {
+          "description": "theme:deny-get-theme -> Denies the get_theme command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "theme:deny-get-theme"
+          ]
+        },
+        {
+          "description": "theme:deny-set-theme -> Denies the set_theme command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "theme:deny-set-theme"
+          ]
+        },
+        {
           "description": "tray:default -> Default permissions for the plugin.",
           "type": "string",
           "enum": [
@@ -5674,6 +5708,13 @@
           ]
         },
         {
+          "description": "webview:allow-set-webview-zoom -> Enables the set_webview_zoom command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "webview:allow-set-webview-zoom"
+          ]
+        },
+        {
           "description": "webview:allow-webview-close -> Enables the webview_close command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -5748,6 +5789,13 @@
           "type": "string",
           "enum": [
             "webview:deny-set-webview-size"
+          ]
+        },
+        {
+          "description": "webview:deny-set-webview-zoom -> Denies the set_webview_zoom command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "webview:deny-set-webview-zoom"
           ]
         },
         {

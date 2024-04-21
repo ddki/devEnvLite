@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use tauri::Manager;
 use tauri_plugin_log::{Target, TargetKind};
 
 pub mod command;
@@ -8,6 +9,7 @@ pub mod environment_vars;
 pub mod error;
 
 fn main() {
+	let mut ctx = tauri::generate_context!();
 	tauri::Builder::default()
 		.plugin(
 			tauri_plugin_log::Builder::new()
@@ -28,13 +30,18 @@ fn main() {
 		.plugin(tauri_plugin_fs::init())
 		.plugin(tauri_plugin_shell::init())
 		.plugin(tauri_plugin_dialog::init())
+		// Init plugin and auto restore window theme !!!
+		.plugin(tauri_plugin_theme::init(ctx.config_mut()))
 		.on_window_event(|_window, event| match event {
 			_ => {}
 		})
-		.setup(|_app| {
+		.setup(|app| {
 			// #[cfg(desktop)]
 			// app.handle()
 			// 	.plugin(tauri_plugin_updater::Builder::new().build())?;
+			let main = app.get_webview_window("main").unwrap();
+			let theme = main.theme().unwrap();
+			println!("theme: {}", theme);
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
@@ -51,6 +58,6 @@ fn main() {
 			command::config_check,
 			command::config_apply,
 		])
-		.run(tauri::generate_context!())
+		.run(ctx)
 		.expect("error while running tauri application");
 }

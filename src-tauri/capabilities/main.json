@@ -44,6 +44,9 @@
 		"dialog:allow-confirm",
 		"dialog:allow-message",
 		"dialog:allow-open",
-		"dialog:allow-save"
+		"dialog:allow-save",
+		"theme:default",
+		"theme:allow-set-theme",
+		"theme:allow-get-theme"
 	]
 }

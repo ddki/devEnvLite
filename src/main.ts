@@ -2,8 +2,8 @@ import messages from "@intlify/unplugin-vue-i18n/messages";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 
-import App from "./App.vue";
 import { getSetting } from "@/store/setting";
+import App from "./App.vue";
 import "./styles/main.css";
 import { disableContextMenu, disableRefresh } from "./utils/Webview";
 
@@ -19,4 +19,4 @@ app.use(i18n);
 app.mount("#main");
 
 // disableRefresh();
-// disableContextMenu();
+disableContextMenu();
