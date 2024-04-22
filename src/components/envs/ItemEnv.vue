@@ -4,7 +4,11 @@
 			<TerminalSquare class="h-4 w-4" />
 			<div class="grid grid-flow-row h-full w-full justify-center">
 				<div class="grid grid-flow-col gap-2 w-full justify-start items-center">
-					<span>{{ props.data.key }}</span>
+					<div class="grid grid-flow-col gap-1 items-center">
+						<CheckCircle class="h-4 w-4" v-if="props.data.isApplied" />
+						<AlertCircle class="h-4 w-4" v-else />
+						<span>{{ props.data.key }}</span>
+					</div>
 					<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
 						{{ props.data.note }}
 					</span>
@@ -63,7 +67,15 @@ import {
 import type { Env } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
-import { Copy, Laugh, Pencil, TerminalSquare, Trash2 } from "lucide-vue-next";
+import {
+	AlertCircle,
+	CheckCircle,
+	Copy,
+	Laugh,
+	Pencil,
+	TerminalSquare,
+	Trash2,
+} from "lucide-vue-next";
 import { defineEmits, defineProps } from "vue";
 import { useI18n } from "vue-i18n";
 import { EditItemEnv } from ".";

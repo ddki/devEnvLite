@@ -27,6 +27,8 @@ interface GroupEnv {
 	sort: number;
 	envs?: Env[];
 	envKeys?: string[];
+	envAppliedCount?: number;
+	envNotAppliedCount?: number;
 }
 
 interface Env {
@@ -35,6 +37,7 @@ interface Env {
 	value: string;
 	sort: number;
 	note?: string;
+	isApplied?: boolean;
 }
 
 export type { Setting, ActiveConfig, Config, GroupEnv, Env };

@@ -4,7 +4,17 @@
 			<PanelBottomClose class="h-4 w-4" v-if="showItems === true" />
 			<PanelBottomOpen class="h-4 w-4" v-else />
 			<div class="grid grid-flow-col gap-2 w-full justify-start items-center">
-				<span>{{ props.data.name }}</span>
+				<span>{{ props.data.name }} ({{ props.data.envs?.length }})</span>
+				<div class="grid grid-flow-col gap-2">
+					<div class="grid grid-flow-col gap-1 items-center">
+						<CheckCircle class="w-4 h-4" />
+						<span>{{ props.data.envAppliedCount || 0 }}</span>
+					</div>
+					<div class="grid grid-flow-col gap-1 items-center text-destructive">
+						<AlertCircle class="w-4 h-4" />
+						<span>{{ props.data.envNotAppliedCount || 0 }}</span>
+					</div>
+				</div>
 				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
 					{{ props.data.note }}
 				</span>
@@ -62,6 +72,8 @@ import {
 import type { GroupEnv } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import {
+	AlertCircle,
+	CheckCircle,
 	Ellipsis,
 	Laugh,
 	PanelBottomClose,

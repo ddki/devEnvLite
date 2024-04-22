@@ -11,7 +11,9 @@
 		</div>
 		<ScrollArea class="h-full w-full p-2">
 			<div class="sm:mt-1 md:mt-2 overflow-auto">
-				<span class="text-secondary" v-if="(!configs || configs.length < 1)">{{ t("config.emptyText") }}</span>
+				<p class="text-secondary-foreground text-center" v-if="(!configs || configs.length < 1)">
+					{{ t("config.emptyText") }}
+				</p>
 				<div
 					:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.activeClass}`"
 					v-for="item in configs">

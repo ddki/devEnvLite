@@ -154,8 +154,14 @@ const converterGroupEnvs = (configId: string, groupEnvs: GroupEnv[] | undefined)
 					return env;
 				});
 				item.envs = newEnvs;
+				if (newEnvs.length > 0) {
+					item.envAppliedCount = newEnvs.filter((env) => env.isApplied).length;
+					item.envNotAppliedCount = newEnvs.filter((env) => !env.isApplied).length;
+				}
 			} else {
 				item.envs = [];
+				item.envAppliedCount = 0;
+				item.envNotAppliedCount = 0;
 			}
 			return item;
 		});
@@ -176,6 +182,14 @@ const saveGroupEnvToConfig = async (groupEnv: GroupEnv): Promise<boolean> => {
 				item.note = groupEnv.note;
 				item.sort = groupEnv.sort;
 				item.envs = groupEnv.envs;
+				if (groupEnv.envs && groupEnv.envs.length > 0) {
+					if (!groupEnv.envAppliedCount) {
+						item.envAppliedCount = groupEnv.envs.filter((env) => env.isApplied).length;
+					}
+					if (!groupEnv.envNotAppliedCount) {
+						item.envAppliedCount = groupEnv.envs.filter((env) => !env.isApplied).length;
+					}
+				}
 			}
 			return item;
 		});
@@ -202,6 +216,7 @@ const saveEnvToGroup = async (configId: string, env: Env): Promise<boolean> => {
 				item.value = env.value;
 				item.note = env.note;
 				item.sort = env.sort;
+				item.isApplied = env.isApplied || false;
 			}
 			return item;
 		});
@@ -280,6 +295,7 @@ const generateEnvs = (groupId: string, envs: Map<string, string>): Env[] => {
 				key,
 				value,
 				sort,
+				isApplied: true,
 			});
 		}
 		return envArray;
@@ -298,7 +314,7 @@ const generateConfigFromEnvs = async (
 	const groupEnv: GroupEnv = {
 		configId: generateConfig.id,
 		id: uuidv4(),
-		name: "auto generate",
+		name: "default",
 		sort: 1,
 	};
 	groupEnv.envs = generateEnvs(groupEnv.id, envs);
