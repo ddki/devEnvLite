@@ -5,7 +5,7 @@
 			<EditPopover operate="new" @callback="loadStore">
 				<Button variant="outline">
 					<FilePlus class="mr-2 h-6 w-6" />
-					{{ t("config.new-config") }}
+					{{ t("operate.new", { name: t("config.text") }) }}
 				</Button>
 			</EditPopover>
 		</div>
@@ -40,19 +40,19 @@
 							<DropdownMenuContent>
 								<DropdownMenuItem @click="dropdownMenuActive(item)">
 									<CircleCheckBig class="mr-2 h-4 w-4" />
-									<span>{{ t("config.context-menu.active") }}</span>
+									<span>{{ t("operate.active") }}</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem @click="dropdownMenuCheck(item)">
 									<SearchCheck class="mr-2 h-4 w-4" />
-									<span>{{ t("config.context-menu.check") }}</span>
+									<span>{{ t("operate.check") }}</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem @click="dropdownMenuApply(item)">
 									<Laugh class="mr-2 h-4 w-4" />
-									<span>{{ t("config.context-menu.apply") }}</span>
+									<span>{{ t("operate.apply") }}</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem @click="dropdownMenuDelete(item)">
 									<Trash2 class="mr-2 h-4 w-4 text-destructive" />
-									<span class="text-destructive">{{ t("config.context-menu.delete") }}</span>
+									<span class="text-destructive">{{ t("operate.delete") }}</span>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>

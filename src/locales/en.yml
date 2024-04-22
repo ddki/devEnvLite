@@ -70,13 +70,6 @@ config:
   name: Config's Name
   note: Config's Note
   sort: Config's Sort
-  context-menu:
-    active: Active
-    check: Check
-    apply: Apply
-    modify: Modify
-    delete: Delete
-    add: Add
   error:
     nameNotEmpty: Name is not empty.
     nameExists: Name has already been.
@@ -91,12 +84,6 @@ envGroup:
   name: Group's Name
   note: Group's Note
   sort: Group's Sort
-  context-menu:
-    addEnv: Add Environment Variable
-    check: Check
-    apply: Apply
-    modify: Modify
-    delete: Delete
   error:
     selectConfig: Please select a configuration first.
     nameNotEmpty: Name is not empty.
@@ -111,10 +98,6 @@ env:
   value: Value
   note: Description
   sort: Serial Number
-  copy-context-menu:
-    copyKeyValue: Copy key and value
-    copyKey: Copy key
-    copyValue: Copy value
   error:
     selectGroup: Please select a group first.
     checkScope: Please check a scope first.
@@ -129,11 +112,22 @@ env:
     system: System
     user: User
 
-save: Save
-close: Close
-clear: Clear
-success: Successed
-failure: Failed
-version: Version
+operate:
+  new: New {name}
+  edit: Edit {name}
+  delete: Delete {name}
+  apply: Apply
+  check: Check
+  active: Active
+  move: Move to {name}
+  copy: Copy {name}
+  save: Save
+  close: Close
+  clear: Clear
+message:
+  error: An error has occurred.
+  warning: Warning
+  success: "{operate} successed"
+  failure: "{operate} failed"
 
-error: An error has occurred.
+version: Version

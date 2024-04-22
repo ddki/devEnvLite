@@ -39,7 +39,7 @@ const onBackup = async () => {
 			console.error(err);
 			toast({
 				title: t("config.import-config.types.env.text"),
-				description: `${t("error")} : ${err.message}`,
+				description: `${t("message.error")} : ${err.message}`,
 				variant: "destructive",
 			});
 		});

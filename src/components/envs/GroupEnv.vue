@@ -31,15 +31,15 @@
 				<DropdownMenuContent>
 					<DropdownMenuItem @click="dropdownMenuCheck(props.data)">
 						<SearchCheck class="mr-2 h-4 w-4" />
-						<span>{{ t("envGroup.context-menu.check") }}</span>
+						<span>{{ t("operate.check") }}</span>
 					</DropdownMenuItem>
 					<DropdownMenuItem @click="dropdownMenuApply(props.data)">
 						<Laugh class="mr-2 h-4 w-4" />
-						<span>{{ t("envGroup.context-menu.apply") }}</span>
+						<span>{{ t("operate.apply") }}</span>
 					</DropdownMenuItem>
 					<DropdownMenuItem @click="dropdownMenuDelete(props.data)">
 						<Trash2 class="mr-2 h-4 w-4 text-destructive" />
-						<span class="text-destructive">{{ t("envGroup.context-menu.delete") }}</span>
+						<span class="text-destructive">{{ t("operate.delete") }}</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

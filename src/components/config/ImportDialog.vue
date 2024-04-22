@@ -95,14 +95,14 @@ const importFromSystem = async () => {
 							title: t("config.import-config.types.env.text"),
 							description: `${t("config.import-config.text")}-${t(
 								"config.import-config.types.env.text",
-							)}: ${t("success")}`,
+							)}: ${t("message.success")}`,
 						});
 					})
 					.catch((err) => {
 						console.error(err);
 						toast({
 							title: t("config.import-config.types.env.text"),
-							description: `${t("error")} : ${err.message}`,
+							description: `${t("message.error")} : ${err.message}`,
 							variant: "destructive",
 						});
 					});
@@ -112,7 +112,7 @@ const importFromSystem = async () => {
 			console.error(err);
 			toast({
 				title: t("config.import-config.types.env.text"),
-				description: `${t("error")} : ${err.message}`,
+				description: `${t("message.error")} : ${err.message}`,
 				variant: "destructive",
 			});
 		});

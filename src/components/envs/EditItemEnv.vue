@@ -29,10 +29,10 @@
 				</div>
 				<div class="grid grid-cols-2 gap-4">
 					<Button variant="secondary" @click="onClear">
-						{{ t("clear") }}
+						{{ t("operate.clear") }}
 					</Button>
 					<Button @click="onSave">
-						{{ t("save") }}
+						{{ t("operate.save") }}
 					</Button>
 				</div>
 			</div>
@@ -88,6 +88,10 @@ const onClear = () => {
 const onSave = async () => {
 	if (!props.configId || !data.groupId) {
 		toast({
+			title:
+				props.operate === "new"
+					? t("operate.new", { name: t("env.text") })
+					: t("operate.edit", { name: t("env.text") }),
 			description: t("env.error.selectGroup"),
 			variant: "destructive",
 		});
@@ -95,6 +99,10 @@ const onSave = async () => {
 	}
 	if (!data.key) {
 		toast({
+			title:
+				props.operate === "new"
+					? t("operate.new", { name: t("env.text") })
+					: t("operate.edit", { name: t("env.text") }),
 			description: t("env.error.keyNotEmpty"),
 			variant: "destructive",
 		});
@@ -105,6 +113,10 @@ const onSave = async () => {
 		(await checkGroupEnvsKeyExists(props.configId, data.groupId, data.key))
 	) {
 		toast({
+			title:
+				props.operate === "new"
+					? t("operate.new", { name: t("env.text") })
+					: t("operate.edit", { name: t("env.text") }),
 			description: t("env.error.keyExists"),
 			variant: "destructive",
 		});
@@ -118,7 +130,11 @@ const onSave = async () => {
 		emit("callback");
 	} else {
 		toast({
-			description: t("save") + t("failure"),
+			title:
+				props.operate === "new"
+					? t("operate.new", { name: t("env.text") })
+					: t("operate.edit", { name: t("env.text") }),
+			description: t("message.operate-failure", { operate: t("operate.save") }),
 			variant: "destructive",
 		});
 	}

@@ -66,7 +66,7 @@
 			</div>
 			<DialogFooter>
 				<Button type="submit" @click="onSave">
-					{{ t('save') }}
+					{{ t('operate.save') }}
 				</Button>
 			</DialogFooter>
 		</DialogContent>
@@ -141,7 +141,7 @@ const onSave = async () => {
 	} else {
 		toast({
 			title: t("header.setting"),
-			description: t("save") + t("failure"),
+			description: t("message.operate-failure", { operate: t("operate.save") }),
 			variant: "destructive",
 		});
 	}
