@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { cn } from "@/lib/utils";
-import { type HTMLAttributes, reactive, ref, watch } from "vue";
-import { Checkbox } from ".";
+import { type HTMLAttributes, ref, watch } from "vue";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface CheckInfo {
 	label: string;

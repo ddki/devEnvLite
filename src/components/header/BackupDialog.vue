@@ -11,6 +11,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { LocalFileInput } from "@/components/common";
 import { Label } from "@/components/ui/label";
 import { invoke } from "@tauri-apps/api/core";
 import { ref, watch } from "vue";
@@ -70,13 +71,13 @@ watch(open, (newValue) => {
 					<Label for="name" class="text-right">
 						{{ t("header.backup.name") }}
 					</Label>
-					<Input v-model="name" class="col-span-3" />
+					<Input v-model="name" :placeholder="t('header.backup.name')" class="col-span-3" />
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="username" class="text-right">
 						{{ t("header.backup.folder") }}
 					</Label>
-					<Input v-model="folder" class="col-span-3" />
+					<LocalFileInput v-model="folder" :placeholder="t('header.backup.folder')" class="col-span-3" />
 				</div>
 			</div>
 			<DialogFooter>

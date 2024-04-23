@@ -7,6 +7,7 @@ use tauri_plugin_log::{Target, TargetKind};
 pub mod command;
 pub mod environment_vars;
 pub mod error;
+pub mod model;
 
 fn main() {
 	let mut ctx = tauri::generate_context!();

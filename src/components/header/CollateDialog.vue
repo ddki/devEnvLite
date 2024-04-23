@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
-import { ListCheckbox } from "@/components/ui/checkbox";
+import { ListCheckbox } from "@/components/common";
 import {
 	Dialog,
 	DialogContent,
@@ -130,7 +130,6 @@ watch(open, (newValue) => {
 							{{ t("header.collate.env-keys.description") }}
 						</span>
 					</Label>
-
 					<ListCheckbox :items="keyList" v-model="keys" class="pl-4" />
 				</div>
 			</div>
