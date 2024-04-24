@@ -3,16 +3,18 @@ use std::{
 	fs,
 };
 
+use log::info;
 use tauri::{AppHandle, Manager, Runtime};
 
 use crate::{
 	environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType},
 	error::AppError,
+	model,
 };
 
 #[tauri::command]
 pub fn close_splashscreen(app: AppHandle) {
-	println!("close_splashscreen");
+	info!("close_splashscreen");
 	// Close splashscreen
 	if let Some(splashscreen) = app.get_webview_window("splashscreen") {
 		splashscreen.close().unwrap();
@@ -34,17 +36,17 @@ pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, AppError> {
 	let data_dir = app.path().data_dir().unwrap();
 	let config_dir = app.path().config_dir().unwrap();
 	let local_data_dir = app.path().local_data_dir().unwrap();
-	println!("app_config_dir = {:?}", app_config_dir);
-	println!("app_cache_dir = {:?}", app_cache_dir);
-	println!("app_data_dir = {:?}", app_data_dir);
-	println!("app_log_dir = {:?}", app_log_dir);
-	println!("app_local_data_dir = {:?}", app_local_data_dir);
-	// println!("font_dir = {:?}", font_dir);
-	println!("home_dir = {:?}", home_dir);
-	println!("cache_dir = {:?}", cache_dir);
-	println!("data_dir = {:?}", data_dir);
-	println!("config_dir = {:?}", config_dir);
-	println!("local_data_dir = {:?}", local_data_dir);
+	info!("app_config_dir = {:?}", app_config_dir);
+	info!("app_cache_dir = {:?}", app_cache_dir);
+	info!("app_data_dir = {:?}", app_data_dir);
+	info!("app_log_dir = {:?}", app_log_dir);
+	info!("app_local_data_dir = {:?}", app_local_data_dir);
+	// info!("font_dir = {:?}", font_dir);
+	info!("home_dir = {:?}", home_dir);
+	info!("cache_dir = {:?}", cache_dir);
+	info!("data_dir = {:?}", data_dir);
+	info!("config_dir = {:?}", config_dir);
+	info!("local_data_dir = {:?}", local_data_dir);
 	let mut config_path = app_data_dir.clone();
 	config_path.push("config");
 
@@ -53,8 +55,8 @@ pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, AppError> {
 		for entry in entries.flatten() {
 			let file_path = entry.path();
 			if let Some(extension) = file_path.extension() {
-				println!("extension: {:?}", extension);
-				println!("file_name: {:?}", file_path.file_name());
+				info!("extension: {:?}", extension);
+				info!("file_name: {:?}", file_path.file_name());
 				if extension == "json" {
 					let config_file_name =
 						file_path.file_name().unwrap().to_str().unwrap().to_string();
@@ -74,7 +76,7 @@ pub fn get_envs<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<HashMap<String, String>, AppError> {
-	println!("get_envs scope: {:?}", scope);
+	info!("get_envs scope: {:?}", scope);
 	if EnvironmentVarsType::SYSTEM.to_string().eq(&scope) {
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
 		let system_envs = manager.inner().read_envs()?;
@@ -94,7 +96,7 @@ pub async fn get_keys<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<Vec<String>, AppError> {
-	println!("get_keys: scopes: {:?}", scopes);
+	info!("get_keys: scopes: {:?}", scopes);
 	let mut keys = HashSet::new();
 	if scopes.contains(&EnvironmentVarsType::SYSTEM.to_string()) {
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
@@ -106,7 +108,7 @@ pub async fn get_keys<R: Runtime>(
 	}
 	let mut sort_keys: Vec<String> = keys.iter().cloned().collect();
 	sort_keys.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
-	println!("get_keys: keys: {:?}", sort_keys);
+	info!("get_keys: keys: {:?}", sort_keys);
 	Ok(sort_keys)
 }
 
@@ -118,7 +120,7 @@ pub async fn collate_envs<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	println!("collate_envs: keys: {:?}, scopes: {:?}", keys, scopes);
+	info!("collate_envs: keys: {:?}, scopes: {:?}", keys, scopes);
 	if scopes.contains(&EnvironmentVarsType::SYSTEM.to_string()) {
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
 		manager.inner().collate(keys.clone())?;
@@ -138,7 +140,7 @@ pub async fn backup_envs<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	println!(
+	info!(
 		"backup_envs: backup_name: {:?}, folder: {:?}",
 		backup_name, folder
 	);
@@ -153,7 +155,7 @@ pub async fn recover_envs<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	println!("recover_envs: file: {:?}, name: {:?}", file, name);
+	info!("recover_envs: file: {:?}, name: {:?}", file, name);
 	Ok(())
 }
 
@@ -165,7 +167,7 @@ pub async fn env_apply<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	println!(
+	info!(
 		"env_apply: env_key: {:?}, env_value: {:?}",
 		env_key, env_value
 	);
@@ -180,7 +182,7 @@ pub async fn group_env_apply<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	println!(
+	info!(
 		"group_env_apply: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
 	);
@@ -195,7 +197,7 @@ pub async fn group_env_check<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	println!(
+	info!(
 		"group_env_check: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
 	);
@@ -206,10 +208,12 @@ pub async fn group_env_check<R: Runtime>(
 #[tauri::command]
 pub async fn config_check<R: Runtime>(
 	config_id: String,
-	_app: tauri::AppHandle<R>,
+	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	println!("config_check: config_id: {:?}", config_id);
+	info!("config_check: config_id: {:?}", config_id);
+	let config_info = model::config::ConfigInfo::load_from_store(&config_id, app);
+	info!("config_check: config_info: {:?}", config_info);
 	Ok(())
 }
 
@@ -220,6 +224,6 @@ pub async fn config_apply<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	println!("config_apply: config_id: {:?}", config_id);
+	info!("config_apply: config_id: {:?}", config_id);
 	Ok(())
 }

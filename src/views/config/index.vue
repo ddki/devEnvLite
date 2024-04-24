@@ -154,7 +154,7 @@ const dropdownMenuActive = async (config: ConfigData) => {
 // 检查
 const dropdownMenuCheck = async (config: ConfigData) => {
 	// todo
-	await invoke("config_check");
+	await invoke("config_check", { configId: config.id });
 };
 
 // 应用

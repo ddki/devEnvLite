@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use log::info;
 use tauri::Manager;
 use tauri_plugin_log::{Target, TargetKind};
 
@@ -24,7 +25,7 @@ fn main() {
 				.build(),
 		)
 		.plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
-			println!("{}, {argv:?}, {cwd}", app.package_info().name);
+			info!("{}, {argv:?}, {cwd}", app.package_info().name);
 		}))
 		.plugin(tauri_plugin_store::Builder::default().build())
 		.plugin(tauri_plugin_clipboard_manager::init())
@@ -42,7 +43,7 @@ fn main() {
 			// 	.plugin(tauri_plugin_updater::Builder::new().build())?;
 			let main = app.get_webview_window("main").unwrap();
 			let theme = main.theme().unwrap();
-			println!("theme: {}", theme);
+			info!("theme: {}", theme);
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![

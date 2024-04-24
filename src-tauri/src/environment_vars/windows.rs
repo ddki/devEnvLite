@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use anyhow::Ok;
 
+use log::info;
 use winreg::{
 	enums::{HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE},
 	RegKey,
@@ -26,7 +27,7 @@ impl WindowEnvironmentVars {
 
 impl EnvironmentVars for WindowEnvironmentVars {
 	fn read_envs(&self) -> anyhow::Result<std::collections::HashMap<String, String>> {
-		println!("{:?}", self.env_type);
+		info!("{:?}", self.env_type);
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
 			// 打开注册表
@@ -34,7 +35,7 @@ impl EnvironmentVars for WindowEnvironmentVars {
 			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY).unwrap();
 			let mut keys = HashMap::new();
 			for (name, value) in cur_ver.enum_values().map(|x| x.unwrap()) {
-				// println!("{} = {:?}", name, value);
+				// info!("{} = {:?}", name, value);
 				keys.insert(name, value.to_string());
 			}
 			let mut key_list: Vec<String> = keys.keys().cloned().collect();
@@ -52,7 +53,7 @@ impl EnvironmentVars for WindowEnvironmentVars {
 			let cur_ver = hklm.open_subkey(USER_SUB_HKEY).unwrap();
 			let mut keys = HashMap::new();
 			for (name, value) in cur_ver.enum_values().map(|x| x.unwrap()) {
-				// println!("{} = {:?}", name, value);
+				// info!("{} = {:?}", name, value);
 				keys.insert(name, value.to_string());
 			}
 			let mut key_list: Vec<String> = keys.keys().cloned().collect();
@@ -66,7 +67,7 @@ impl EnvironmentVars for WindowEnvironmentVars {
 		}
 	}
 	fn get_keys(&self) -> anyhow::Result<HashSet<String>> {
-		println!("{:?}", self.env_type);
+		info!("{:?}", self.env_type);
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
 			// 打开注册表
@@ -74,7 +75,7 @@ impl EnvironmentVars for WindowEnvironmentVars {
 			let cur_ver = hklm.open_subkey(SYSTEM_SUB_HKEY).unwrap();
 			let mut keys = HashSet::new();
 			for (name, _value) in cur_ver.enum_values().map(|x| x.unwrap()) {
-				// println!("{} = {:?}", name, value);
+				// info!("{} = {:?}", name, value);
 				keys.insert(name);
 			}
 			Ok(keys)
@@ -85,7 +86,7 @@ impl EnvironmentVars for WindowEnvironmentVars {
 			let cur_ver = hklm.open_subkey(USER_SUB_HKEY).unwrap();
 			let mut keys = HashSet::new();
 			for (name, _value) in cur_ver.enum_values().map(|x| x.unwrap()) {
-				// println!("{} = {:?}", name, value);
+				// info!("{} = {:?}", name, value);
 				keys.insert(name);
 			}
 			Ok(keys)
@@ -163,7 +164,7 @@ impl EnvironmentVars for WindowEnvironmentVars {
 				.filter(|x| keys.contains(&x.0))
 			{
 				let sort_value = self.sort_value(&value.to_string());
-				println!(
+				info!(
 					"collate: sort_value = {:?}",
 					sort_value.as_ref().unwrap().clone()
 				);
@@ -181,7 +182,7 @@ impl EnvironmentVars for WindowEnvironmentVars {
 				.filter(|x| keys.contains(&x.0))
 			{
 				let sort_value = &self.sort_value(&value.to_string());
-				println!(
+				info!(
 					"collate: sort_value = {:?}",
 					sort_value.as_ref().unwrap().clone()
 				);
