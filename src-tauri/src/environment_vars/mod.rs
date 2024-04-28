@@ -1,7 +1,7 @@
 pub mod linux;
 pub mod windows;
 
-use anyhow::Result;
+use anyhow::{Error, Result};
 use std::collections::{HashMap, HashSet};
 
 pub trait EnvironmentVars {
@@ -48,6 +48,25 @@ impl<T> EnvironmentVarsManager<T> {
 pub enum EnvironmentVarsType {
 	USER,
 	SYSTEM,
+}
+
+impl EnvironmentVarsType {
+	// 为枚举变体提供对应的字符串表示
+	pub fn as_str(&self) -> &'static str {
+		match self {
+			EnvironmentVarsType::USER => "USER",
+			EnvironmentVarsType::SYSTEM => "SYSTEM",
+		}
+	}
+
+	// 根据字符串返回对应的枚举变体
+	pub fn from_str(value: &str) -> Result<Self, &'static str> {
+		match value {
+			"USER" => Ok(EnvironmentVarsType::USER),
+			"SYSTEM" => Ok(EnvironmentVarsType::SYSTEM),
+			_ => Err("Invalid environment variable type"),
+		}
+	}
 }
 
 impl std::fmt::Display for EnvironmentVarsType {

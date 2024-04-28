@@ -13,6 +13,7 @@ interface ActiveConfig {
 
 interface Config {
 	id: string;
+	scope: string;
 	name: string;
 	note?: string;
 	sort: number;
@@ -32,6 +33,7 @@ interface GroupEnv {
 }
 
 interface Env {
+	configId: string;
 	groupId: string;
 	key: string;
 	value: string;

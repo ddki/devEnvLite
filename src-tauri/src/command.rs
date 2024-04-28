@@ -162,15 +162,19 @@ pub async fn recover_envs<R: Runtime>(
 /// environment variables apply to system
 #[tauri::command]
 pub async fn env_apply<R: Runtime>(
+	config_id: String,
+	group_id: String,
 	env_key: String,
 	env_value: String,
-	_app: tauri::AppHandle<R>,
+	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
 	info!(
-		"env_apply: env_key: {:?}, env_value: {:?}",
-		env_key, env_value
+		"env_apply: config_id: {:?}, group_id: {:?}, env_key: {:?}, env_value: {:?}",
+		config_id, group_id, env_key, env_value
 	);
+	let store_config = model::config::ConfigInfo::load_from_store(&config_id, app);
+
 	Ok(())
 }
 
@@ -212,8 +216,10 @@ pub async fn config_check<R: Runtime>(
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
 	info!("config_check: config_id: {:?}", config_id);
-	let config_info = model::config::ConfigInfo::load_from_store(&config_id, app);
+	let mut config_info =
+		model::config::ConfigInfo::load_from_file(&config_id, app).expect("load config failed!");
 	info!("config_check: config_info: {:?}", config_info);
+	config_info.check()?;
 	Ok(())
 }
 
