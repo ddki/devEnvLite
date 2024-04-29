@@ -1,10 +1,14 @@
 export {
 	getActiveConfig,
 	saveActiveConfig,
-	getConfigNames,
+	getActiveConfigNames,
 	getActiveConfigId,
 	setActiveConfigId,
-	pushConfigName,
+	pushActiveConfigName,
+	removeActiveConfigName,
+	removeActiveId,
+} from "./activeConfig.ts";
+export {
 	getConfig,
 	getConfigs,
 	getGroupEnvs,

@@ -75,7 +75,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { deleteConfig, getConfigs, setActiveConfigId } from "@/store/config";
+import { deleteConfig, getConfigs, setActiveConfigId } from "@/store";
 import type { Config } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import {

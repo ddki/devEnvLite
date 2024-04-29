@@ -9,7 +9,7 @@ use tauri::{AppHandle, Manager, Runtime};
 use crate::{
 	environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType},
 	error::AppError,
-	model,
+	model::{self, config::ConfigInfo},
 };
 
 #[tauri::command]
@@ -219,8 +219,8 @@ pub async fn config_check<R: Runtime>(
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
 	info!("config_check: config_id: {:?}", config_id);
-	let mut config_info =
-		model::config::ConfigInfo::load_from_file(&config_id, app.clone()).expect("load config failed!");
+	let mut config_info = model::config::ConfigInfo::load_from_file(&config_id, app.clone())
+		.expect("load config failed!");
 	info!("config_check: config_info: {:?}", config_info);
 	Ok(config_info.check(app.clone())?)
 }
@@ -235,5 +235,40 @@ pub async fn config_apply<R: Runtime>(
 	info!("config_apply: config_id: {:?}", config_id);
 	let store_config = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
 	store_config.apply()?;
+	Ok(())
+}
+
+/// get config by id
+#[tauri::command]
+pub async fn get_config<R: Runtime>(
+	config_id: String,
+	app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
+) -> Result<ConfigInfo, AppError> {
+	info!("get config id: {:?}", config_id);
+	let config_info = model::config::ConfigInfo::load_from_file(&config_id, app)?;
+	Ok(config_info)
+}
+
+/// save config
+#[tauri::command]
+pub async fn save_config<R: Runtime>(
+	config_info: ConfigInfo,
+	app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
+) -> Result<(), AppError> {
+	info!("save config: config_info: {:?}", config_info);
+	config_info.save_to_file(app.clone())?;
+	Ok(())
+}
+
+#[tauri::command]
+pub async fn remove_config<R: Runtime>(
+	config_id: String,
+	app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
+) -> Result<(), AppError> {
+	info!("remove config: id: {:?}", config_id);
+	model::config::ConfigInfo::remove_file(&config_id, app.clone())?;
 	Ok(())
 }

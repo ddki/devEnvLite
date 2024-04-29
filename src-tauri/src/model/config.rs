@@ -44,13 +44,28 @@ impl ConfigInfo {
 			.unwrap()
 			.join("config")
 			.join(format!("{}.json", self.get_id()));
-		info!("load config from file path: {:#?}", path);
+		info!("save config from file path: {:#?}", path);
 		if !path.exists() {
-			return Err(Error::msg("not found config"));
+			std::fs::create_dir_all(path.parent().unwrap())?;
 		}
 		let file = std::fs::File::create(path)?;
 		serde_json::to_writer(file, self).expect("save config failed");
 
+		Ok(())
+	}
+
+	pub fn remove_file<R: tauri::Runtime>(id: &str, app: tauri::AppHandle<R>) -> Result<()> {
+		let path = app
+			.path()
+			.app_data_dir()
+			.unwrap()
+			.join("config")
+			.join(format!("{}.json", id));
+		info!("load config from file path: {:#?}", path);
+		if !path.exists() {
+			return Err(Error::msg("not found config"));
+		}
+		std::fs::remove_file(path)?;
 		Ok(())
 	}
 

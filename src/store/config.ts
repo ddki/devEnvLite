@@ -1,73 +1,12 @@
-import { BaseDirectory, remove } from "@tauri-apps/plugin-fs";
-import { Store } from "@tauri-apps/plugin-store";
+import { invoke } from "@tauri-apps/api/core";
 import { v4 as uuidv4 } from "uuid";
-import type { ActiveConfig, Config, Env, GroupEnv } from "./type";
-
-const activeConfigStore = new Store("active-config.json");
-
-const getActiveConfig = async (): Promise<ActiveConfig> => {
-	return {
-		activeConfigId: (await activeConfigStore.get("activeConfigId")) as string,
-		configNames: (await activeConfigStore.get("configNames")) as string[],
-	};
-};
-
-const saveActiveConfig = async (config: ActiveConfig): Promise<boolean> => {
-	await activeConfigStore.set("activeConfigId", config.activeConfigId || "");
-	await activeConfigStore.set("configNames", config.configNames || []);
-	await activeConfigStore.save();
-	return true;
-};
-
-const getConfigNames = async (): Promise<string[]> => {
-	return (await activeConfigStore.get("configNames")) as string[];
-};
-
-const getActiveConfigId = async (): Promise<string> => {
-	return (await activeConfigStore.get("activeConfigId")) as string;
-};
-
-const setActiveConfigId = async (id: string): Promise<void> => {
-	await activeConfigStore.set("activeConfigId", id);
-	await activeConfigStore.save();
-};
-
-const pushConfigName = async (name: string): Promise<void> => {
-	const configNames = ((await activeConfigStore.get("configNames")) as string[]) || [];
-	configNames.push(name);
-	await activeConfigStore.set("configNames", configNames);
-	await activeConfigStore.save();
-};
-
-const removeConfigName = async (name: string): Promise<void> => {
-	const configNames = ((await activeConfigStore.get("configNames")) as string[]) || [];
-	const newConfigNames = configNames.filter((item) => item !== name);
-	await activeConfigStore.set("configNames", newConfigNames);
-	await activeConfigStore.save();
-};
-
-const removeActiveId = async (configId: string): Promise<void> => {
-	const activeConfigId = (await activeConfigStore.get("activeConfigId")) as string;
-	if (configId === activeConfigId) {
-		await setActiveConfigId("");
-	}
-};
+import type { Config, Env, GroupEnv } from "./type";
+import { pushActiveConfigName, removeActiveConfigName, removeActiveId } from "./index";
 
 const getConfig = async (id: string): Promise<Config> => {
-	const path = `config/${id}.json`;
-	const store = new Store(path);
-	const storeId = (await store.get("id")) as string;
-	const storeScope = (await store.get("scope")) as string;
-	const storeName = (await store.get("name")) as string;
-
-	return {
-		id: storeId,
-		scope: storeScope,
-		name: storeName,
-		note: (await store.get("note")) as string,
-		sort: (await store.get("sort")) as number,
-		groupEnvs: (await store.get("groupEnvs")) || [],
-	};
+	const config = (await invoke("get_config", { configId: id })) as Config;
+	console.log("getConfig: ", config);
+	return config;
 };
 
 const getConfigs = async (ids: string[]): Promise<Config[]> => {
@@ -116,35 +55,17 @@ const getEnv = async (
 };
 
 const saveConfig = async (config: Config): Promise<boolean> => {
-	const path = `config/${config.id}.json`;
-	const store = new Store(path);
-	const load = await loadConfig(store, config);
-	if (load) {
-		const storeConfig = await getConfig(config.id);
-		if (storeConfig) {
-			await store.set("id", storeConfig.id);
-			await store.set("scope", config.scope);
-			await store.set("name", config.name);
-			await store.set("note", config.note);
-			await store.set("sort", config.sort);
-			const groupEnvs = converterGroupEnvs(
-				storeConfig.id,
-				config.groupEnvs || storeConfig.groupEnvs,
-			);
-			console.log("[saveConfig()] groupEnvs: ", groupEnvs);
-			await store.set("groupEnvs", groupEnvs);
-		} else {
-			await store.set("id", config.id);
-			await store.set("name", config.name);
-			await store.set("note", config.note);
-			await store.set("sort", config.sort);
-			await store.set("groupEnvs", converterGroupEnvs(config.id, config.groupEnvs));
-		}
-		await store.save();
-
-		await pushConfigName(config.name);
-	}
-	return load;
+	config.groupEnvs = converterGroupEnvs(config.id, config.groupEnvs);
+	console.log("saveConfig: ", config);
+	await invoke("save_config", { configInfo: config })
+		.then(async () => {
+			await pushActiveConfigName(config.name);
+		})
+		.catch((e) => {
+			console.log("saveConfig error: ", e);
+			return false;
+		});
+	return true;
 };
 
 const converterGroupEnvs = (configId: string, groupEnvs: GroupEnv[] | undefined): GroupEnv[] => {
@@ -268,23 +189,17 @@ const deleteGroupEnv = async (configId: string, groupId: string): Promise<boolea
 };
 
 const deleteConfig = async (id: string): Promise<void> => {
-	const path = `config/${id}.json`;
-	await remove(path, { baseDir: BaseDirectory.AppData });
 	const storeConfig = await getConfig(id);
-	// 移除名称
-	await removeConfigName(storeConfig.name);
-	// 移除激活ID
-	await removeActiveId(storeConfig.id);
-};
-
-const loadConfig = async (store: Store, config: Config): Promise<boolean> => {
-	await store.set("id", config.id);
-	await store.save();
-	const load = await store.has("id");
-	if (!load) {
-		loadConfig(store, config);
-	}
-	return load;
+	await invoke("remove_config", { configId: id })
+		.then(async () => {
+			// 移除名称
+			await removeActiveConfigName(storeConfig.name);
+			// 移除激活ID
+			await removeActiveId(storeConfig.id);
+		})
+		.catch((e) => {
+			console.log("deleteConfig error: ", e);
+		});
 };
 
 const generateEnvs = (configId: string, groupId: string, envs: Map<string, string>): Env[] => {
@@ -328,12 +243,6 @@ const generateConfigFromEnvs = async (
 };
 
 export {
-	getActiveConfig,
-	saveActiveConfig,
-	getConfigNames,
-	getActiveConfigId,
-	setActiveConfigId,
-	pushConfigName,
 	getConfig,
 	getConfigs,
 	getGroupEnvs,

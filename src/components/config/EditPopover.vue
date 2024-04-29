@@ -52,7 +52,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast/use-toast";
-import { deleteConfig, getConfig, getConfigNames, saveConfig } from "@/store";
+import { deleteConfig, getConfig, getActiveConfigNames, saveConfig } from "@/store";
 import { v4 as uuidv4 } from "uuid";
 import { onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
@@ -116,7 +116,7 @@ const onSave = async () => {
 		});
 		return;
 	}
-	const configNames = await getConfigNames();
+	const configNames = await getActiveConfigNames();
 	console.log("configNames = ", configNames);
 	if (props.operate === "new" && configNames?.includes(data.name)) {
 		toast({

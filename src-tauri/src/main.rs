@@ -59,6 +59,9 @@ fn main() {
 			command::group_env_check,
 			command::config_check,
 			command::config_apply,
+			command::get_config,
+			command::save_config,
+			command::remove_config,
 		])
 		.run(ctx)
 		.expect("error while running tauri application");
