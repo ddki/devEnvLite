@@ -70,6 +70,7 @@ console.log("props[item-env]: ", props);
 const emit = defineEmits(["callback"]);
 
 const data = reactive({
+	configId: props.configId,
 	groupId: props.groupId,
 	key: props.envKey as string,
 	value: "",
@@ -78,6 +79,7 @@ const data = reactive({
 });
 
 const onClear = () => {
+	data.configId = props.configId;
 	data.groupId = props.groupId;
 	data.key = "";
 	data.value = "";

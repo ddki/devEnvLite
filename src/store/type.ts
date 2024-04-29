@@ -40,6 +40,8 @@ interface Env {
 	sort: number;
 	note?: string;
 	isApplied?: boolean;
+	isSame?: boolean;
+	currentValue?: string;
 }
 
 export type { Setting, ActiveConfig, Config, GroupEnv, Env };

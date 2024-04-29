@@ -144,6 +144,7 @@ pub async fn backup_envs<R: Runtime>(
 		"backup_envs: backup_name: {:?}, folder: {:?}",
 		backup_name, folder
 	);
+	// todo
 	Ok(())
 }
 
@@ -156,6 +157,7 @@ pub async fn recover_envs<R: Runtime>(
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
 	info!("recover_envs: file: {:?}, name: {:?}", file, name);
+	// todo
 	Ok(())
 }
 
@@ -173,8 +175,7 @@ pub async fn env_apply<R: Runtime>(
 		"env_apply: config_id: {:?}, group_id: {:?}, env_key: {:?}, env_value: {:?}",
 		config_id, group_id, env_key, env_value
 	);
-	let store_config = model::config::ConfigInfo::load_from_store(&config_id, app);
-
+	// todo
 	Ok(())
 }
 
@@ -190,6 +191,7 @@ pub async fn group_env_apply<R: Runtime>(
 		"group_env_apply: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
 	);
+	// todo
 	Ok(())
 }
 
@@ -205,6 +207,7 @@ pub async fn group_env_check<R: Runtime>(
 		"group_env_check: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
 	);
+	// todo
 	Ok(())
 }
 
@@ -217,19 +220,20 @@ pub async fn config_check<R: Runtime>(
 ) -> Result<(), AppError> {
 	info!("config_check: config_id: {:?}", config_id);
 	let mut config_info =
-		model::config::ConfigInfo::load_from_file(&config_id, app).expect("load config failed!");
+		model::config::ConfigInfo::load_from_file(&config_id, app.clone()).expect("load config failed!");
 	info!("config_check: config_info: {:?}", config_info);
-	config_info.check()?;
-	Ok(())
+	Ok(config_info.check(app.clone())?)
 }
 
 /// config apply to system
 #[tauri::command]
 pub async fn config_apply<R: Runtime>(
 	config_id: String,
-	_app: tauri::AppHandle<R>,
+	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
 	info!("config_apply: config_id: {:?}", config_id);
+	let store_config = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
+	store_config.apply()?;
 	Ok(())
 }

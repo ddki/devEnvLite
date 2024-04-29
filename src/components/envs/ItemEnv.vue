@@ -6,7 +6,7 @@
 				<div class="grid grid-flow-col gap-2 w-full justify-start items-center">
 					<div class="grid grid-flow-col gap-1 items-center">
 						<CheckCircle class="h-4 w-4" v-if="props.data.isApplied" />
-						<AlertCircle class="h-4 w-4" v-else />
+						<AlertCircle class="h-4 w-4 text-destructive" v-else />
 						<span>{{ props.data.key }}</span>
 					</div>
 					<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
@@ -15,6 +15,9 @@
 				</div>
 				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground">
 					{{ props.data.value }}
+				</span>
+				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground" v-if="!props.data.isSame">
+					{{ props.data.currentValue }}
 				</span>
 			</div>
 		</div>

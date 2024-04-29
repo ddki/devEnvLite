@@ -57,10 +57,12 @@ const getConfig = async (id: string): Promise<Config> => {
 	const path = `config/${id}.json`;
 	const store = new Store(path);
 	const storeId = (await store.get("id")) as string;
+	const storeScope = (await store.get("scope")) as string;
 	const storeName = (await store.get("name")) as string;
 
 	return {
 		id: storeId,
+		scope: storeScope,
 		name: storeName,
 		note: (await store.get("note")) as string,
 		sort: (await store.get("sort")) as number,
@@ -121,6 +123,7 @@ const saveConfig = async (config: Config): Promise<boolean> => {
 		const storeConfig = await getConfig(config.id);
 		if (storeConfig) {
 			await store.set("id", storeConfig.id);
+			await store.set("scope", config.scope);
 			await store.set("name", config.name);
 			await store.set("note", config.note);
 			await store.set("sort", config.sort);
@@ -284,13 +287,14 @@ const loadConfig = async (store: Store, config: Config): Promise<boolean> => {
 	return load;
 };
 
-const generateEnvs = (groupId: string, envs: Map<string, string>): Env[] => {
+const generateEnvs = (configId: string, groupId: string, envs: Map<string, string>): Env[] => {
 	if (envs) {
 		const envArray: Env[] = [];
 		let sort = 0;
 		for (const [key, value] of envs) {
 			sort += 1;
 			envArray.push({
+				configId,
 				groupId,
 				key,
 				value,
@@ -317,7 +321,7 @@ const generateConfigFromEnvs = async (
 		name: "default",
 		sort: 1,
 	};
-	groupEnv.envs = generateEnvs(groupEnv.id, envs);
+	groupEnv.envs = generateEnvs(generateConfig.id, groupEnv.id, envs);
 	generateConfig.groupEnvs = [groupEnv];
 	await saveConfig(generateConfig);
 	return generateConfig;

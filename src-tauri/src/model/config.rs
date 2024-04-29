@@ -3,7 +3,6 @@ use log::info;
 use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
-use tauri_plugin_store::StoreBuilder;
 
 use crate::environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType};
 
@@ -55,75 +54,6 @@ impl ConfigInfo {
 		Ok(())
 	}
 
-	pub fn load_from_store<R: tauri::Runtime>(id: &str, app: tauri::AppHandle<R>) -> Option<Self> {
-		let path = app
-			.path()
-			.app_data_dir()
-			.unwrap()
-			.join("config")
-			.join(format!("{}.json", id));
-		if !path.exists() {
-			return None;
-		}
-		info!("load config from store path: {:#?}", path);
-		let mut store = StoreBuilder::new(path)
-			.deserialize(|bytes| serde_json::from_slice(&bytes).map_err(Into::into))
-			.build(app);
-		store.load().expect("load config from store failed");
-		info!("load config from store store: {:#?}", store);
-
-		let id = store
-			.get("id")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string())
-			.unwrap_or_default();
-
-		let scope = store
-			.get("scope")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string())
-			.unwrap_or_default();
-
-		let name = store
-			.get("name")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string())
-			.unwrap_or_default();
-
-		let note = store
-			.get("note")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string());
-
-		let sort = store
-			.get("sort")
-			.and_then(|v| v.as_u64())
-			.unwrap_or_default();
-
-		info!(
-			"load config from store id: {:#?}, name: {:#?}, note: {:#?}, sort: {:#?}",
-			id, name, note, sort
-		);
-		store
-			.get("groupEnvs")
-			.and_then(|v| v.as_array())
-			.map(|arr| {
-				let groups = arr
-					.iter()
-					.map(|v| GroupInfo::new_from_map(v.as_object().unwrap().clone()))
-					.collect::<Option<Vec<GroupInfo>>>();
-				info!("load config from store groups: {:#?}", groups);
-				ConfigInfo {
-					id,
-					scope,
-					name,
-					note,
-					sort,
-					groups,
-				}
-			})
-	}
-
 	fn get_scope_enum(&self) -> EnvironmentVarsType {
 		EnvironmentVarsType::from_str(self.scope.as_str()).expect("not found scope")
 	}
@@ -148,7 +78,7 @@ impl ConfigInfo {
 		Ok(())
 	}
 
-	pub fn check(&mut self) -> anyhow::Result<()> {
+	pub fn check<R: tauri::Runtime>(&mut self, app: tauri::AppHandle<R>) -> anyhow::Result<()> {
 		let type_enum = self.get_scope_enum();
 		let manager = get_environment_vars_manager(&type_enum);
 		let system_envs = manager
@@ -164,8 +94,8 @@ impl ConfigInfo {
 						let value = env.get_value();
 						let system_env_value = system_envs.get(key).unwrap();
 						if system_env_value.eq(value) {
-							env.set_is_same(true);
-							env.set_current_value(system_env_value.to_string());
+							env.set_is_same(Some(true));
+							env.set_current_value(Some(system_env_value.to_string()));
 						} else {
 							match manager.inner().set(key, value) {
 								Ok(_) => {
@@ -178,6 +108,6 @@ impl ConfigInfo {
 				}
 			}
 		}
-		Ok(())
+		self.save_to_file(app)
 	}
 }

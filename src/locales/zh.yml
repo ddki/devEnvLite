@@ -72,6 +72,7 @@ config:
   sort: 配置序号
   error:
     nameNotEmpty: 名称不能为空
+    scopesNotEmpty: 范围不能为空
     nameExists: 名称已经存在
     missId: 缺失配置唯一标识
 

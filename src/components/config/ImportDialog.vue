@@ -30,19 +30,19 @@ import { Import } from "lucide-vue-next";
 import { v4 as uuidv4 } from "uuid";
 import { defineEmits, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useToast } from "../ui/toast";
+import { useToast } from "@/components/ui/toast";
 
 const { t } = useI18n();
 const { toast } = useToast();
-
-const emit = defineEmits(["callback"]);
-
-const dialogOpen = ref(false);
 
 const scopesList = [
 	{ label: t("env.scopes.user"), value: "USER" },
 	{ label: t("env.scopes.system"), value: "SYSTEM" },
 ];
+
+const emit = defineEmits(["callback"]);
+
+const dialogOpen = ref(false);
 
 const systemConfigName = ref("");
 const systemScope = ref("USER");
@@ -84,6 +84,7 @@ const importFromSystem = async () => {
 				console.log(typeof resMap);
 				const config: Config = {
 					id: uuidv4(),
+					scope: systemScope.value,
 					name: systemConfigName.value,
 					note: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
 					sort: 1,

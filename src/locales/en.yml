@@ -72,6 +72,7 @@ config:
   sort: Config's Sort
   error:
     nameNotEmpty: Name is not empty.
+    scopesNotEmpty: Scope is not empty.
     nameExists: Name has already been.
     missId: Missing config's unique identifier.
 

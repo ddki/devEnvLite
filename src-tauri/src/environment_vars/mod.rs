@@ -1,7 +1,7 @@
 pub mod linux;
 pub mod windows;
 
-use anyhow::{Error, Result};
+use anyhow::Result;
 use std::collections::{HashMap, HashSet};
 
 pub trait EnvironmentVars {

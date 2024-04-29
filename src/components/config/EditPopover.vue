@@ -11,6 +11,15 @@
 						<Input v-model="data.id" type="text" :placeholder="t('config.id')" class="col-span-2 h-8" readonly />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="name" class="text-right">{{ t('config.import-config.types.env.scope') }}</Label>
+						<RadioGroup v-model="data.scope">
+							<div class="flex items-center space-x-2" v-for="item in scopesList" :key="item.value">
+								<RadioGroupItem :value="item.value" />
+								<Label for="r1">{{ item.label }}</Label>
+							</div>
+						</RadioGroup>
+					</div>
+					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="name">{{ t('config.name') }}</Label>
 						<Input v-model.trim="data.name" type="text" :placeholder="t('config.name')" class="col-span-2 h-8" />
 					</div>
@@ -47,9 +56,15 @@ import { deleteConfig, getConfig, getConfigNames, saveConfig } from "@/store";
 import { v4 as uuidv4 } from "uuid";
 import { onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const { t } = useI18n();
 const { toast } = useToast();
+
+const scopesList = [
+	{ label: t("env.scopes.user"), value: "USER" },
+	{ label: t("env.scopes.system"), value: "SYSTEM" },
+];
 
 interface Prop {
 	id?: string;
@@ -64,6 +79,7 @@ const emit = defineEmits(["callback"]);
 
 const data = reactive({
 	id: "",
+	scope: "USER",
 	name: "",
 	note: "",
 	sort: 0,
@@ -71,12 +87,24 @@ const data = reactive({
 
 const onClear = () => {
 	data.id = uuidv4();
+	data.scope = "USER";
 	data.name = "";
 	data.note = "";
 	data.sort = props.maxSort + 1;
 };
 
 const onSave = async () => {
+	if (!data.scope) {
+		toast({
+			title:
+				props.operate === "new"
+					? t("operate.new", { name: t("config.text") })
+					: t("operate.edit", { name: t("config.text") }),
+			description: t("config.error.scopesNotEmpty"),
+			variant: "destructive",
+		});
+		return;
+	}
 	if (!data.name) {
 		toast({
 			title:
@@ -126,6 +154,7 @@ onMounted(async () => {
 	if (props.operate === "edit" && props.id) {
 		const storeConfig = await getConfig(props.id);
 		data.id = storeConfig.id;
+		data.scope = storeConfig.scope;
 		data.name = storeConfig.name;
 		data.note = storeConfig.note as string;
 		data.sort = storeConfig.sort;
