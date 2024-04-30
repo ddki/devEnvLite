@@ -6,6 +6,12 @@ import { getSetting } from "@/store/setting";
 import App from "./App.vue";
 import "./styles/main.css";
 import { disableContextMenu, disableRefresh } from "./utils/Webview";
+import mitt from "mitt";
+
+const emitter = mitt();
+emitter.on("reloadApp", () => {
+	window.location.reload();
+})
 
 const setting = await getSetting();
 
@@ -15,8 +21,9 @@ const i18n = createI18n({
 });
 
 const app = createApp(App);
+app.config.globalProperties.$emitter = emitter;
 app.use(i18n);
 app.mount("#main");
 
-// disableRefresh();
+disableRefresh();
 disableContextMenu();

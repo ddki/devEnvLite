@@ -49,7 +49,7 @@
 									<span>{{ t("operate.check") }}</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem @click="dropdownMenuApply(item)">
-									<Laugh class="mr-2 h-4 w-4" />
+									<CircleCheck class="mr-2 h-4 w-4" />
 									<span>{{ t("operate.apply") }}</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem @click="dropdownMenuDelete(item)">
@@ -75,6 +75,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/toast";
 import { deleteConfig, getConfigs, setActiveConfigId } from "@/store";
 import type { Config } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
@@ -83,12 +84,12 @@ import {
 	Ellipsis,
 	File,
 	FilePlus,
-	Laugh,
+	CircleCheck,
 	Pencil,
 	SearchCheck,
 	Trash2,
 } from "lucide-vue-next";
-import { ref, watch } from "vue";
+import { getCurrentInstance, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 interface ConfigData extends Config {
@@ -100,10 +101,11 @@ const props = defineProps({
 	activeConfigId: String,
 	selectedConfigId: String,
 });
-
 const emits = defineEmits(["update:activeConfigId", "update:selectedConfigId"]);
+const context = getCurrentInstance();
 
 const { t } = useI18n();
+const { toast } = useToast();
 
 const configs = ref<ConfigData[]>([]);
 
@@ -153,26 +155,71 @@ const dropdownMenuActive = async (config: ConfigData) => {
 
 // 检查
 const dropdownMenuCheck = async (config: ConfigData) => {
-	// todo
-	await invoke("config_check", { configId: config.id });
+	await invoke("config_check", { configId: config.id })
+		.then(async () => {
+			await loadStore();
+			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
+			toast({
+				title: `${t("operate.check")} ${t("config.text")}`,
+				description: t("message.success"),
+			});
+		})
+		.catch((e) => {
+			toast({
+				title: `${t("operate.check")} ${t("config.text")}`,
+				description: `${t("message.error")}: ${e.message}`,
+				variant: "destructive",
+			});
+			console.log("application startup config_check error: ", e);
+		});
 };
 
 // 应用
 const dropdownMenuApply = async (config: ConfigData) => {
-	// todo
-	await invoke("config_apply");
+	await invoke("config_apply", { configId: config.id })
+		.then(async () => {
+			await loadStore();
+			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
+			toast({
+				title: `${t("operate.apply")} ${t("config.text")}`,
+				description: t("message.success"),
+			});
+		})
+		.catch((e) => {
+			toast({
+				title: `${t("operate.apply")} ${t("config.text")}`,
+				description: `${t("message.error")}: ${e.message}`,
+				variant: "destructive",
+			});
+			console.log("application startup config_check error: ", e);
+		});
 };
 
 // 删除
 const dropdownMenuDelete = async (config: ConfigData) => {
-	await deleteConfig(config.id);
-	await loadStore();
+	await deleteConfig(config.id)
+		.then(async () => {
+			await loadStore();
+			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
+			toast({
+				title: `${t("operate.delete", { name: t("config.text") })}`,
+				description: t("message.success"),
+			});
+		})
+		.catch((e) => {
+			toast({
+				title: `${t("operate.delete", { name: t("config.text") })}`,
+				description: `${t("message.error")}: ${e.message}`,
+				variant: "destructive",
+			});
+			console.log("application startup config_check error: ", e);
+		});
 };
 
 watch(
 	() => props.activeConfigId,
 	async (newValue, oldValue) => {
-		if (newValue !== oldValue) {
+		if (newValue && newValue !== oldValue) {
 			await loadStore();
 		}
 	},

@@ -56,7 +56,6 @@ fn main() {
 			command::recover_envs,
 			command::env_apply,
 			command::group_env_apply,
-			command::group_env_check,
 			command::config_check,
 			command::config_apply,
 			command::get_config,

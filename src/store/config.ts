@@ -4,7 +4,9 @@ import type { Config, Env, GroupEnv } from "./type";
 import { pushActiveConfigName, removeActiveConfigName, removeActiveId } from "./index";
 
 const getConfig = async (id: string): Promise<Config> => {
-	const config = (await invoke("get_config", { configId: id })) as Config;
+	const config = await invoke("get_config", { configId: id }).then((config) => {
+		return config as Config;
+	});
 	console.log("getConfig: ", config);
 	return config;
 };
@@ -196,9 +198,6 @@ const deleteConfig = async (id: string): Promise<void> => {
 			await removeActiveConfigName(storeConfig.name);
 			// 移除激活ID
 			await removeActiveId(storeConfig.id);
-		})
-		.catch((e) => {
-			console.log("deleteConfig error: ", e);
 		});
 };
 

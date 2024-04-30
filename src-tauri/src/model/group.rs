@@ -22,7 +22,7 @@ pub struct GroupInfo {
 
 impl GroupInfo {
 
-	fn apply(&self, env_type: &EnvironmentVarsType) -> anyhow::Result<()> {
+	pub fn apply(&self, env_type: &EnvironmentVarsType) -> anyhow::Result<()> {
 		let manager = get_environment_vars_manager(env_type);
 		if let Some(envs) = &self.envs {
 			envs.iter().for_each(|env| {

@@ -12,7 +12,7 @@ pub struct EnvInfo {
 	note: Option<String>,
 	sort: u64,
 	#[serde(rename = "isApplied")]
-	is_applied: bool,
+	is_applied: Option<bool>,
 	#[serde(rename = "isSame")]
 	is_same: Option<bool>,
 	#[serde(rename = "currentValue")]

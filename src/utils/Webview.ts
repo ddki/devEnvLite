@@ -7,13 +7,13 @@ const disableRefresh = () => {
 		) {
 			event.preventDefault();
 		}
-		if (
-			event.key === "F12" ||
-			(event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "i") ||
-			(event.metaKey && event.shiftKey && event.key.toLowerCase() === "i")
-		) {
-			event.preventDefault();
-		}
+		// if (
+		// 	event.key === "F12" ||
+		// 	(event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "i") ||
+		// 	(event.metaKey && event.shiftKey && event.key.toLowerCase() === "i")
+		// ) {
+		// 	event.preventDefault();
+		// }
 	});
 };
 

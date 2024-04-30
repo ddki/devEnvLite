@@ -9,7 +9,7 @@
 					</ResizablePanel>
 					<ResizableHandle />
 					<ResizablePanel :default-size="70">
-						<GroupEnv v-model:configId="selectedConfigId" />
+						<GroupEnv :configId="selectedConfigId" />
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			</main>
@@ -24,23 +24,50 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { Toaster } from "@/components/ui/toast";
+import { Toaster, useToast } from "@/components/ui/toast";
 import { getActiveConfig } from "@/store/index";
 import Config from "@/views/config/index.vue";
 import GroupEnv from "@/views/groupenv/index.vue";
 import { invoke } from "@tauri-apps/api/core";
-import { onBeforeMount, onMounted, ref } from "vue";
+import { onBeforeMount, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+const { toast } = useToast();
 
 const activeConfigId = ref("");
 const selectedConfigId = ref("");
 
+
 onMounted(async () => {
 	const activeConfig = await getActiveConfig();
-	activeConfigId.value = activeConfig.activeConfigId;
-	selectedConfigId.value = activeConfigId.value;
+	if (activeConfig?.activeConfigId && activeConfig.activeConfigId.length > 0) {
+		activeConfigId.value = activeConfig.activeConfigId;
+		selectedConfigId.value = activeConfigId.value;
+		await invoke("config_check", { configId: activeConfig.activeConfigId })
+		.then(() => {
+			toast({
+				title: `${t("operate.check")} ${t("config.text")}`,
+				description: t("message.success"),
+			});
+		})
+		.catch((e) => {
+			toast({
+				title: `${t("operate.check")} ${t("config.text")}`,
+				description: `${t("message.error")}: ${e.message}`,
+				variant: "destructive",
+			});
+			console.log("application startup config_check error: ", e);
+		});
+	}
 });
 
 onBeforeMount(async () => {
 	await invoke("close_splashscreen");
 });
+
+watch(selectedConfigId, (newValue, oldValue) => {
+	console.log("selectedConfigId changed from ", oldValue, " to ", newValue);
+});
+
 </script>

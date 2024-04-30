@@ -6,7 +6,9 @@ use tauri::Manager;
 
 use crate::environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType};
 
-use super::{env::EnvInfo, group::GroupInfo};
+use super::
+	group::GroupInfo
+;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Getter, Setter)]
 pub struct ConfigInfo {
@@ -37,7 +39,7 @@ impl ConfigInfo {
 		Ok(config)
 	}
 
-	pub fn save_to_file<R: tauri::Runtime>(&self, app: tauri::AppHandle<R>) -> Result<()> {
+	pub fn save_to_file<R: tauri::Runtime>(&mut self, app: tauri::AppHandle<R>) -> Result<()> {
 		let path = app
 			.path()
 			.app_data_dir()
@@ -48,6 +50,23 @@ impl ConfigInfo {
 		if !path.exists() {
 			std::fs::create_dir_all(path.parent().unwrap())?;
 		}
+		if let Some(groups) = &mut self.groups {
+			for group in groups.iter_mut() {
+				if let Some(envs) = group.get_envs().clone() {
+					let applied_count = envs.iter().filter(|x| {
+						match x.get_is_applied() {
+							Some(is_applied) => *is_applied,
+							None => false,
+						}
+					}).count() as u64;
+					group.set_env_applied_count(applied_count);
+					let not_applied_count = (envs.len() as u64) - applied_count;
+					group.set_env_not_applied_count(not_applied_count);
+				}
+			}
+		}
+
+		info!("save config from file config: {:#?}", self);
 		let file = std::fs::File::create(path)?;
 		serde_json::to_writer(file, self).expect("save config failed");
 
@@ -69,28 +88,31 @@ impl ConfigInfo {
 		Ok(())
 	}
 
-	fn get_scope_enum(&self) -> EnvironmentVarsType {
+	pub fn get_scope_enum(&self) -> EnvironmentVarsType {
 		EnvironmentVarsType::from_str(self.scope.as_str()).expect("not found scope")
 	}
 
-	pub fn apply(&self) -> anyhow::Result<()> {
+	pub fn apply<R: tauri::Runtime>(&mut self, app: tauri::AppHandle<R>) -> anyhow::Result<()> {
 		let type_enum = self.get_scope_enum();
 		let manager = get_environment_vars_manager(&type_enum);
 
-		match self.groups.clone() {
-			Some(groups) => {
-				let envs = groups
-					.iter()
-					.map(|group| group.get_envs().as_ref().unwrap().clone())
-					.flatten()
-					.collect::<Vec<EnvInfo>>();
-				envs.iter().for_each(|env| {
-					let _ = manager.inner().set(env.get_key(), env.get_value());
-				})
+		if let Some(groups) = &mut self.groups {
+			for group in groups.iter_mut() {
+				if let Some(envs) = group.envs.as_mut() {
+					for env in envs.iter_mut() {
+						match manager.inner().set(env.get_key(), env.get_value()) {
+							Ok(_) => {
+								env.set_is_applied(Some(true));
+							}
+							Err(_) => {
+								env.set_is_applied(Some(false));
+							}
+						}
+					}
+				}
 			}
-			None => {}
 		}
-		Ok(())
+		self.save_to_file(app)
 	}
 
 	pub fn check<R: tauri::Runtime>(&mut self, app: tauri::AppHandle<R>) -> anyhow::Result<()> {
@@ -107,17 +129,23 @@ impl ConfigInfo {
 					for env in envs.iter_mut() {
 						let key = env.get_key();
 						let value = env.get_value();
-						let system_env_value = system_envs.get(key).unwrap();
-						if system_env_value.eq(value) {
-							env.set_is_same(Some(true));
-							env.set_current_value(Some(system_env_value.to_string()));
-						} else {
-							match manager.inner().set(key, value) {
-								Ok(_) => {
-									env.set_is_applied(true);
+
+						if let Some(system_env_value) = system_envs.get(key) {
+							if system_env_value.eq(value) {
+								env.set_is_same(Some(true));
+								env.set_current_value(Some(system_env_value.to_string()));
+							} else {
+								match manager.inner().set(key, value) {
+									Ok(_) => {
+										env.set_is_applied(Some(true));
+									}
+									Err(_) => {
+										env.set_is_applied(Some(false));
+									}
 								}
-								Err(_) => {}
 							}
+						} else {
+							env.set_is_applied(Some(false));
 						}
 					}
 				}

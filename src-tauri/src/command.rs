@@ -175,8 +175,10 @@ pub async fn env_apply<R: Runtime>(
 		"env_apply: config_id: {:?}, group_id: {:?}, env_key: {:?}, env_value: {:?}",
 		config_id, group_id, env_key, env_value
 	);
-	// todo
-	Ok(())
+	let config_info = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
+	let scope_enum = config_info.get_scope_enum();
+	let manager = get_environment_vars_manager(&scope_enum);
+	Ok(manager.inner().set(&env_key, &env_value)?)
 }
 
 /// group environment variables apply to system
@@ -184,30 +186,23 @@ pub async fn env_apply<R: Runtime>(
 pub async fn group_env_apply<R: Runtime>(
 	config_id: String,
 	group_id: String,
-	_app: tauri::AppHandle<R>,
+	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
 	info!(
 		"group_env_apply: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
 	);
-	// todo
-	Ok(())
-}
-
-/// group environment variables check from system
-#[tauri::command]
-pub async fn group_env_check<R: Runtime>(
-	config_id: String,
-	group_id: String,
-	_app: tauri::AppHandle<R>,
-	_window: tauri::Window<R>,
-) -> Result<(), AppError> {
-	info!(
-		"group_env_check: config_id: {:?}, group_id: {:?}",
-		config_id, group_id
-	);
-	// todo
+	let config_info = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
+	let scope_enum = config_info.get_scope_enum();
+	if let Some(groups) = config_info.get_groups() {
+		groups
+			.iter()
+			.filter(|x| x.get_id().eq(&group_id))
+			.for_each(|group| {
+				group.apply(&scope_enum).expect("set group environment variables failed");
+			});
+	}
 	Ok(())
 }
 
@@ -233,9 +228,8 @@ pub async fn config_apply<R: Runtime>(
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
 	info!("config_apply: config_id: {:?}", config_id);
-	let store_config = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
-	store_config.apply()?;
-	Ok(())
+	let mut store_config = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
+	Ok(store_config.apply(app.clone())?)
 }
 
 /// get config by id
@@ -258,7 +252,8 @@ pub async fn save_config<R: Runtime>(
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
 	info!("save config: config_info: {:?}", config_info);
-	config_info.save_to_file(app.clone())?;
+	let mut config = config_info.clone();
+	config.save_to_file(app.clone())?;
 	Ok(())
 }
 

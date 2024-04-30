@@ -29,7 +29,7 @@
 				</Button>
 			</EditItemEnv>
 			<Button variant="ghost" size="icon" @click="dropdownMenuApply(props.data)">
-				<Laugh class="h-4 w-4" />
+				<CircleCheck class="h-4 w-4" />
 			</Button>
 			<Button variant="ghost" size="icon" @click="dropdownMenuDelete(props.data)">
 				<Trash2 class="h-4 w-4 text-destructive" />
@@ -74,7 +74,7 @@ import {
 	AlertCircle,
 	CheckCircle,
 	Copy,
-	Laugh,
+	CircleCheck,
 	Pencil,
 	TerminalSquare,
 	Trash2,
@@ -82,6 +82,7 @@ import {
 import { defineEmits, defineProps } from "vue";
 import { useI18n } from "vue-i18n";
 import { EditItemEnv } from ".";
+import { useToast } from "@/components/ui/toast";
 
 interface Props {
 	configId: string;
@@ -94,11 +95,26 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const { toast } = useToast();
 
 // 应用
 const dropdownMenuApply = async (data: Env) => {
 	// todo
-	await invoke("env_apply");
+	await invoke("env_apply", { configId: props.configId, groupId: data.groupId, EnvKey: data.key, envValue: data.value })
+		.then(() => {
+			toast({
+				title: `${t("operate.apply")} ${t("env.text")}`,
+				description: t("message.success"),
+			});
+		})
+		.catch((e) => {
+			toast({
+				title: `${t("operate.apply")} ${t("env.text")}`,
+				description: `${t("message.error")}: ${e.message}`,
+				variant: "destructive",
+			});
+			console.log("dropdownMenuApply error: ", e);
+		});
 };
 
 // 删除

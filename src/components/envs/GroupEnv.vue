@@ -32,27 +32,12 @@
 					<Pencil class="h-4 w-4" />
 				</Button>
 			</EditGroupEnv>
-			<DropdownMenu>
-				<DropdownMenuTrigger>
-					<Button variant="ghost" size="icon">
-						<Ellipsis class="h-4 w-4" />
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent>
-					<DropdownMenuItem @click="dropdownMenuCheck(props.data)">
-						<SearchCheck class="mr-2 h-4 w-4" />
-						<span>{{ t("operate.check") }}</span>
-					</DropdownMenuItem>
-					<DropdownMenuItem @click="dropdownMenuApply(props.data)">
-						<Laugh class="mr-2 h-4 w-4" />
-						<span>{{ t("operate.apply") }}</span>
-					</DropdownMenuItem>
-					<DropdownMenuItem @click="dropdownMenuDelete(props.data)">
-						<Trash2 class="mr-2 h-4 w-4 text-destructive" />
-						<span class="text-destructive">{{ t("operate.delete") }}</span>
-					</DropdownMenuItem>
-				</DropdownMenuContent>
-			</DropdownMenu>
+			<Button variant="ghost" size="icon" @click="dropdownMenuApply(props.data)">
+				<CircleCheck class="h-4 w-4" />
+			</Button>
+			<Button variant="ghost" size="icon" @click="dropdownMenuDelete(props.data)">
+				<Trash2 class="h-4 w-4 text-destructive" />
+			</Button>
 		</div>
 	</div>
 	<div class="grid grid-flow-row items-center gap-1" v-if="showItems">
@@ -63,30 +48,23 @@
 
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import type { GroupEnv } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import {
 	AlertCircle,
 	CheckCircle,
-	Ellipsis,
-	Laugh,
+	CircleCheck,
 	PanelBottomClose,
 	PanelBottomOpen,
 	Pencil,
 	PlusSquare,
-	SearchCheck,
 	Trash2,
 } from "lucide-vue-next";
 import { defineEmits, defineProps, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { EditGroupEnv, EditItemEnv } from ".";
 import { ItemEnv } from ".";
+import { useToast } from "@/components/ui/toast";
 
 interface Props {
 	data: GroupEnv;
@@ -99,6 +77,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const { toast } = useToast();
 
 const showItems = ref(false);
 
@@ -110,16 +89,23 @@ const removeEnv = (envKey: string) => {
 	emit("removeEnv", props.data.configId, props.data.id, envKey);
 };
 
-// 检查
-const dropdownMenuCheck = async (data: GroupEnv) => {
-	// todo
-	await invoke("group_env_check");
-};
-
 // 应用
 const dropdownMenuApply = async (data: GroupEnv) => {
-	// todo
-	await invoke("group_env_apply");
+	await invoke("group_env_apply", { configId: data.configId, groupId: data.id })
+		.then(() => {
+			toast({
+				title: `${t("operate.apply")} ${t("envGroup.text")}`,
+				description: t("message.success"),
+			});
+		})
+		.catch((e) => {
+			toast({
+				title: `${t("operate.apply")} ${t("envGroup.text")}`,
+				description: `${t("message.error")}: ${e.message}`,
+				variant: "destructive",
+			});
+			console.log("dropdownMenuApply error: ", e);
+		});
 };
 
 // 删除
