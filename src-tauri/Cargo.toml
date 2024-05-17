@@ -8,23 +8,23 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta.13", features = [] }
+tauri-build = { version = "2.0.0-beta.15", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-beta.16", features = ["devtools", "config-json5"] }
-tauri-plugin-shell = "2.0.0-beta.3"
-tauri-plugin-dialog = "2.0.0-beta.6"
-tauri-plugin-updater = "2.0.0-beta.4"
-tauri-plugin-single-instance = "2.0.0-beta.6"
-tauri-plugin-store = "2.0.0-beta.5"
-tauri-plugin-log = "2.0.0-beta.3"
-tauri-plugin-fs = "2.0.0-beta.6"
+tauri = { version = "2.0.0-beta.19", features = ["devtools", "config-json5"] }
+tauri-plugin-shell = "2.0.0-beta.5"
+tauri-plugin-dialog = "2.0.0-beta.7"
+tauri-plugin-updater = "2.0.0-beta.5"
+tauri-plugin-single-instance = "2.0.0-beta.7"
+tauri-plugin-store = "2.0.0-beta.6"
+tauri-plugin-log = "2.0.0-beta.4"
+tauri-plugin-fs = "2.0.0-beta.7"
+tauri-plugin-clipboard-manager = "2.1.0-beta.2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 log = "^0.4"
-tauri-plugin-clipboard-manager = "2.1.0-beta.1"
-thiserror = "1.0.59"
-anyhow = "1.0.82"
+thiserror = "1.0.60"
+anyhow = "1.0.83"
 tauri-plugin-theme = { path = "./tauri-plugin-theme" }
 lombok = "0.4.0"
 

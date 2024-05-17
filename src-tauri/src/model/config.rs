@@ -1,5 +1,5 @@
 use anyhow::{Error, Result};
-use log::info;
+use log::{info, log};
 use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
@@ -123,6 +123,7 @@ impl ConfigInfo {
 			.read_envs()
 			.expect("get system environment variables failed!");
 
+		info!("check config before: {:#?}", self);
 		if let Some(groups) = &mut self.groups {
 			for group in groups.iter_mut() {
 				if let Some(envs) = group.envs.as_mut() {
@@ -151,6 +152,7 @@ impl ConfigInfo {
 				}
 			}
 		}
+		info!("check config after: {:#?}", self);
 		self.save_to_file(app)
 	}
 }
