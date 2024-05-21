@@ -97,6 +97,7 @@ const dropdownMenuApply = async (data: GroupEnv) => {
 				title: `${t("operate.apply")} ${t("envGroup.text")}`,
 				description: t("message.success"),
 			});
+			emit("callback");
 		})
 		.catch((e) => {
 			toast({

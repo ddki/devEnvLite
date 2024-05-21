@@ -175,10 +175,9 @@ pub async fn env_apply<R: Runtime>(
 		"env_apply: config_id: {:?}, group_id: {:?}, env_key: {:?}, env_value: {:?}",
 		config_id, group_id, env_key, env_value
 	);
-	let config_info = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
-	let scope_enum = config_info.get_scope_enum();
-	let manager = get_environment_vars_manager(&scope_enum);
-	Ok(manager.inner().set(&env_key, &env_value)?)
+	let mut env = model::config::ConfigInfo::get_group_env(&config_id, &group_id, &env_key, app.clone())?;
+	env.apply(app.clone())?;
+	Ok(())
 }
 
 /// group environment variables apply to system
@@ -193,16 +192,9 @@ pub async fn group_env_apply<R: Runtime>(
 		"group_env_apply: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
 	);
-	let config_info = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
-	let scope_enum = config_info.get_scope_enum();
-	if let Some(groups) = config_info.get_groups() {
-		groups
-			.iter()
-			.filter(|x| x.get_id().eq(&group_id))
-			.for_each(|group| {
-				group.apply(&scope_enum).expect("set group environment variables failed");
-			});
-	}
+
+	let mut group = model::config::ConfigInfo::get_group(&config_id, &group_id, app.clone())?;
+	group.apply(app.clone())?;
 	Ok(())
 }
 

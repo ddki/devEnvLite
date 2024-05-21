@@ -1,13 +1,13 @@
 use anyhow::{Error, Result};
-use log::{info, log};
+use log::info;
 use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
 
 use crate::environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType};
 
-use super::
-	group::GroupInfo
+use super::{env::EnvInfo,
+	group::GroupInfo}
 ;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Getter, Setter)]
@@ -37,6 +37,47 @@ impl ConfigInfo {
 		let config = serde_json::from_str(&content).expect("config file format error");
 		info!("load config from file config: {:#?}", config);
 		Ok(config)
+	}
+
+	pub fn get_group<R: tauri::Runtime>(config_id: &str, group_id: &str, app: tauri::AppHandle<R>) -> Result<GroupInfo> {
+		let config = ConfigInfo::load_from_file(config_id, app)?;
+		if let Some(groups) = config.groups {
+			for group in groups.iter() {
+				if group.get_id().eq(group_id) {
+					return Ok(group.clone())
+				}
+			}
+		}
+		Err(Error::msg("not found group from config"))
+	}
+
+	pub fn get_group_env<R: tauri::Runtime>(config_id: &str, group_id: &str, env_key: &str, app: tauri::AppHandle<R>) -> Result<EnvInfo> {
+		let group = ConfigInfo::get_group(config_id, group_id, app)?;
+		if let Some(envs) = group.get_envs() {
+			for env in envs.iter() {
+				if env.get_key().eq(env_key) {
+					return Ok(env.clone())
+				}
+			}
+		}
+		Err(Error::msg("not found env from config"))
+	}
+
+	/// 更新组信息
+	/// 返回是否更新成功
+	pub fn update_group(&mut self, new_group: GroupInfo) -> Result<bool> {
+		if let Some(groups) = &mut self.groups {
+			for group in groups.iter_mut() {
+				if group.get_id().eq(new_group.get_id()) {
+					*group = new_group;
+					return Ok(true);
+				}
+			}
+		} else {
+			self.groups = Some(vec![new_group]);
+			return Ok(true);
+		}
+		Ok(false)
 	}
 
 	pub fn save_to_file<R: tauri::Runtime>(&mut self, app: tauri::AppHandle<R>) -> Result<()> {

@@ -100,12 +100,13 @@ const { toast } = useToast();
 // 应用
 const dropdownMenuApply = async (data: Env) => {
 	// todo
-	await invoke("env_apply", { configId: props.configId, groupId: data.groupId, EnvKey: data.key, envValue: data.value })
+	await invoke("env_apply", { configId: props.configId, groupId: data.groupId, envKey: data.key, envValue: data.value })
 		.then(() => {
 			toast({
 				title: `${t("operate.apply")} ${t("env.text")}`,
 				description: t("message.success"),
 			});
+			emit('callback');
 		})
 		.catch((e) => {
 			toast({

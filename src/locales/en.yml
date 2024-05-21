@@ -117,6 +117,7 @@ operate:
   new: New {name}
   edit: Edit {name}
   delete: Delete {name}
+  export: Export {name}
   apply: Apply
   check: Check
   active: Active
