@@ -47,6 +47,7 @@
 		"dialog:allow-save",
 		"theme:default",
 		"theme:allow-set-theme",
-		"theme:allow-get-theme"
+		"theme:allow-get-theme",
+		"webview:allow-internal-toggle-devtools"
 	]
 }

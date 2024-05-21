@@ -99,12 +99,13 @@ import { useToast } from "@/components/ui/toast/use-toast";
 import { getSetting, saveSetting } from "@/store";
 import { getVersion } from "@tauri-apps/api/app";
 import { Settings } from "lucide-vue-next";
-import { reactive, ref } from "vue";
+import { getCurrentInstance, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 const appVersion = await getVersion();
 const { t } = useI18n();
 const { toast } = useToast();
+const context = getCurrentInstance();
 
 const languageList = [
 	{
@@ -138,6 +139,7 @@ const onSave = async () => {
 	});
 	if (save) {
 		open.value = false;
+		context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
 	} else {
 		toast({
 			title: t("header.setting"),
