@@ -175,7 +175,8 @@ pub async fn env_apply<R: Runtime>(
 		"env_apply: config_id: {:?}, group_id: {:?}, env_key: {:?}, env_value: {:?}",
 		config_id, group_id, env_key, env_value
 	);
-	let mut env = model::config::ConfigInfo::get_group_env(&config_id, &group_id, &env_key, app.clone())?;
+	let mut env =
+		model::config::ConfigInfo::get_group_env(&config_id, &group_id, &env_key, app.clone())?;
 	env.apply(app.clone())?;
 	Ok(())
 }
@@ -257,5 +258,34 @@ pub async fn remove_config<R: Runtime>(
 ) -> Result<(), AppError> {
 	info!("remove config: id: {:?}", config_id);
 	model::config::ConfigInfo::remove_file(&config_id, app.clone())?;
+	Ok(())
+}
+
+#[tauri::command]
+pub async fn config_export<R: Runtime>(
+	config_id: String,
+	app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
+) -> Result<(), AppError> {
+	Ok(())
+}
+
+#[tauri::command]
+pub async fn import_config_form_file<R: Runtime>(
+	name: String,
+	path: String,
+	app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
+) -> Result<(), AppError> {
+	Ok(())
+}
+
+#[tauri::command]
+pub async fn import_config_form_url<R: Runtime>(
+	name: String,
+	url: String,
+	app: tauri::AppHandle<R>,
+	_window: tauri::Window<R>,
+) -> Result<(), AppError> {
 	Ok(())
 }

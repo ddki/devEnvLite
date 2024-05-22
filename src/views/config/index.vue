@@ -56,6 +56,10 @@
 									<Trash2 class="mr-2 h-4 w-4 text-destructive" />
 									<span class="text-destructive">{{ t("operate.delete") }}</span>
 								</DropdownMenuItem>
+								<DropdownMenuItem @click="dropdownMenuExport(item)">
+									<FileDown class="mr-2 h-4 w-4" />
+									<span>{{ t("operate.export") }}</span>
+								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>
@@ -88,6 +92,7 @@ import {
 	Pencil,
 	SearchCheck,
 	Trash2,
+	FileDown,
 } from "lucide-vue-next";
 import { getCurrentInstance, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -215,6 +220,24 @@ const dropdownMenuDelete = async (config: ConfigData) => {
 			console.log("application startup config_check error: ", e);
 		});
 };
+
+// 导出配置
+const dropdownMenuExport = async (config: ConfigData) => {
+	await invoke("config_export", { configId: config.id })
+		.then(async () => {
+			toast({
+				title: `${t("operate.export", { name: t("config.text") })}`,
+				description: t("message.success"),
+			});
+		})
+		.catch((e) => {
+			toast({
+				title: `${t("operate.export", { name: t("config.text") })}`,
+				description: `${t("message.error")}: ${e.message}`,
+				variant: "destructive",
+			});
+		});
+}
 
 watch(
 	() => props.activeConfigId,

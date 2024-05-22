@@ -129,7 +129,13 @@ operate:
 message:
   error: An error has occurred.
   warning: Warning
-  success: "{operate} successed"
-  failure: "{operate} failed"
+  success: Success
+  failure: Failure
+  confirm: Confirm
+  cancel: Cancel
+  field-not-empty: "{field} is not empty"
+  field-error-format: "{field} is not in the correct format"
+  operate-success: "{operate} Success"
+  operate-failure: "{operate} Failure"
 
 version: Version

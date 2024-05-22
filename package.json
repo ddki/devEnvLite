@@ -25,7 +25,7 @@
 		"clsx": "^2.1.1",
 		"lucide-vue-next": "^0.378.0",
 		"mitt": "^3.0.1",
-		"radix-vue": "^1.8.0",
+		"radix-vue": "^1.8.1",
 		"tailwind-merge": "^2.3.0",
 		"tailwindcss-animate": "^1.0.7",
 		"uuid": "^9.0.1",
@@ -50,7 +50,7 @@
 		"oxlint": "^0.3.5",
 		"postcss": "^8.4.38",
 		"release-it": "^17.3.0",
-		"shadcn-vue": "^0.10.4",
+		"shadcn-vue": "^0.10.5",
 		"tailwindcss": "^3.4.3",
 		"typescript": "^5.4.5",
 		"vite": "^5.2.11",
@@ -63,7 +63,9 @@
 			"biome format --write --no-errors-on-unmatched",
 			"biome lint --apply --no-errors-on-unmatched"
 		],
-		"**/*": ["git add"]
+		"**/*": [
+			"git add"
+		]
 	},
 	"volta": {
 		"node": "21.7.3",

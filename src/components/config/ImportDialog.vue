@@ -31,6 +31,7 @@ import { v4 as uuidv4 } from "uuid";
 import { defineEmits, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "@/components/ui/toast";
+import { validateUrl } from "@/utils/ValidateUtil";
 
 const { t } = useI18n();
 const { toast } = useToast();
@@ -118,8 +119,86 @@ const importFromSystem = async () => {
 			});
 		});
 };
-const importFromFile = () => {};
-const importFromUrl = () => {};
+const importFromFile = async () => {
+	if (!fileConfigName.value || fileConfigName.value.length < 0) {
+		toast({
+			title: t("config.import-config.types.file.text"),
+			description: `${t("message.field-not-empty", { field: t("config.import-config.types.file.name") })}`,
+			variant: "destructive",
+		});
+		return;
+	}
+	if (!filePath.value || filePath.value.length < 0) {
+		toast({
+			title: t("config.import-config.types.file.text"),
+			description: `${t("message.field-not-empty", { field: t("config.import-config.types.file.file") })}`,
+			variant: "destructive",
+		});
+		return;
+	}
+
+	await invoke("import_config_form_file", { path: filePath.value, name: fileConfigName.value })
+		.then(async () => {
+			emit("callback");
+			toast({
+				title: `${t("config.import-config.text")} t("config.import-config.types.file.text")`,
+				description: `${t("config.import-config.text")}-${t(
+					"config.import-config.types.file.text",
+				)}: ${t("message.success")}`,
+			});
+		})
+		.catch((err) => {
+			toast({
+				title: `${t("config.import-config.text")} t("config.import-config.types.file.text")`,
+				description: `${t("message.error")} : ${err.message}`,
+				variant: "destructive",
+			});
+		});
+};
+const importFromUrl = async () => {
+	if (!urlConfigName.value || urlConfigName.value.length < 0) {
+		toast({
+			title: t("config.import-config.types.url.text"),
+			description: `${t("message.field-not-empty", { field: t("config.import-config.types.url.name") })}`,
+			variant: "destructive",
+		});
+		return;
+	}
+	if (!url.value || url.value.length < 0) {
+		toast({
+			title: t("config.import-config.types.url.text"),
+			description: `${t("message.field-not-empty", { field: t("config.import-config.types.url.url") })}`,
+			variant: "destructive",
+		});
+		return;
+	}
+	if(!validateUrl(url.value)) {
+		toast({
+			title: t("config.import-config.types.url.text"),
+			description: `${t("message.field-error-format", { field: t("config.import-config.types.url.url") })}`,
+			variant: "destructive",
+		});
+		return;
+	}
+
+	await invoke("import_config_form_url", { url: url.value, name: urlConfigName.value })
+		.then(async () => {
+			emit("callback");
+			toast({
+				title: `${t("config.import-config.text")}-t("config.import-config.types.url.text")`,
+				description: `${t("config.import-config.text")}-${t(
+					"config.import-config.types.url.text",
+				)}: ${t("message.success")}`,
+			});
+		})
+		.catch((err) => {
+			toast({
+				title: `${t("config.import-config.text")}-t("config.import-config.types.url.text")`,
+				description: `${t("message.error")} : ${err.message}`,
+				variant: "destructive",
+			});
+		});
+};
 
 watch(dialogOpen, (newValue) => {
 	if (!newValue) {
