@@ -3,10 +3,7 @@ module.exports = {
 		allowSameVersion: true,
 	},
 	hooks: {
-		"after:bump": [
-			"npx prettier --write {package,./src-tauri/tauri.conf}.json",
-			"npx esmo scripts/changelog.ts",
-		],
+		"after:bump": ["pnpm biome format --write package.json ./src-tauri/tauri.conf.json"],
 	},
 	git: {
 		commitMessage: "🔖 release: v${version}",
@@ -14,8 +11,13 @@ module.exports = {
 	},
 	plugins: {
 		"@release-it/conventional-changelog": {
-			writerOpts: {},
-			infile: "CHANGE_LOG.md",
+			context: {
+				linkCompare: true,
+			},
+			writerOpts: {
+				groupBy: "type",
+			},
+			infile: "CHANGELOG.md",
 			header: "# 📄 更新日志",
 			preset: {
 				name: "conventionalcommits",

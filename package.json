@@ -37,6 +37,8 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.7.3",
 		"@intlify/unplugin-vue-i18n": "^4.0.0",
+		"@release-it/bumper": "^6.0.1",
+		"@release-it/conventional-changelog": "^8.0.1",
 		"@tailwindcss/typography": "^0.5.13",
 		"@tauri-apps/cli": "2.0.0-beta.11",
 		"@types/node": "^20.12.12",
@@ -63,9 +65,7 @@
 			"biome format --write --no-errors-on-unmatched",
 			"biome lint --apply --no-errors-on-unmatched"
 		],
-		"**/*": [
-			"git add"
-		]
+		"**/*": ["git add"]
 	},
 	"volta": {
 		"node": "21.7.3",
