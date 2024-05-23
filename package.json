@@ -23,7 +23,7 @@
 		"@vueuse/core": "^10.9.0",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
-		"lucide-vue-next": "^0.378.0",
+		"lucide-vue-next": "^0.379.0",
 		"mitt": "^3.0.1",
 		"radix-vue": "^1.8.1",
 		"tailwind-merge": "^2.3.0",
@@ -48,7 +48,7 @@
 		"cz-git": "^1.9.1",
 		"czg": "^1.9.1",
 		"husky": "^9.0.11",
-		"lint-staged": "^15.2.2",
+		"lint-staged": "^15.2.4",
 		"oxlint": "^0.3.5",
 		"postcss": "^8.4.38",
 		"release-it": "^17.3.0",
@@ -65,7 +65,9 @@
 			"biome format --write --no-errors-on-unmatched",
 			"biome lint --apply --no-errors-on-unmatched"
 		],
-		"**/*": ["git add"]
+		"**/*": [
+			"git add"
+		]
 	},
 	"volta": {
 		"node": "21.7.3",

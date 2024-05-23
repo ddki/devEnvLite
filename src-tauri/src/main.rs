@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use log::info;
+use log::{info, LevelFilter};
 use tauri::Manager;
 use tauri_plugin_log::{Target, TargetKind};
 
@@ -18,10 +18,12 @@ fn main() {
 				.targets([
 					Target::new(TargetKind::Stdout),
 					Target::new(TargetKind::LogDir {
-						file_name: Some("log".to_string()),
+						file_name: Some("devEnvLite.log".to_string()),
 					}),
 					Target::new(TargetKind::Webview),
 				])
+				// how to set log level: https://github.com/tauri-apps/plugins-workspace/issues/36
+				.level(LevelFilter::Info)
 				.build(),
 		)
 		.plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {

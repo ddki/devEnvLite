@@ -95,7 +95,6 @@ function dispatch(action: Action) {
         addToRemoveQueue(toastId)
       }
       else {
-        // biome-ignore lint/complexity/noForEach: <explanation>
         state.value.toasts.forEach((toast) => {
           addToRemoveQueue(toast.id)
         })

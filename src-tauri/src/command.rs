@@ -1,9 +1,7 @@
-use std::{
-	collections::{HashMap, HashSet},
-	fs,
-};
+use std::{collections::{HashMap, HashSet}, path::PathBuf};
 
-use log::info;
+use anyhow::Error;
+use log::{debug, info};
 use tauri::{AppHandle, Manager, Runtime};
 
 use crate::{
@@ -14,7 +12,7 @@ use crate::{
 
 #[tauri::command]
 pub fn close_splashscreen(app: AppHandle) {
-	info!("close_splashscreen");
+	debug!("close_splashscreen");
 	// Close splashscreen
 	if let Some(splashscreen) = app.get_webview_window("splashscreen") {
 		splashscreen.close().unwrap();
@@ -51,7 +49,7 @@ pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, AppError> {
 	config_path.push("config");
 
 	let mut config_ids: Vec<String> = vec![];
-	if let Ok(entries) = fs::read_dir(config_path) {
+	if let Ok(entries) = std::fs::read_dir(config_path) {
 		for entry in entries.flatten() {
 			let file_path = entry.path();
 			if let Some(extension) = file_path.extension() {
@@ -76,7 +74,7 @@ pub fn get_envs<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<HashMap<String, String>, AppError> {
-	info!("get_envs scope: {:?}", scope);
+	debug!("get_envs scope: {:?}", scope);
 	if EnvironmentVarsType::SYSTEM.to_string().eq(&scope) {
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
 		let system_envs = manager.inner().read_envs()?;
@@ -96,7 +94,7 @@ pub async fn get_keys<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<Vec<String>, AppError> {
-	info!("get_keys: scopes: {:?}", scopes);
+	debug!("get_keys: scopes: {:?}", scopes);
 	let mut keys = HashSet::new();
 	if scopes.contains(&EnvironmentVarsType::SYSTEM.to_string()) {
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
@@ -108,7 +106,7 @@ pub async fn get_keys<R: Runtime>(
 	}
 	let mut sort_keys: Vec<String> = keys.iter().cloned().collect();
 	sort_keys.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
-	info!("get_keys: keys: {:?}", sort_keys);
+	debug!("get_keys: keys: {:?}", sort_keys);
 	Ok(sort_keys)
 }
 
@@ -120,7 +118,7 @@ pub async fn collate_envs<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!("collate_envs: keys: {:?}, scopes: {:?}", keys, scopes);
+	debug!("collate_envs: keys: {:?}, scopes: {:?}", keys, scopes);
 	if scopes.contains(&EnvironmentVarsType::SYSTEM.to_string()) {
 		let manager = get_environment_vars_manager(&EnvironmentVarsType::SYSTEM);
 		manager.inner().collate(keys.clone())?;
@@ -140,7 +138,7 @@ pub async fn backup_envs<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!(
+	debug!(
 		"backup_envs: backup_name: {:?}, folder: {:?}",
 		backup_name, folder
 	);
@@ -156,7 +154,7 @@ pub async fn recover_envs<R: Runtime>(
 	_app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!("recover_envs: file: {:?}, name: {:?}", file, name);
+	debug!("recover_envs: file: {:?}, name: {:?}", file, name);
 	// todo
 	Ok(())
 }
@@ -171,7 +169,7 @@ pub async fn env_apply<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!(
+	debug!(
 		"env_apply: config_id: {:?}, group_id: {:?}, env_key: {:?}, env_value: {:?}",
 		config_id, group_id, env_key, env_value
 	);
@@ -189,7 +187,7 @@ pub async fn group_env_apply<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!(
+	debug!(
 		"group_env_apply: config_id: {:?}, group_id: {:?}",
 		config_id, group_id
 	);
@@ -206,10 +204,10 @@ pub async fn config_check<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!("config_check: config_id: {:?}", config_id);
+	debug!("config_check: config_id: {:?}", config_id);
 	let mut config_info = model::config::ConfigInfo::load_from_file(&config_id, app.clone())
 		.expect("load config failed!");
-	info!("config_check: config_info: {:?}", config_info);
+	debug!("config_check: config_info: {:?}", config_info);
 	Ok(config_info.check(app.clone())?)
 }
 
@@ -220,7 +218,7 @@ pub async fn config_apply<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!("config_apply: config_id: {:?}", config_id);
+	debug!("config_apply: config_id: {:?}", config_id);
 	let mut store_config = model::config::ConfigInfo::load_from_file(&config_id, app.clone())?;
 	Ok(store_config.apply(app.clone())?)
 }
@@ -232,7 +230,7 @@ pub async fn get_config<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<ConfigInfo, AppError> {
-	info!("get config id: {:?}", config_id);
+	debug!("get config id: {:?}", config_id);
 	let config_info = model::config::ConfigInfo::load_from_file(&config_id, app)?;
 	Ok(config_info)
 }
@@ -244,7 +242,7 @@ pub async fn save_config<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!("save config: config_info: {:?}", config_info);
+	debug!("save config: config_info: {:?}", config_info);
 	let mut config = config_info.clone();
 	config.save_to_file(app.clone())?;
 	Ok(())
@@ -256,7 +254,7 @@ pub async fn remove_config<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
-	info!("remove config: id: {:?}", config_id);
+	debug!("remove config: id: {:?}", config_id);
 	model::config::ConfigInfo::remove_file(&config_id, app.clone())?;
 	Ok(())
 }
@@ -267,6 +265,13 @@ pub async fn config_export<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
+	let config_path = model::config::ConfigInfo::get_path(&config_id, app.clone())?;
+	let export_dir = app
+		.path()
+		.download_dir()
+		.expect("system download dir not found!");
+	std::fs::copy(config_path, export_dir.join(config_id + ".json"))
+		.expect_err("export config failed!");
 	Ok(())
 }
 
@@ -277,6 +282,10 @@ pub async fn import_config_form_file<R: Runtime>(
 	app: tauri::AppHandle<R>,
 	_window: tauri::Window<R>,
 ) -> Result<(), AppError> {
+	let file_path = PathBuf::from(path);
+	if !file_path.exists() {
+		return Err(Error::msg("file not found!"));
+	}
 	Ok(())
 }
 
