@@ -4,7 +4,6 @@ use anyhow::{Error, Result};
 use log::{debug, error};
 use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
-use tauri::Manager;
 
 use crate::{
 	environment_vars::{get_environment_vars_manager, EnvironmentVars, EnvironmentVarsType},
@@ -26,20 +25,26 @@ pub struct ConfigInfo {
 
 impl ConfigInfo {
 
-	pub fn get_path<R: tauri::Runtime>(id: &str, app: tauri::AppHandle<R>) -> Result<PathBuf> {
+	pub fn get_dir<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Result<PathBuf> {
 		let settings = settings::Settings::load_from_store(app.clone())?;
-		let path = PathBuf::from(settings.get_data_dir())
-			.join("config")
+		let dir = PathBuf::from(settings.get_data_dir())
+			.join("config");
+		debug!("config dir: {:#?}", dir);
+		Ok(dir)
+	}
+
+	pub fn get_path<R: tauri::Runtime>(id: &str, app: tauri::AppHandle<R>) -> Result<PathBuf> {
+		let path = Self::get_dir(app.clone())?
 			.join(format!("{}.json", id));
-		debug!("load config from file path: {:#?}", path);
-		if !path.exists() {
-			return Err(Error::msg("not found config"));
-		}
+		debug!("config file path: {:#?}", path);
 		Ok(path)
 	}
 
 	pub fn load_from_file<R: tauri::Runtime>(id: &str, app: tauri::AppHandle<R>) -> Result<Self> {
 		let path = Self::get_path(id, app.clone())?;
+		if !path.exists() {
+			return Err(Error::msg("not found config"));
+		}
 		match std::fs::read_to_string(path) {
 			Ok(content) => {
 				let config = serde_json::from_str(&content).expect("config file format error");
@@ -104,15 +109,9 @@ impl ConfigInfo {
 	}
 
 	pub fn save_to_file<R: tauri::Runtime>(&mut self, app: tauri::AppHandle<R>) -> Result<()> {
-		let path = app
-			.path()
-			.app_data_dir()
-			.unwrap()
-			.join("config")
-			.join(format!("{}.json", self.get_id()));
-		debug!("save config from file path: {:#?}", path);
+		let path = Self::get_path(self.get_id(), app.clone())?;
 		if !path.exists() {
-			std::fs::create_dir_all(path.parent().unwrap())?;
+				std::fs::create_dir_all(path.parent().unwrap())?;
 		}
 		if let Some(groups) = &mut self.groups {
 			for group in groups.iter_mut() {
@@ -131,7 +130,7 @@ impl ConfigInfo {
 			}
 		}
 
-		debug!("save config from file config: {:#?}", self);
+		debug!("save config from file config: {:#?}, path: {:#?}", self, path);
 		let file = std::fs::File::create(path)?;
 		serde_json::to_writer(file, self).expect("save config failed");
 
@@ -139,13 +138,7 @@ impl ConfigInfo {
 	}
 
 	pub fn remove_file<R: tauri::Runtime>(id: &str, app: tauri::AppHandle<R>) -> Result<()> {
-		let path = app
-			.path()
-			.app_data_dir()
-			.unwrap()
-			.join("config")
-			.join(format!("{}.json", id));
-		debug!("load config from file path: {:#?}", path);
+		let path = Self::get_path(id, app.clone())?;
 		if !path.exists() {
 			return Err(Error::msg("not found config"));
 		}

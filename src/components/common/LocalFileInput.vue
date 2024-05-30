@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { type DialogFilter, open } from "@tauri-apps/plugin-dialog";
-import { File, Folder } from "lucide-vue-next";
+import { File, Folder, FolderOpenDot } from "lucide-vue-next";
 import { type HTMLAttributes, defineModel } from "vue";
 
 interface Props {
@@ -29,9 +29,12 @@ const getFilePath = async () => {
 		multiple: false,
 		directory: props.type === "folder",
 		filters: filters,
+		defaultPath: model.value,
 	});
 	console.log(file);
-	model.value = props.type === "folder" ? (file as unknown as string) : file?.path;
+	if (file) {
+		model.value = props.type === "folder" ? (file as unknown as string) : file?.path;
+	}
 };
 </script>
 

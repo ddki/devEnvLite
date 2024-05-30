@@ -1,7 +1,13 @@
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
+	#[error("IO error: {0}")]
+	Io(#[from] std::io::Error),
+
 	#[error(transparent)]
 	Other(#[from] anyhow::Error),
+
+	#[error("Application error: {0}")]
+	Custom(String),
 }
 
 impl serde::Serialize for AppError {

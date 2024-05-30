@@ -25,5 +25,5 @@ app.config.globalProperties.$emitter = emitter;
 app.use(i18n);
 app.mount("#main");
 
-disableRefresh();
+// disableRefresh();
 disableContextMenu();

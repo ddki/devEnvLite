@@ -99,7 +99,7 @@ import { useToast } from "@/components/ui/toast/use-toast";
 import { getSetting, saveSetting } from "@/store";
 import { getVersion } from "@tauri-apps/api/app";
 import { Settings } from "lucide-vue-next";
-import { getCurrentInstance, reactive, ref } from "vue";
+import { getCurrentInstance, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const appVersion = await getVersion();
@@ -148,4 +148,15 @@ const onSave = async () => {
 		});
 	}
 };
+
+watch(open, async (newValue) => {
+	if (!newValue) {
+		const setting = await getSetting();
+		settingData.language = setting.language;
+		settingData.homeDir = setting.homeDir;
+		settingData.cacheDir = setting.cacheDir;
+		settingData.dataDir = setting.dataDir;
+		settingData.envBackupDir = setting.envBackupDir;
+	}
+});
 </script>

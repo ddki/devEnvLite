@@ -18,12 +18,12 @@ fn main() {
 				.targets([
 					Target::new(TargetKind::Stdout),
 					Target::new(TargetKind::LogDir {
-						file_name: Some("devEnvLite.log".to_string()),
+						file_name: Some("devEnvLite".to_string()),
 					}),
 					Target::new(TargetKind::Webview),
 				])
 				// how to set log level: https://github.com/tauri-apps/plugins-workspace/issues/36
-				.level(LevelFilter::Info)
+				// .level(LevelFilter::Debug)
 				.build(),
 		)
 		.plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {

@@ -129,6 +129,7 @@ impl Settings {
 				Ok(()) => {
 					let settings = Self::build_form_store(app, &store);
 					settings.save_to_store(store)?;
+					settings.create_dir()?;
 					Ok(settings)
 				}
 				Err(e) => {
@@ -139,4 +140,26 @@ impl Settings {
 				}
 		}
 	}
+
+	pub fn create_dir(&self) -> anyhow::Result<()> {
+		let home_dir = std::path::Path::new(&self.home_dir);
+		let cache_dir = std::path::Path::new(&self.cache_dir);
+		let data_dir = std::path::Path::new(&self.data_dir);
+		let env_backup_dir = std::path::Path::new(&self.env_backup_dir);
+
+		if !home_dir.exists() {
+			std::fs::create_dir_all(home_dir)?;
+		}
+		if !cache_dir.exists() {
+			std::fs::create_dir_all(cache_dir)?;
+		}
+		if !data_dir.exists() {
+			std::fs::create_dir_all(data_dir)?;
+		}
+		if !env_backup_dir.exists() {
+			std::fs::create_dir_all(env_backup_dir)?;
+		}
+		Ok(())
+	}
+
 }
