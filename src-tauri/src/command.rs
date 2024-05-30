@@ -272,9 +272,10 @@ pub async fn config_export<R: Runtime>(
 		.download_dir()
 		.expect("system download dir not found!");
 	let export_file_path = export_dir.join(config_id + ".json").to_string_lossy().to_string();
+	debug!("config export from: {:?}, to: {:?}", config_path, export_file_path);
 	std::fs::copy(config_path, &export_file_path)
-		.expect_err("export config failed!");
-	app.shell().open(&export_file_path, None).expect("open file failed!");
+		.expect("export config failed!");
+	app.shell().open(&export_dir.to_string_lossy().to_string(), None).expect("open file failed!");
 	Ok(())
 }
 

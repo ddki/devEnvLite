@@ -63,6 +63,9 @@ fn main() {
 			command::get_config,
 			command::save_config,
 			command::remove_config,
+			command::config_export,
+			command::import_config_form_file,
+			command::import_config_form_url,
 		])
 		.run(ctx)
 		.expect("error while running tauri application");
