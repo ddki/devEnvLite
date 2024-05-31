@@ -12,18 +12,18 @@
 	},
 	"dependencies": {
 		"@tauri-apps/api": "2.0.0-beta.6",
-		"@tauri-apps/plugin-clipboard-manager": "2.1.0-beta.1",
-		"@tauri-apps/plugin-dialog": "2.0.0-beta.3",
-		"@tauri-apps/plugin-fs": "2.0.0-beta.3",
-		"@tauri-apps/plugin-process": "2.0.0-beta.3",
-		"@tauri-apps/plugin-store": "2.0.0-beta.3",
-		"@tauri-apps/plugin-updater": "2.0.0-beta.3",
+		"@tauri-apps/plugin-clipboard-manager": "2.1.0-beta.2",
+		"@tauri-apps/plugin-dialog": "2.0.0-beta.4",
+		"@tauri-apps/plugin-fs": "2.0.0-beta.4",
+		"@tauri-apps/plugin-process": "2.0.0-beta.4",
+		"@tauri-apps/plugin-store": "2.0.0-beta.4",
+		"@tauri-apps/plugin-updater": "2.0.0-beta.4",
 		"@types/uuid": "^9.0.8",
 		"@vee-validate/zod": "^4.12.8",
 		"@vueuse/core": "^10.10.0",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
-		"lucide-vue-next": "^0.379.0",
+		"lucide-vue-next": "^0.381.0",
 		"mitt": "^3.0.1",
 		"radix-vue": "^1.8.2",
 		"tailwind-merge": "^2.3.0",
@@ -41,21 +41,21 @@
 		"@release-it/conventional-changelog": "^8.0.1",
 		"@tailwindcss/typography": "^0.5.13",
 		"@tauri-apps/cli": "2.0.0-beta.11",
-		"@types/node": "^20.12.12",
-		"@vitejs/plugin-vue": "^5.0.4",
+		"@types/node": "^20.12.13",
+		"@vitejs/plugin-vue": "^5.0.5",
 		"autoprefixer": "^10.4.19",
 		"commitizen": "^4.3.0",
 		"cz-git": "^1.9.2",
 		"czg": "^1.9.2",
 		"husky": "^9.0.11",
 		"lint-staged": "^15.2.5",
-		"oxlint": "^0.4.1",
+		"oxlint": "^0.4.2",
 		"postcss": "^8.4.38",
 		"release-it": "^17.3.0",
 		"shadcn-vue": "^0.10.5",
 		"tailwindcss": "^3.4.3",
 		"typescript": "^5.4.5",
-		"vite": "^5.2.11",
+		"vite": "^5.2.12",
 		"vue-tsc": "^2.0.19"
 	},
 	"lint-staged": {
@@ -70,7 +70,7 @@
 		]
 	},
 	"volta": {
-		"node": "21.7.3",
-		"pnpm": "9.0.1"
+		"node": "22.2.0",
+		"pnpm": "9.1.4"
 	}
 }
