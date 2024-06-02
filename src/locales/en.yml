@@ -138,4 +138,8 @@ message:
   operate-success: "{operate} Success"
   operate-failure: "{operate} Failure"
 
+footer:
+  check-update: Check Update
+  connect-failed: Connect to server for updating failed.
+
 version: Version

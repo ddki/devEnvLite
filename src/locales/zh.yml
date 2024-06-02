@@ -138,5 +138,9 @@ message:
   operate-success: "{operate}成功"
   operate-failure: "{operate}失败"
 
+footer:
+  check-update: 检查更新
+  connect-failed: 连接更新服务器失败
+
 version: 版本
 

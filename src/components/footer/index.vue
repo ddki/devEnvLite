@@ -4,6 +4,9 @@
 			<Tag class="h-4 w-4" />
 			<span>V{{ appVersion }}</span>
 		</span>
+		<span class="grid grid-flow-col gap-1 items-center" v-if="update?.available" @click="updateApp">
+			<span>latest version is {{ update?.version }}</span>
+		</span>
 		<span class="grid grid-flow-col gap-1 items-center">
 			<Copyright class="h-4 w-4" />
 			<a target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0</a>
@@ -13,16 +16,28 @@
 
 <script setup lang="ts">
 import { getVersion } from "@tauri-apps/api/app";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { check } from "@tauri-apps/plugin-updater";
 import { Copyright, Tag } from "lucide-vue-next";
-// import { check } from "@tauri-apps/plugin-updater";
-// import { relaunch } from "@tauri-apps/plugin-process";
+import { useI18n } from "vue-i18n";
+import { toast } from "../ui/toast/use-toast";
 
 const appVersion = await getVersion();
 
-// const update = await check();
+const { t } = useI18n();
 
-// if (update?.available) {
-//   await update.downloadAndInstall();
-//   await relaunch();
-// }
+const update = await check().catch((e) => {
+	toast({
+		title: t("footer.check-update"),
+		description: t("footer.connect-failed"),
+		variant: "destructive",
+	});
+});
+
+const updateApp = async () => {
+	if (update?.available) {
+		await update.downloadAndInstall();
+		await relaunch();
+	}
+};
 </script>

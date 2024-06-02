@@ -10,7 +10,7 @@
 	},
 	"i18n-ally.localesPaths": ["src/locales"],
 	"[vue]": {
-		"editor.defaultFormatter": "Vue.volar"
+		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"[typescript,javascript,json,jsonc]": {
 		"editor.defaultFormatter": "biomejs.biome"
