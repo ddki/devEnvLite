@@ -1,5 +1,11 @@
+## Default Permission
 
-### Permission Table 
+Allow all
+
+- `allow-set-theme`
+- `allow-get-theme`
+
+## Permission Table
 
 <table>
 <tr>

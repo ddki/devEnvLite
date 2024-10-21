@@ -1,6 +1,6 @@
 {
 	"$schema": "../node_modules/@tauri-apps/cli/schema.json",
-	"productName": "DvEnvLite",
+	"productName": "DevEnvLite",
 	"version": "0.0.0",
 	"identifier": "devenvlite.ddki.io.github",
 	"build": {

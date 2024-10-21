@@ -10,10 +10,10 @@ readme = "README.md"
 links = "tauri-plugin-theme"
 
 [build-dependencies]
-tauri-plugin = { version = "2.0.0-beta.0", features = ["build"] }
+tauri-plugin = { version = "2.0.1", features = ["build"] }
 
 [dependencies]
-tauri = { version = "2.0.0-beta" }
+tauri = { version = "2.0.4" }
 serde = { version = "1", features = ["derive"] }
 
 [target."cfg(target_os = \"macos\")".dependencies]
@@ -22,9 +22,9 @@ cocoa = "0.25"
 [target."cfg(target_os = \"linux\")".dependencies]
 gtk = "0.18"
 tintanum = "0.1"
-futures-lite = "2.0"
+futures-lite = "2.3"
 tokio = { version = "1", features = ["macros"] }
-once_cell = "1.18"
+once_cell = "1.20"
 
 [target."cfg(target_os = \"windows\")".dependencies]
 dirs-next = "2.0"
