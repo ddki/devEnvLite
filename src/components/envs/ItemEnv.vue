@@ -79,7 +79,6 @@ import {
 	TerminalSquare,
 	Trash2,
 } from "lucide-vue-next";
-import { defineEmits, defineProps } from "vue";
 import { useI18n } from "vue-i18n";
 import { EditItemEnv } from ".";
 import { useToast } from "@/components/ui/toast";

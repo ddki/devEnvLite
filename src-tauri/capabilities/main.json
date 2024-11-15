@@ -2,15 +2,8 @@
 	"$schema": "../gen/schemas/desktop-schema.json",
 	"identifier": "default",
 	"description": "Capability for the main window",
-	"windows": ["main"],
+	"windows": ["main", "splashscreen"],
 	"permissions": [
-		"path:default",
-		"event:default",
-		"window:default",
-		"app:default",
-		"resources:default",
-		"menu:default",
-		"tray:default",
 		"shell:allow-open",
 		"log:allow-log",
 		"fs:default",
@@ -48,6 +41,9 @@
 		"theme:default",
 		"theme:allow-set-theme",
 		"theme:allow-get-theme",
-		"webview:allow-internal-toggle-devtools"
+		"core:app:allow-version",
+		"core:app:default",
+		"core:webview:default",
+		"core:webview:allow-internal-toggle-devtools"
 	]
 }

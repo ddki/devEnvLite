@@ -28,7 +28,7 @@
 				"url": "index.html",
 				"width": 1200,
 				"height": 800,
-				"visible": false,
+				"visible": true,
 				"resizable": true,
 				"center": true,
 				"shadow": true,

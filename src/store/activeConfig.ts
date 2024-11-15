@@ -1,7 +1,7 @@
 import { Store } from "@tauri-apps/plugin-store";
 import type { ActiveConfig } from "./type";
 
-const activeConfigStore = new Store("data/active-config.json");
+const activeConfigStore = await Store.load("data/active-config.json");
 
 const getActiveConfig = async (): Promise<ActiveConfig> => {
 	return {

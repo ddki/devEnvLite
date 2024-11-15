@@ -28,7 +28,7 @@ import type { Config } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
 import { v4 as uuidv4 } from "uuid";
-import { defineEmits, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "@/components/ui/toast";
 import { validateUrl } from "@/utils/ValidateUtil";

@@ -1,7 +1,7 @@
 import { Store } from "@tauri-apps/plugin-store";
 import type { Setting } from "./type";
 
-const store = new Store("settings.json");
+const store = await Store.load('settings.json');
 
 const getSetting = async (): Promise<Setting> => {
 	return {

@@ -1,8 +1,10 @@
+use std::sync::Arc;
+
 use log::debug;
 use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
-use tauri_plugin_store::StoreBuilder;
+use tauri_plugin_store::{Store, StoreExt};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Getter, Setter)]
 pub struct Settings {
@@ -44,9 +46,8 @@ impl Settings {
 	) -> Self {
 		let store_language = store
 			.get("language")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string())
-			.unwrap_or_else(|| "en".to_string());
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| "en".to_owned());
 
 		let home_dir = app
 			.path()
@@ -55,8 +56,7 @@ impl Settings {
 
 		let store_home_dir = store
 			.get("homeDir")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string())
+			.and_then(|v| v.as_str().map(String::from))
 			.unwrap_or_else(|| {
 				home_dir
 					.clone()
@@ -67,8 +67,7 @@ impl Settings {
 
 		let store_cache_dir = store
 			.get("cacheDir")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string())
+			.and_then(|v| v.as_str().map(String::from))
 			.unwrap_or_else(|| {
 				home_dir
 					.clone()
@@ -80,8 +79,7 @@ impl Settings {
 
 		let store_data_dir = store
 			.get("dataDir")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string())
+			.and_then(|v| v.as_str().map(String::from))
 			.unwrap_or_else(|| {
 				home_dir
 					.clone()
@@ -93,8 +91,7 @@ impl Settings {
 
 		let store_env_backup_dir = store
 			.get("envBackupDir")
-			.and_then(|v| v.as_str())
-			.map(|s| s.to_string())
+			.and_then(|v| v.as_str().map(String::from))
 			.unwrap_or_else(|| {
 				home_dir
 					.clone()
@@ -113,19 +110,19 @@ impl Settings {
 		}
 	}
 
-	pub fn save_to_store<R: tauri::Runtime>(&self, mut store: tauri_plugin_store::Store<R>,) -> anyhow::Result<()> {
-		store.insert("language".to_string(), self.language.as_str().into())?;
-		store.insert("homeDir".to_string(), self.home_dir.as_str().into())?;
-		store.insert("cacheDir".to_string(), self.cache_dir.as_str().into())?;
-		store.insert("dataDir".to_string(), self.data_dir.as_str().into())?;
-		store.insert("envBackupDir".to_string(), self.env_backup_dir.as_str().into())?;
+	pub fn save_to_store<R: tauri::Runtime>(&self, store: Arc<Store<R>>,) -> anyhow::Result<()> {
+		store.set("language".to_string(), self.language.as_str());
+		store.set("homeDir".to_string(), self.home_dir.as_str());
+		store.set("cacheDir".to_string(), self.cache_dir.as_str());
+		store.set("dataDir".to_string(), self.data_dir.as_str());
+		store.set("envBackupDir".to_string(), self.env_backup_dir.as_str());
 		store.save().expect("Failed to save settings to store");
 		Ok(())
 	}
 
 	pub fn load_from_store<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> anyhow::Result<Self> {
-		let mut store = StoreBuilder::new("settings.json").build(app.clone());
-		match store.load() {
+		let store = app.store("settings.json")?;
+		match store.reload() {
 				Ok(()) => {
 					let settings = Self::build_form_store(app, &store);
 					settings.save_to_store(store)?;

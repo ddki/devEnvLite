@@ -60,7 +60,7 @@ import {
 	PlusSquare,
 	Trash2,
 } from "lucide-vue-next";
-import { defineEmits, defineProps, ref } from "vue";
+import {  ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { EditGroupEnv, EditItemEnv } from ".";
 import { ItemEnv } from ".";

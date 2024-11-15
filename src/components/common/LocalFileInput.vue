@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { type DialogFilter, open } from "@tauri-apps/plugin-dialog";
-import { File, Folder, FolderOpenDot } from "lucide-vue-next";
-import { type HTMLAttributes, defineModel } from "vue";
+import { File, Folder } from "lucide-vue-next";
+import type { HTMLAttributes } from "vue";
 
 interface Props {
 	type: "file" | "folder";

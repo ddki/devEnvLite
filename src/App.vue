@@ -63,6 +63,7 @@ onMounted(async () => {
 });
 
 onBeforeMount(async () => {
+	console.log("application startup close_splashscreen....");
 	await invoke("close_splashscreen");
 });
 
