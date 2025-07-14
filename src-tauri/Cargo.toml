@@ -25,7 +25,6 @@ serde_json = "1"
 log = "^0.4"
 thiserror = "1.0.69"
 anyhow = "1.0.98"
-tauri-plugin-theme = { path = "./tauri-plugin-theme" }
 lombok = "0.4.0"
 
 [features]

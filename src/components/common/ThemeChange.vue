@@ -10,8 +10,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { invoke } from "@tauri-apps/api/core";
-import { useColorMode } from "@vueuse/core";
+import { setTheme } from "@tauri-apps/api/app";
+import { set, useColorMode } from "@vueuse/core";
 import { Moon, Sun, SunMoon } from "lucide-vue-next";
 import { watch } from "vue";
 
@@ -51,18 +51,12 @@ const themes = [
 
 watch(mode, (newValue) => {
 	console.log("theme changed: ", newValue);
-	if (newValue === "auto") {
-		invoke("plugin:theme|set_theme", {
-			theme: newValue,
-		});
-	} else if (newValue.includes("dark")) {
-		invoke("plugin:theme|set_theme", {
-			theme: "dark",
-		});
+	if (newValue.includes("dark")) {
+		setTheme("dark");
 	} else if (newValue.includes("light")) {
-		invoke("plugin:theme|set_theme", {
-			theme: "light",
-		});
+		setTheme("light");
+	} else {
+		setTheme(null);
 	}
 });
 </script>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
 import { ListCheckbox } from "@/components/common";
+import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { invoke } from "@tauri-apps/api/core";
 import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { toast } from "../ui/toast/use-toast";
+import { toast } from "vue-sonner";
 
 interface CheckInfo {
 	label: string;

@@ -95,16 +95,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/toast/use-toast";
 import { getSetting, saveSetting } from "@/store";
 import { getVersion } from "@tauri-apps/api/app";
 import { Settings } from "lucide-vue-next";
 import { getCurrentInstance, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
 
 const appVersion = await getVersion();
 const { t } = useI18n();
-const { toast } = useToast();
 const context = getCurrentInstance();
 
 const languageList = [

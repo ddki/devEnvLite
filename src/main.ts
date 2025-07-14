@@ -4,14 +4,14 @@ import { createI18n } from "vue-i18n";
 
 import { getSetting } from "@/store/setting";
 import App from "./App.vue";
-import "./styles/main.css";
-import { disableContextMenu, disableRefresh } from "./utils/Webview";
+import "./styles/index.css";
 import mitt from "mitt";
+import { disableContextMenu, disableRefresh } from "./utils/Webview";
 
 const emitter = mitt();
 emitter.on("reloadApp", () => {
 	window.location.reload();
-})
+});
 
 const setting = await getSetting();
 

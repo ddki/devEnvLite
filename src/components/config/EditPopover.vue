@@ -50,16 +50,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/toast/use-toast";
-import { deleteConfig, getConfig, getActiveConfigNames, saveConfig } from "@/store";
+import { deleteConfig, getActiveConfigNames, getConfig, saveConfig } from "@/store";
 import { v4 as uuidv4 } from "uuid";
 import { onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
-const { toast } = useToast();
 
 const scopesList = [
 	{ label: t("env.scopes.user"), value: "USER" },

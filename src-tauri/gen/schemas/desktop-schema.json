@@ -6225,36 +6225,6 @@
           "markdownDescription": "Denies the values command without any pre-configured scope."
         },
         {
-          "description": "Allow all\n#### This default permission set includes:\n\n- `allow-set-theme`\n- `allow-get-theme`",
-          "type": "string",
-          "const": "theme:default",
-          "markdownDescription": "Allow all\n#### This default permission set includes:\n\n- `allow-set-theme`\n- `allow-get-theme`"
-        },
-        {
-          "description": "Enables the get_theme command without any pre-configured scope.",
-          "type": "string",
-          "const": "theme:allow-get-theme",
-          "markdownDescription": "Enables the get_theme command without any pre-configured scope."
-        },
-        {
-          "description": "Enables the set_theme command without any pre-configured scope.",
-          "type": "string",
-          "const": "theme:allow-set-theme",
-          "markdownDescription": "Enables the set_theme command without any pre-configured scope."
-        },
-        {
-          "description": "Denies the get_theme command without any pre-configured scope.",
-          "type": "string",
-          "const": "theme:deny-get-theme",
-          "markdownDescription": "Denies the get_theme command without any pre-configured scope."
-        },
-        {
-          "description": "Denies the set_theme command without any pre-configured scope.",
-          "type": "string",
-          "const": "theme:deny-set-theme",
-          "markdownDescription": "Denies the set_theme command without any pre-configured scope."
-        },
-        {
           "description": "This permission set configures which kind of\nupdater functions are exposed to the frontend.\n\n#### Granted Permissions\n\nThe full workflow from checking for updates to installing them\nis enabled.\n\n\n#### This default permission set includes:\n\n- `allow-check`\n- `allow-download`\n- `allow-install`\n- `allow-download-and-install`",
           "type": "string",
           "const": "updater:default",

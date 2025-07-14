@@ -79,23 +79,23 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/components/ui/toast";
 import { deleteConfig, getConfigs, setActiveConfigId } from "@/store";
 import type { Config } from "@/store/type";
 import { invoke } from "@tauri-apps/api/core";
 import {
+	CircleCheck,
 	CircleCheckBig,
 	Ellipsis,
 	File,
+	FileDown,
 	FilePlus,
-	CircleCheck,
 	Pencil,
 	SearchCheck,
 	Trash2,
-	FileDown,
 } from "lucide-vue-next";
 import { getCurrentInstance, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
 
 interface ConfigData extends Config {
 	activeClass?: string;
@@ -110,7 +110,6 @@ const emits = defineEmits(["update:activeConfigId", "update:selectedConfigId"]);
 const context = getCurrentInstance();
 
 const { t } = useI18n();
-const { toast } = useToast();
 
 const configs = ref<ConfigData[]>([]);
 
@@ -237,7 +236,7 @@ const dropdownMenuExport = async (config: ConfigData) => {
 				variant: "destructive",
 			});
 		});
-}
+};
 
 watch(
 	() => props.activeConfigId,

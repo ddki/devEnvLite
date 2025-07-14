@@ -60,11 +60,11 @@ import {
 	PlusSquare,
 	Trash2,
 } from "lucide-vue-next";
-import {  ref } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
 import { EditGroupEnv, EditItemEnv } from ".";
 import { ItemEnv } from ".";
-import { useToast } from "@/components/ui/toast";
 
 interface Props {
 	data: GroupEnv;
@@ -77,7 +77,6 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const { toast } = useToast();
 
 const showItems = ref(false);
 

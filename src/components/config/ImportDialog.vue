@@ -25,16 +25,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateConfigFromEnvs } from "@/store/config";
 import type { Config } from "@/store/type";
+import { validateUrl } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
 import { v4 as uuidv4 } from "uuid";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useToast } from "@/components/ui/toast";
-import { validateUrl } from "@/utils/ValidateUtil";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
-const { toast } = useToast();
 
 const scopesList = [
 	{ label: t("env.scopes.user"), value: "USER" },
@@ -172,7 +171,7 @@ const importFromUrl = async () => {
 		});
 		return;
 	}
-	if(!validateUrl(url.value)) {
+	if (!validateUrl(url.value)) {
 		toast({
 			title: t("config.import-config.types.url.text"),
 			description: `${t("message.field-error-format", { field: t("config.import-config.types.url.url") })}`,

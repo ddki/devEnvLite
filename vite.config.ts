@@ -1,21 +1,19 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-import vue from "@vitejs/plugin-vue";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
+import tailwindcss from "@tailwindcss/vite";
+import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vite";
-import tailwindcss from '@tailwindcss/vite'
-import autoprefixer from "autoprefixer"
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
 	plugins: [
 		vue(),
+		tailwindcss(),
 		VueI18nPlugin({
 			include: [path.resolve(__dirname, "./src/locales/*.yml")],
-			jitCompilation: true,
 		}),
-		tailwindcss(),
 	],
 	resolve: {
 		alias: {
@@ -28,7 +26,7 @@ export default defineConfig(async () => ({
 	clearScreen: false,
 	// 2. tauri expects a fixed port, fail if that port is not available
 	server: {
-		port: 1420,
+		port: 5173,
 		strictPort: true,
 		watch: {
 			// 3. tell vite to ignore watching `src-tauri`

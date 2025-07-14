@@ -4,7 +4,7 @@ import { relaunch } from "@tauri-apps/plugin-process";
 import { check } from "@tauri-apps/plugin-updater";
 import { Tag } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
-import { toast } from "../ui/toast/use-toast";
+import { toast } from "vue-sonner";
 
 const appVersion = await getVersion();
 

@@ -38,11 +38,9 @@
 		"dialog:allow-message",
 		"dialog:allow-open",
 		"dialog:allow-save",
-		"theme:default",
-		"theme:allow-set-theme",
-		"theme:allow-get-theme",
 		"core:app:allow-version",
 		"core:app:default",
+		"core:app:allow-set-app-theme",
 		"core:webview:default",
 		"core:webview:allow-internal-toggle-devtools"
 	]

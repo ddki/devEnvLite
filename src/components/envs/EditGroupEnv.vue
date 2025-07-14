@@ -46,16 +46,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/toast/use-toast";
 import { deleteGroupEnv, getConfig, getGroupEnv, saveGroupEnvToConfig } from "@/store";
 import type { GroupEnv } from "@/store/type";
 import { v4 as uuidv4 } from "uuid";
 import { watch } from "vue";
 import { onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
-const { toast } = useToast();
 
 interface Prop {
 	configId: string;

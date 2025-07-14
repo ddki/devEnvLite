@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { LocalFileInput } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -11,15 +12,13 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { LocalFileInput } from "@/components/common";
 import { Label } from "@/components/ui/label";
 import { invoke } from "@tauri-apps/api/core";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useToast } from "../ui/toast";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
-const { toast } = useToast();
 
 const open = ref(false);
 

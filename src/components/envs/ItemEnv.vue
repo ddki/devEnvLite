@@ -73,15 +73,15 @@ import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import {
 	AlertCircle,
 	CheckCircle,
-	Copy,
 	CircleCheck,
+	Copy,
 	Pencil,
 	TerminalSquare,
 	Trash2,
 } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
 import { EditItemEnv } from ".";
-import { useToast } from "@/components/ui/toast";
 
 interface Props {
 	configId: string;
@@ -94,18 +94,22 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const { toast } = useToast();
 
 // 应用
 const dropdownMenuApply = async (data: Env) => {
 	// todo
-	await invoke("env_apply", { configId: props.configId, groupId: data.groupId, envKey: data.key, envValue: data.value })
+	await invoke("env_apply", {
+		configId: props.configId,
+		groupId: data.groupId,
+		envKey: data.key,
+		envValue: data.value,
+	})
 		.then(() => {
 			toast({
 				title: `${t("operate.apply")} ${t("env.text")}`,
 				description: t("message.success"),
 			});
-			emit('callback');
+			emit("callback");
 		})
 		.catch((e) => {
 			toast({
