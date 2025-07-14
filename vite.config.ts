@@ -4,7 +4,7 @@ import path from "node:path";
 import vue from "@vitejs/plugin-vue";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import { defineConfig } from "vite";
-import tailwind from "tailwindcss"
+import tailwindcss from '@tailwindcss/vite'
 import autoprefixer from "autoprefixer"
 
 // https://vitejs.dev/config/
@@ -15,12 +15,8 @@ export default defineConfig(async () => ({
 			include: [path.resolve(__dirname, "./src/locales/*.yml")],
 			jitCompilation: true,
 		}),
+		tailwindcss(),
 	],
-	css: {
-		postcss: {
-			plugins: [tailwind(), autoprefixer()]
-		}
-	},
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),

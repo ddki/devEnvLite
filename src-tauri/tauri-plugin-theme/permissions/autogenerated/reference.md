@@ -2,6 +2,8 @@
 
 Allow all
 
+#### This default permission set includes the following:
+
 - `allow-set-theme`
 - `allow-get-theme`
 
