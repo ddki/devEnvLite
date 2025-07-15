@@ -6,9 +6,11 @@ use tauri::Manager;
 use tauri_plugin_log::{Target, TargetKind};
 
 pub mod command;
+pub mod entity;
 pub mod environment_vars;
 pub mod error;
 pub mod model;
+pub mod service;
 
 fn main() {
 	let mut ctx = tauri::generate_context!();
@@ -43,12 +45,16 @@ fn main() {
 		})
 		.setup(|app| {
 			// #[cfg(desktop)]
-            // let _ = app.handle().plugin(tauri_plugin_single_instance::init(|app, args, cwd| {}));
+			// let _ = app.handle().plugin(tauri_plugin_single_instance::init(|app, args, cwd| {}));
 			#[cfg(desktop)]
-			let _ = app.handle().plugin(tauri_plugin_window_state::Builder::default().build());
+			let _ = app.handle()
+				.plugin(tauri_plugin_window_state::Builder::default().build());
 			#[cfg(desktop)]
-			let _ = app.handle().plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, Some(vec!["--flag1", "--flag2"]) /* 传递给应用程序的任意数量的参数 */));
-			
+			let _ = app.handle().plugin(tauri_plugin_autostart::init(
+				tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+				Some(vec!["--flag1", "--flag2"]), /* 传递给应用程序的任意数量的参数 */
+			));
+
 			// #[cfg(desktop)]
 			// app.handle()
 			// 	.plugin(tauri_plugin_updater::Builder::new().build())?;
