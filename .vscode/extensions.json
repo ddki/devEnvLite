@@ -1,6 +1,5 @@
 {
 	"recommendations": [
-		"Vue.volar",
 		"tauri-apps.tauri-vscode",
 		"editorconfig.editorconfig",
 		"rust-lang.rust-analyzer",

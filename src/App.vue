@@ -29,7 +29,7 @@ import { getActiveConfig } from "@/store/index";
 import Config from "@/views/config/index.vue";
 import GroupEnv from "@/views/groupenv/index.vue";
 import { invoke } from "@tauri-apps/api/core";
-import { onBeforeMount, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -59,11 +59,6 @@ onMounted(async () => {
 				console.log("application startup config_check error: ", e);
 			});
 	}
-});
-
-onBeforeMount(async () => {
-	console.log("application startup close_splashscreen....");
-	await invoke("close_splashscreen");
 });
 
 watch(selectedConfigId, (newValue, oldValue) => {

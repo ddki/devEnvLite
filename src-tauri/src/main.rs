@@ -29,6 +29,9 @@ fn main() {
 		.plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
 			info!("{}, {argv:?}, {cwd}", app.package_info().name);
 		}))
+		.plugin(tauri_plugin_os::init())
+		.plugin(tauri_plugin_opener::init())
+		.plugin(tauri_plugin_fs::init())
 		.plugin(tauri_plugin_store::Builder::default().build())
 		.plugin(tauri_plugin_clipboard_manager::init())
 		.plugin(tauri_plugin_fs::init())
@@ -40,6 +43,13 @@ fn main() {
 		})
 		.setup(|app| {
 			// #[cfg(desktop)]
+            // let _ = app.handle().plugin(tauri_plugin_single_instance::init(|app, args, cwd| {}));
+			#[cfg(desktop)]
+			let _ = app.handle().plugin(tauri_plugin_window_state::Builder::default().build());
+			#[cfg(desktop)]
+			let _ = app.handle().plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, Some(vec!["--flag1", "--flag2"]) /* 传递给应用程序的任意数量的参数 */));
+			
+			// #[cfg(desktop)]
 			// app.handle()
 			// 	.plugin(tauri_plugin_updater::Builder::new().build())?;
 			let main = app.get_webview_window("main").unwrap();
@@ -48,7 +58,6 @@ fn main() {
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
-			command::close_splashscreen,
 			command::get_config_ids,
 			command::get_envs,
 			command::get_keys,

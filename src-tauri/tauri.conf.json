@@ -13,17 +13,6 @@
 		"windows": [
 			{
 				"title": "DevEnvLite",
-				"label": "splashscreen",
-				"url": "splashscreen.html",
-				"width": 1200,
-				"height": 800,
-				"visible": true,
-				"center": true,
-				"shadow": true,
-				"fullscreen": false
-			},
-			{
-				"title": "DevEnvLite",
 				"label": "main",
 				"url": "index.html",
 				"width": 1200,
@@ -62,7 +51,9 @@
 	},
 	"plugins": {
 		"updater": {
-			"endpoints": ["https://github.com/ddki/devEnvLite/releases/latest/download/latest.json"],
+			"endpoints": [
+				"https://github.com/ddki/devEnvLite/releases/latest/download/latest.json"
+			],
 			"active": true,
 			"dialog": true,
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhGNzI5NUM4QTJGMjA4QTYKUldTbUNQS2l5SlZ5ajBBWVVtQ2dOWnc0SDlXb0FYemJOWkNVamNWQktzK3BRQXhVRkVsa24zNngK",

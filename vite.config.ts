@@ -38,7 +38,6 @@ export default defineConfig(async () => ({
 		rollupOptions: {
 			input: {
 				index: fileURLToPath(new URL("./index.html", import.meta.url)),
-				splashscreen: fileURLToPath(new URL("./splashscreen.html", import.meta.url)),
 			},
 		},
 	},

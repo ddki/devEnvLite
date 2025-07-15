@@ -10,17 +10,6 @@ use crate::{
 };
 
 #[tauri::command]
-pub fn close_splashscreen(app: AppHandle) {
-	debug!("close_splashscreen");
-	// Close splashscreen
-	if let Some(splashscreen) = app.get_webview_window("splashscreen") {
-		splashscreen.close().unwrap();
-	}
-	// Show main window
-	app.get_webview_window("main").unwrap().show().unwrap();
-}
-
-#[tauri::command]
 pub fn get_config_ids(app: AppHandle) -> Result<Vec<String>, String> {
 	let app_config_dir = app.path().app_config_dir().unwrap();
 	let app_cache_dir = app.path().app_cache_dir().unwrap();

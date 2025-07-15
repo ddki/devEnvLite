@@ -20,20 +20,31 @@ tauri-plugin-store = "2.3.0"
 tauri-plugin-log = "2.6.0"
 tauri-plugin-fs = "2.4.0"
 tauri-plugin-clipboard-manager = "2.3.0"
+tauri-plugin-opener = "2.4.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 log = "^0.4"
-thiserror = "1.0.69"
+thiserror = "2.0.12"
 anyhow = "1.0.98"
 lombok = "0.4.0"
+tauri-plugin-os = "2.3.0"
+ulid = "1.2.1"
+
+[workspace]
+members = [".", "migration"]
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
 
 [dev-dependencies]
-cargo-edit = "0.12.3"
+cargo-edit = "0.13.6"
 rustfmt = "0.10.0"
 
 [target.'cfg(windows)'.dependencies]
-winreg = { version = "0.52.0", features = ["transactions"] }
+winreg = { version = "0.55.0", features = ["transactions"] }
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-autostart = "2.5.0"
+tauri-plugin-single-instance = "2.3.0"
+tauri-plugin-window-state = "2.3.0"
