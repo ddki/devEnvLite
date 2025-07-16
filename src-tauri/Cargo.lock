@@ -1314,8 +1314,10 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "cargo-edit",
+ "dotenvy",
  "log 0.4.27",
  "lombok",
+ "migration",
  "rustfmt",
  "sea-orm",
  "serde",
