@@ -1,5 +1,8 @@
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
+	#[error("Database error: {0}")]
+	DbErr(#[from] sea_orm::DbErr),
+
 	#[error("IO error: {0}")]
 	Io(#[from] std::io::Error),
 

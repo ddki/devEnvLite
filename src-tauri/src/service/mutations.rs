@@ -106,11 +106,14 @@ impl MutationsService {
 		db: &DbConn,
 		model: variable_group::ActiveModel,
 	) -> Result<(), DbErr> {
-		let id = model.clone().id.clone();
-		let found = variable_group::Entity::find_by_id(id.clone())
+		let id = model.clone().id.unwrap();
+		variable_group::Entity::find_by_id(id.clone())
 			.one(db)
 			.await?
-			.ok_or(DbErr::RecordNotFound(format!("没有找到 {} 分组", id)))?;
+			.ok_or(DbErr::RecordNotFound(format!(
+				"没有找到 {} 分组",
+				id.clone()
+			)))?;
 
 		match model.update(db).await {
 			Ok(_) => Ok(()),
