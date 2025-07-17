@@ -24,7 +24,6 @@ pub struct EnvInfo {
 }
 
 impl EnvInfo {
-
 	pub fn apply<R: tauri::Runtime>(&mut self, app: tauri::AppHandle<R>) -> anyhow::Result<()> {
 		let mut config_info = ConfigInfo::load_from_file(&self.config_id, app.clone())?;
 		let scope_enum = &config_info.get_scope_enum();
@@ -34,7 +33,7 @@ impl EnvInfo {
 		match manager.inner().set(&self.get_key(), &self.get_value()) {
 			Ok(_) => {
 				self.set_is_applied(Some(true));
-			},
+			}
 			Err(_) => {
 				self.set_is_applied(Some(false));
 			}
@@ -42,16 +41,16 @@ impl EnvInfo {
 
 		// 更新配置
 		if let Some(mut groups) = config_info.groups.clone() {
-			let target_group = groups.iter_mut().find(|group| group.get_id().eq(self.get_group_id()));
+			let target_group = groups
+				.iter_mut()
+				.find(|group| group.get_id().eq(self.get_group_id()));
 			if let Some(env_group) = target_group {
 				match env_group.update_env(self.clone()) {
-					Ok(_) => {
-						match config_info.update_group(env_group.clone()) {
-							Ok(_) => {
-								config_info.save_to_file(app.clone())?;
-							},
-							_ => {}
+					Ok(_) => match config_info.update_group(env_group.clone()) {
+						Ok(_) => {
+							config_info.save_to_file(app.clone())?;
 						}
+						_ => {}
 					},
 					_ => {}
 				}

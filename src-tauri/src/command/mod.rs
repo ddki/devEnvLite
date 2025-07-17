@@ -5,15 +5,15 @@ pub mod environment_variable;
 pub mod variable_group;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct Seccess<T> {
+pub struct Success<T> {
 	pub code: Option<String>,
 	pub message: Option<String>,
 	pub data: Option<T>,
 }
 
-impl<T> Seccess<T> {
+impl<T> Success<T> {
 	pub fn success(data: T) -> Self {
-		Seccess {
+		Success {
 			code: Some("200".to_string()),
 			message: Some("Success".to_string()),
 			data: Some(data),
@@ -28,26 +28,26 @@ pub struct Fail {
 }
 
 impl Fail {
-    pub fn fail(code: &str, message: &str) -> Self {
-        Fail {
-            code: Some(code.to_string()),
-            message: Some(message.to_string()),
-        }
-    }
+	pub fn fail(code: &str, message: &str) -> Self {
+		Fail {
+			code: Some(code.to_string()),
+			message: Some(message.to_string()),
+		}
+	}
 
-    pub fn fail_with_message(message: &str) -> Self {
-        Fail {
-            code: Some("500".to_string()),
-            message: Some(message.to_string()),
-        }
-    }
+	pub fn fail_with_message(message: &str) -> Self {
+		Fail {
+			code: Some("500".to_string()),
+			message: Some(message.to_string()),
+		}
+	}
 
-    pub fn fail_default() -> Self {
-        Fail {
-            code: Some("500".to_string()),
-            message: Some("Internal Server Error".to_string()),
-        }
-    }
+	pub fn fail_default() -> Self {
+		Fail {
+			code: Some("500".to_string()),
+			message: Some("Internal Server Error".to_string()),
+		}
+	}
 }
 
-pub type SResult<T> = Result<Seccess<T>, Fail>;
+pub type SResult<T> = Result<Success<T>, Fail>;

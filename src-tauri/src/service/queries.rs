@@ -42,9 +42,12 @@ impl QueriesService {
 						.into_iter()
 						.map(EnvironmentVariable::from)
 						.map(|mut var| {
-							variable_group_mappings.iter().find(|m| m.variable_id == var.id).map(|m| {
-								var.sort = m.sort;
-							});
+							variable_group_mappings
+								.iter()
+								.find(|m| m.variable_id == var.id)
+								.map(|m| {
+									var.sort = m.sort;
+								});
 							var
 						})
 						.collect(),

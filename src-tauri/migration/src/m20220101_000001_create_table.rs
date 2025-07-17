@@ -145,60 +145,60 @@ impl MigrationTrait for Migration {
 
 #[derive(DeriveIden)]
 enum EnvironmentVariable {
-    #[sea_orm(iden = "environment_variable")]
-    Table,
-    #[sea_orm(iden = "id")]
-    Id,
-    #[sea_orm(iden = "key")]
-    Key,
-    #[sea_orm(iden = "value")]
-    Value,
-    #[sea_orm(iden = "description")]
-    Description,
+	#[sea_orm(iden = "environment_variable")]
+	Table,
+	#[sea_orm(iden = "id")]
+	Id,
+	#[sea_orm(iden = "key")]
+	Key,
+	#[sea_orm(iden = "value")]
+	Value,
+	#[sea_orm(iden = "description")]
+	Description,
 }
 
 #[derive(DeriveIden)]
 enum EnvConfig {
-    #[sea_orm(iden = "env_config")]
-    Table,
-    #[sea_orm(iden = "id")]
-    Id,
-    #[sea_orm(iden = "name")]
-    Name,
-    #[sea_orm(iden = "scope")]
-    Scope,
-    #[sea_orm(iden = "description")]
-    Description,
-    #[sea_orm(iden = "sort")]
-    Sort,
+	#[sea_orm(iden = "env_config")]
+	Table,
+	#[sea_orm(iden = "id")]
+	Id,
+	#[sea_orm(iden = "name")]
+	Name,
+	#[sea_orm(iden = "scope")]
+	Scope,
+	#[sea_orm(iden = "description")]
+	Description,
+	#[sea_orm(iden = "sort")]
+	Sort,
 }
 
 #[derive(DeriveIden)]
 enum VariableGroup {
-    #[sea_orm(iden = "variable_group")]
-    Table,
-    #[sea_orm(iden = "id")]
-    Id,
-    #[sea_orm(iden = "config_id")]
-    ConfigId,
-    #[sea_orm(iden = "name")]
-    Name,
-    #[sea_orm(iden = "description")]
-    Description,
-    #[sea_orm(iden = "is_active")]
-    IsActive,
-    #[sea_orm(iden = "sort")]
-    Sort,
+	#[sea_orm(iden = "variable_group")]
+	Table,
+	#[sea_orm(iden = "id")]
+	Id,
+	#[sea_orm(iden = "config_id")]
+	ConfigId,
+	#[sea_orm(iden = "name")]
+	Name,
+	#[sea_orm(iden = "description")]
+	Description,
+	#[sea_orm(iden = "is_active")]
+	IsActive,
+	#[sea_orm(iden = "sort")]
+	Sort,
 }
 
 #[derive(DeriveIden)]
 enum VariableGroupMapping {
-    #[sea_orm(iden = "variable_group_mapping")]
-    Table,
-    #[sea_orm(iden = "group_id")]
-    GroupId,
-    #[sea_orm(iden = "variable_id")]
-    VariableId,
-    #[sea_orm(iden = "sort")]
-    Sort,
+	#[sea_orm(iden = "variable_group_mapping")]
+	Table,
+	#[sea_orm(iden = "group_id")]
+	GroupId,
+	#[sea_orm(iden = "variable_id")]
+	VariableId,
+	#[sea_orm(iden = "sort")]
+	Sort,
 }

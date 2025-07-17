@@ -110,7 +110,7 @@ impl Settings {
 		}
 	}
 
-	pub fn save_to_store<R: tauri::Runtime>(&self, store: Arc<Store<R>>,) -> anyhow::Result<()> {
+	pub fn save_to_store<R: tauri::Runtime>(&self, store: Arc<Store<R>>) -> anyhow::Result<()> {
 		store.set("language".to_string(), self.language.as_str());
 		store.set("homeDir".to_string(), self.home_dir.as_str());
 		store.set("cacheDir".to_string(), self.cache_dir.as_str());
@@ -123,18 +123,18 @@ impl Settings {
 	pub fn load_from_store<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> anyhow::Result<Self> {
 		let store = app.store("settings.json")?;
 		match store.reload() {
-				Ok(()) => {
-					let settings = Self::build_form_store(app, &store);
-					settings.save_to_store(store)?;
-					settings.create_dir()?;
-					Ok(settings)
-				}
-				Err(e) => {
-					debug!("Failed to load settings from store: {}", e);
-					let settings = Self::default(app);
-					settings.save_to_store(store)?;
-					Ok(settings)
-				}
+			Ok(()) => {
+				let settings = Self::build_form_store(app, &store);
+				settings.save_to_store(store)?;
+				settings.create_dir()?;
+				Ok(settings)
+			}
+			Err(e) => {
+				debug!("Failed to load settings from store: {}", e);
+				let settings = Self::default(app);
+				settings.save_to_store(store)?;
+				Ok(settings)
+			}
 		}
 	}
 
@@ -158,5 +158,4 @@ impl Settings {
 		}
 		Ok(())
 	}
-
 }

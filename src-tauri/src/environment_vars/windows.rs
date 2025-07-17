@@ -67,7 +67,6 @@ impl EnvironmentVars for WindowEnvironmentVars {
 		}
 	}
 
-
 	fn get_keys(&self) -> anyhow::Result<HashSet<String>> {
 		info!("{:?}", self.env_type);
 		if self.env_type == EnvironmentVarsType::SYSTEM {
@@ -95,7 +94,6 @@ impl EnvironmentVars for WindowEnvironmentVars {
 		}
 	}
 
-
 	fn get_value(&self, key: &str) -> anyhow::Result<String> {
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
@@ -112,20 +110,21 @@ impl EnvironmentVars for WindowEnvironmentVars {
 		}
 	}
 
-
 	fn set(&self, key: &str, value: &str) -> anyhow::Result<()> {
 		if self.env_type == EnvironmentVarsType::SYSTEM {
 			// 系统环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-			let cur_ver = hklm.open_subkey_with_flags(SYSTEM_SUB_HKEY, winreg::enums::KEY_SET_VALUE)?;
+			let cur_ver =
+				hklm.open_subkey_with_flags(SYSTEM_SUB_HKEY, winreg::enums::KEY_SET_VALUE)?;
 			cur_ver.set_value(key, &value)?;
 			Ok(())
 		} else {
 			// 用户环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_CURRENT_USER);
-			let cur_ver = hklm.open_subkey_with_flags(USER_SUB_HKEY, winreg::enums::KEY_SET_VALUE)?;
+			let cur_ver =
+				hklm.open_subkey_with_flags(USER_SUB_HKEY, winreg::enums::KEY_SET_VALUE)?;
 			cur_ver.set_value(key, &value)?;
 			Ok(())
 		}
@@ -136,14 +135,16 @@ impl EnvironmentVars for WindowEnvironmentVars {
 			// 系统环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-			let cur_ver = hklm.open_subkey_with_flags(SYSTEM_SUB_HKEY, winreg::enums::KEY_ALL_ACCESS)?;
+			let cur_ver =
+				hklm.open_subkey_with_flags(SYSTEM_SUB_HKEY, winreg::enums::KEY_ALL_ACCESS)?;
 			cur_ver.delete_subkey(key)?;
 			Ok(())
 		} else {
 			// 用户环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_CURRENT_USER);
-			let cur_ver = hklm.open_subkey_with_flags(USER_SUB_HKEY, winreg::enums::KEY_ALL_ACCESS)?;
+			let cur_ver =
+				hklm.open_subkey_with_flags(USER_SUB_HKEY, winreg::enums::KEY_ALL_ACCESS)?;
 			cur_ver.delete_subkey(key)?;
 			Ok(())
 		}
@@ -161,7 +162,8 @@ impl EnvironmentVars for WindowEnvironmentVars {
 			// 系统环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
-			let cur_ver = hklm.open_subkey_with_flags(SYSTEM_SUB_HKEY, winreg::enums::KEY_SET_VALUE)?;
+			let cur_ver =
+				hklm.open_subkey_with_flags(SYSTEM_SUB_HKEY, winreg::enums::KEY_SET_VALUE)?;
 			for (key, value) in cur_ver
 				.enum_values()
 				.map(|x| x.unwrap())
@@ -179,7 +181,8 @@ impl EnvironmentVars for WindowEnvironmentVars {
 			// 用户环境变量
 			// 打开注册表
 			let hklm = RegKey::predef(HKEY_CURRENT_USER);
-			let cur_ver = hklm.open_subkey_with_flags(USER_SUB_HKEY, winreg::enums::KEY_SET_VALUE)?;
+			let cur_ver =
+				hklm.open_subkey_with_flags(USER_SUB_HKEY, winreg::enums::KEY_SET_VALUE)?;
 			for (key, value) in cur_ver
 				.enum_values()
 				.map(|x| x.unwrap())

@@ -24,18 +24,15 @@ pub struct ConfigInfo {
 }
 
 impl ConfigInfo {
-
 	pub fn get_dir<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Result<PathBuf> {
 		let settings = settings::Settings::load_from_store(app.clone())?;
-		let dir = PathBuf::from(settings.get_data_dir())
-			.join("config");
+		let dir = PathBuf::from(settings.get_data_dir()).join("config");
 		debug!("config dir: {:#?}", dir);
 		Ok(dir)
 	}
 
 	pub fn get_path<R: tauri::Runtime>(id: &str, app: tauri::AppHandle<R>) -> Result<PathBuf> {
-		let path = Self::get_dir(app.clone())?
-			.join(format!("{}.json", id));
+		let path = Self::get_dir(app.clone())?.join(format!("{}.json", id));
 		debug!("config file path: {:#?}", path);
 		Ok(path)
 	}
@@ -111,7 +108,7 @@ impl ConfigInfo {
 	pub fn save_to_file<R: tauri::Runtime>(&mut self, app: tauri::AppHandle<R>) -> Result<()> {
 		let path = Self::get_path(self.get_id(), app.clone())?;
 		if !path.exists() {
-				std::fs::create_dir_all(path.parent().unwrap())?;
+			std::fs::create_dir_all(path.parent().unwrap())?;
 		}
 		if let Some(groups) = &mut self.groups {
 			for group in groups.iter_mut() {
@@ -130,7 +127,10 @@ impl ConfigInfo {
 			}
 		}
 
-		debug!("save config from file config: {:#?}, path: {:#?}", self, path);
+		debug!(
+			"save config from file config: {:#?}, path: {:#?}",
+			self, path
+		);
 		let file = std::fs::File::create(path)?;
 		serde_json::to_writer(file, self).expect("save config failed");
 

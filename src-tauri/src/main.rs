@@ -15,6 +15,7 @@ pub mod service;
 fn main() {
 	let mut ctx = tauri::generate_context!();
 	tauri::Builder::default()
+		.plugin(tauri_plugin_notification::init())
 		.plugin(
 			tauri_plugin_log::Builder::new()
 				.targets([

@@ -21,7 +21,6 @@ pub struct GroupInfo {
 }
 
 impl GroupInfo {
-
 	pub fn update_env(&mut self, new_env: EnvInfo) -> anyhow::Result<bool> {
 		if let Some(envs) = self.envs.as_mut() {
 			for e in envs.iter_mut() {
@@ -60,7 +59,7 @@ impl GroupInfo {
 		match config_info.update_group(self.clone()) {
 			Ok(true) => {
 				config_info.save_to_file(app.clone())?;
-			},
+			}
 			_ => {}
 		}
 		Ok(())

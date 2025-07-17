@@ -1,3 +1,4 @@
+use sea_orm::DatabaseConnection;
 
 use crate::db::setup_database;
 
@@ -9,36 +10,28 @@ pub mod error;
 pub mod model;
 pub mod service;
 
+pub struct AppState {
+	pub db_conn: DatabaseConnection,
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 #[tokio::main]
 pub async fn run() {
 	// db
 	let db_conn = setup_database().await;
 
-	let image_storage: SqliteStorage<ImageProcessorJob> = SqliteStorage::new(pool.clone());
-	let thread_safe_storage = ImageOptimizerJobStorage::new(image_storage.clone());
-
-	let monitor = Monitor::<TokioExecutor>::new().register_with_count(2, {
-		WorkerBuilder::new("image-processor")
-			.layer(TraceLayer::new())
-			.data(db_conn.clone())
-			.with_storage(image_storage)
-			.build_fn(process_image)
-	});
-
-	tokio::spawn(async move {
-		monitor.run().await.unwrap();
-	});
-
 	tauri::Builder::default()
-		.manage(AppState {
-			db_conn,
-			job_storage: thread_safe_storage,
-		})
+		.manage(AppState { db_conn })
 		.plugin(tauri_plugin_notification::init())
-		.plugin(tauri_plugin_updater::Builder::new().build())
+		.plugin(tauri_plugin_os::init())
+		.plugin(tauri_plugin_opener::init())
 		.plugin(tauri_plugin_fs::init())
+		.plugin(tauri_plugin_store::Builder::default().build())
+		.plugin(tauri_plugin_clipboard_manager::init())
+		.plugin(tauri_plugin_fs::init())
+		.plugin(tauri_plugin_shell::init())
 		.plugin(tauri_plugin_dialog::init())
+		.plugin(tauri_plugin_updater::Builder::new().build())
 		.plugin(
 			tauri_plugin_log::Builder::default()
 				.target(tauri_plugin_log::Target::new(
@@ -57,88 +50,24 @@ pub async fn run() {
 				.level_for("tao", log::LevelFilter::Off)
 				.build(),
 		)
+		.setup(|app| {
+			#[cfg(desktop)]
+			let _ = app.handle()
+				.plugin(tauri_plugin_single_instance::init(|app, args, cwd| {}));
+			#[cfg(desktop)]
+			let _ = app.handle()
+				.plugin(tauri_plugin_window_state::Builder::default().build());
+			#[cfg(desktop)]
+			let _ = app.handle().plugin(tauri_plugin_autostart::init(
+				tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+				Some(vec!["--flag1", "--flag2"]), /* 传递给应用程序的任意数量的参数 */
+			));
+			Ok(())
+		})
 		.invoke_handler(tauri::generate_handler![
-			//
-			// products
-			//
-			commands::products::list_products,
-			commands::products::search_products,
-			commands::products::create_product,
-			commands::products::update_product,
-			commands::products::delete_product,
-			//
-			// inventory
-			//
-			commands::inventory::list_inventory,
-			commands::inventory::create_inventory,
-			commands::inventory::delete_inventory,
-			//
-			// clients
-			//
-			commands::clients::list_clients,
-			commands::clients::search_clients,
-			commands::clients::create_client,
-			commands::clients::update_client,
-			commands::clients::delete_client,
-			//
-			// suppliers
-			//
-			commands::suppliers::list_suppliers,
-			commands::suppliers::search_suppliers,
-			commands::suppliers::create_supplier,
-			commands::suppliers::update_supplier,
-			commands::suppliers::delete_supplier,
-			//
-			// orders
-			//
-			commands::orders::list_orders,
-			commands::orders::get_order,
-			commands::orders::get_order_details,
-			commands::orders::create_order,
-			commands::orders::update_order,
-			commands::orders::delete_order,
-			commands::orders::list_order_products,
-			commands::orders::create_order_from_quote,
-			commands::orders::update_order_status,
-			//
-			// quotes
-			//
-			commands::quotes::list_quotes,
-			commands::quotes::get_quote,
-			commands::quotes::get_quote_details,
-			commands::quotes::create_quote,
-			commands::quotes::update_quote,
-			commands::quotes::delete_quote,
-			commands::quotes::list_quote_products,
-			//
-			// quote items
-			//
-			commands::templates::create_template,
-			//
-			// quote items
-			//
-			commands::quote_items::delete_quote_item,
-			//
-			// invoices
-			//
-			commands::invoices::list_invoices,
-			commands::invoices::get_invoice,
-			commands::invoices::get_invoice_details,
-			commands::invoices::create_invoice,
-			commands::invoices::update_invoice,
-			commands::invoices::delete_invoice,
-			commands::invoices::list_invoice_products,
-			commands::invoices::create_invoice_from_order,
-			commands::invoices::update_invoice_status,
-			//
-			// dashboard
-			//
-			commands::dashboard::list_inventory_stats,
-			commands::dashboard::list_top_clients,
-			commands::dashboard::list_top_suppliers,
-			commands::dashboard::list_top_products,
-			commands::dashboard::list_status_count,
-			commands::dashboard::list_financial_metrics,
+			// env_config
+			// variable_groups
+			// environment_variables
 		])
 		.run(tauri::generate_context!())
 		.expect("error while running tauri application");

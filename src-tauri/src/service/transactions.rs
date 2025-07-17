@@ -57,7 +57,7 @@ impl TransactionService {
 						let mapping = variable_group_mapping::ActiveModel {
 							variable_id: Set(variable_id),
 							group_id: Set(group_id.clone()),
-                            sort: Set(variable_item.sort),
+							sort: Set(variable_item.sort),
 							..Default::default()
 						};
 						variable_group_mapping.push(mapping);

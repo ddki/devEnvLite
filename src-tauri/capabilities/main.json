@@ -45,6 +45,7 @@
     "core:app:default",
     "core:app:allow-set-app-theme",
     "core:webview:default",
-    "core:webview:allow-internal-toggle-devtools"
+    "core:webview:allow-internal-toggle-devtools",
+    "notification:default"
   ]
 }
