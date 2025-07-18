@@ -1,3 +1,4 @@
+#[cfg(target_os = "windows")]
 use std::collections::{HashMap, HashSet};
 
 use anyhow::Ok;
@@ -14,10 +15,12 @@ const SYSTEM_SUB_HKEY: &str = "SYSTEM\\CurrentControlSet\\Control\\Session Manag
 const USER_SUB_HKEY: &str = "Environment";
 const VALUE_SPLITOR: &str = ";";
 
+#[cfg(target_os = "windows")]
 pub struct WindowEnvironmentVars {
 	pub env_type: EnvironmentVarsType,
 }
 
+#[cfg(target_os = "windows")]
 impl WindowEnvironmentVars {
 	pub fn set_env_type(mut self, env_type: &EnvironmentVarsType) -> Self {
 		self.env_type = env_type.clone();
@@ -25,6 +28,7 @@ impl WindowEnvironmentVars {
 	}
 }
 
+#[cfg(target_os = "windows")]
 impl EnvironmentVars for WindowEnvironmentVars {
 	fn read_envs(&self) -> anyhow::Result<std::collections::HashMap<String, String>> {
 		info!("{:?}", self.env_type);

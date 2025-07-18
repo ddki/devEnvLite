@@ -1,4 +1,6 @@
+use log::info;
 use sea_orm::DatabaseConnection;
+use tauri::Manager;
 
 use crate::db::setup_database;
 
@@ -61,6 +63,9 @@ pub async fn run() {
 				tauri_plugin_autostart::MacosLauncher::LaunchAgent,
 				Some(vec!["--flag1", "--flag2"]), /* 传递给应用程序的任意数量的参数 */
 			));
+			let main = app.get_webview_window("main").unwrap();
+			let theme = main.theme().unwrap();
+			info!("theme: {}", theme);
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![

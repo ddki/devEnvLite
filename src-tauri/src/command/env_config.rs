@@ -3,7 +3,7 @@ use crate::model::EnvConfig;
 use crate::service::MutationsService;
 use crate::service::QueriesService;
 use crate::service::TransactionService;
-use app_lib::AppState;
+use crate::AppState;
 use tauri::State;
 
 #[tauri::command]
@@ -14,7 +14,7 @@ pub async fn list_env_configs(state: State<'_, AppState>) -> SResult<Vec<EnvConf
 			let configs: Vec<EnvConfig> = models.into_iter().map(EnvConfig::from).collect();
 			Ok(Success::success(configs))
 		}
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -23,7 +23,7 @@ pub async fn get_env_config(id: String, state: State<'_, AppState>) -> SResult<E
 	let db_conn = state.db_conn.clone();
 	match QueriesService::get_env_config(&db_conn, id).await {
 		Ok(model) => Ok(Success::success(EnvConfig::from(model.unwrap()))),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -35,8 +35,8 @@ pub async fn get_env_config_with_groups(
 	let db_conn = state.db_conn.clone();
 	match QueriesService::get_env_config_with_groups(&db_conn, id).await {
 		Ok(Some(config)) => Ok(Success::success(config)),
-		Ok(None) => Err(Fail::fail("404", "Config not found")),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Ok(None) => Err(Fail::fail("404", String::from("没有找到配置"))),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -45,7 +45,7 @@ pub async fn create_env_config(config: EnvConfig, state: State<'_, AppState>) ->
 	let db_conn = state.db_conn.clone();
 	match MutationsService::create_env_config(&db_conn, EnvConfig::into(config)).await {
 		Ok(result) => Ok(Success::success(result)),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -54,7 +54,7 @@ pub async fn update_env_config(config: EnvConfig, state: State<'_, AppState>) ->
 	let db_conn = state.db_conn.clone();
 	match MutationsService::update_env_config(&db_conn, EnvConfig::into(config)).await {
 		Ok(_) => Ok(Success::success(())),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -63,7 +63,7 @@ pub async fn delete_env_config(id: String, state: State<'_, AppState>) -> SResul
 	let db_conn = state.db_conn.clone();
 	match MutationsService::delete_env_config(&db_conn, id).await {
 		Ok(_) => Ok(Success::success(())),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -75,6 +75,6 @@ pub async fn create_env_config_transaction(
 	let db_conn = state.db_conn.clone();
 	match TransactionService::create_env_config(&db_conn, EnvConfig::into(config)).await {
 		Ok(result) => Ok(Success::success(result)),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }

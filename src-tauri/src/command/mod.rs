@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 pub mod env_config;
 pub mod environment_variable;
 pub mod variable_group;
+pub mod os_enviroment_variable;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Success<T> {
@@ -15,7 +16,7 @@ impl<T> Success<T> {
 	pub fn success(data: T) -> Self {
 		Success {
 			code: Some("200".to_string()),
-			message: Some("Success".to_string()),
+			message: Some("成功".to_string()),
 			data: Some(data),
 		}
 	}
@@ -28,24 +29,24 @@ pub struct Fail {
 }
 
 impl Fail {
-	pub fn fail(code: &str, message: &str) -> Self {
+	pub fn fail(code: &str, message: String) -> Self {
 		Fail {
 			code: Some(code.to_string()),
-			message: Some(message.to_string()),
+			message: Some(message),
 		}
 	}
 
-	pub fn fail_with_message(message: &str) -> Self {
+	pub fn fail_with_message(message: String) -> Self {
 		Fail {
 			code: Some("500".to_string()),
-			message: Some(message.to_string()),
+			message: Some(message),
 		}
 	}
 
 	pub fn fail_default() -> Self {
 		Fail {
 			code: Some("500".to_string()),
-			message: Some("Internal Server Error".to_string()),
+			message: Some("发生错误".to_string()),
 		}
 	}
 }

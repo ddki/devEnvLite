@@ -16,7 +16,7 @@ pub async fn list_variable_groups(
 			let groups = models.into_iter().map(VariableGroup::from).collect();
 			Ok(Success::success(groups))
 		}
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -25,8 +25,8 @@ pub async fn get_variable_group(id: String, state: State<'_, AppState>) -> SResu
 	let db_conn = state.db_conn.clone();
 	match QueriesService::get_variable_group(&db_conn, id).await {
 		Ok(Some(group)) => Ok(Success::success(VariableGroup::from(group))),
-		Ok(None) => Err(Fail::fail("404", "Variable group not found")),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Ok(None) => Err(Fail::fail("404", String::from("没有找到环境变量分组"))),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -38,7 +38,7 @@ pub async fn create_variable_group(
 	let db_conn = state.db_conn.clone();
 	match MutationsService::create_variable_group(&db_conn, VariableGroup::into(group)).await {
 		Ok(result) => Ok(Success::success(result)),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -50,7 +50,7 @@ pub async fn update_variable_group(
 	let db_conn = state.db_conn.clone();
 	match MutationsService::update_variable_group(&db_conn, VariableGroup::into(group)).await {
 		Ok(_) => Ok(Success::success(())),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -59,6 +59,6 @@ pub async fn delete_variable_group(id: String, state: State<'_, AppState>) -> SR
 	let db_conn = state.db_conn.clone();
 	match MutationsService::delete_variable_group(&db_conn, id).await {
 		Ok(_) => Ok(Success::success(())),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }

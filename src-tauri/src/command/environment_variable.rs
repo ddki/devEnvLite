@@ -16,7 +16,7 @@ pub async fn list_environment_variables(
 			let variables = models.into_iter().map(EnvironmentVariable::from).collect();
 			Ok(Success::success(variables))
 		}
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -28,8 +28,8 @@ pub async fn get_environment_variable(
 	let db_conn = state.db_conn.clone();
 	match QueriesService::get_environment_variable(&db_conn, id).await {
 		Ok(Some(model)) => Ok(Success::success(EnvironmentVariable::from(model))),
-		Ok(None) => Err(Fail::fail("404", "Variable not found")),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Ok(None) => Err(Fail::fail("404", String::from("没有找到环境变量"))),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -46,7 +46,7 @@ pub async fn create_environment_variable(
 	.await
 	{
 		Ok(result) => Ok(Success::success(result)),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -63,7 +63,7 @@ pub async fn update_environment_variable(
 	.await
 	{
 		Ok(_) => Ok(Success::success(())),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
@@ -72,6 +72,6 @@ pub async fn delete_environment_variable(id: String, state: State<'_, AppState>)
 	let db_conn = state.db_conn.clone();
 	match MutationsService::delete_environment_variable(&db_conn, id).await {
 		Ok(_) => Ok(Success::success(())),
-		Err(e) => Err(Fail::fail_with_message(e.to_string().as_str())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
