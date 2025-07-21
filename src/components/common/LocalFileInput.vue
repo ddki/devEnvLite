@@ -11,6 +11,7 @@ interface Props {
 	placeholder?: string;
 	accepts?: string[];
 	class?: HTMLAttributes["class"];
+	disabled?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), { type: "file", accepts: () => ["json"] });
 const model = defineModel({
@@ -40,7 +41,7 @@ const getFilePath = async () => {
 
 <template>
 	<div :class="cn('relative items-center', props.class)">
-		<Input v-model="model" type="text" :placeholder="props.placeholder" />
+		<Input v-model="model" type="text" :placeholder="props.placeholder" :disabled="disabled" />
 		<Button variant="ghost" size="icon" @click="getFilePath"
 			class="absolute end-0 inset-y-0 flex items-center justify-center px-2">
 			<File class="size-6 text-muted-foreground" v-if="props.type === 'file'" />

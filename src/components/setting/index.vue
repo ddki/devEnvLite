@@ -59,6 +59,13 @@
 				</div>
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label class="text-right">
+						{{ t('settings.log-dir') }}
+					</Label>
+					<LocalFileInput type="folder" v-model="settingData.logDir" :placeholder="t('settings.log-dir')" :disabled="true"
+						class="col-span-3" />
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label class="text-right">
 						{{ t('version') }}
 					</Label>
 					<Badge>{{ appVersion }}</Badge>
@@ -118,12 +125,14 @@ const languageList = [
 ];
 
 const setting = await getSetting();
+console.log("setting", setting);
 
 const settingData = reactive({
 	language: setting.language,
 	homeDir: setting.homeDir,
 	cacheDir: setting.cacheDir,
 	dataDir: setting.dataDir,
+	logDir: setting.logDir,
 	envBackupDir: setting.envBackupDir,
 });
 const open = ref(false);
@@ -134,6 +143,7 @@ const onSave = async () => {
 		homeDir: settingData.homeDir,
 		cacheDir: settingData.cacheDir,
 		dataDir: settingData.dataDir,
+		logDir: settingData.logDir,
 		envBackupDir: settingData.envBackupDir,
 	});
 	if (save) {

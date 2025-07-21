@@ -54,7 +54,7 @@ pub async fn run() {
 		.setup(|app| {
 			#[cfg(desktop)]
 			let _ = app.handle()
-				.plugin(tauri_plugin_single_instance::init(|app, args, cwd| {}));
+				.plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}));
 			#[cfg(desktop)]
 			let _ = app.handle()
 				.plugin(tauri_plugin_window_state::Builder::default().build());

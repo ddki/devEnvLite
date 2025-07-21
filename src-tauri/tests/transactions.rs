@@ -1,7 +1,7 @@
-use sea_orm::DbConn;
+use sea_orm::Database;
 // Add the following imports or definitions for VariableGroup and EnvironmentVariable
-use crate::model::{EnvConfig, EnvironmentVariable, VariableGroup};
-use crate::service::TransactionService;
+use app_lib::model::{EnvConfig, EnvironmentVariable, VariableGroup};
+use app_lib::service::TransactionService;
 
 #[tokio::test]
 async fn test_create_env_config() {
@@ -9,13 +9,15 @@ async fn test_create_env_config() {
 	// 使用 Mock 或者实际的测试数据库来验证 create_env_config 的行为
 	dotenvy::dotenv().ok();
 	let database_url = std::env::var("DATABASE_URL").unwrap();
-	let db = DbConn::connect(&database_url).await.unwrap();
+	let db = Database::connect(database_url).await.unwrap();
 
-	let groups = Vec::<VariableGroup>::new();
+	let config_id = ulid::Ulid::new().to_string();
+	let mut groups = Vec::<VariableGroup>::new();
 	for i in 1..=5 {
-		let variables = Vec::<EnvironmentVariable>::new();
+		let mut variables = Vec::<EnvironmentVariable>::new();
 		for j in 1..=3 {
 			variables.push(EnvironmentVariable {
+				id: ulid::Ulid::new().to_string(),
 				key: format!("VAR_{}_{}", i, j),
 				value: format!("Value for group {} var {}", i, j),
 				description: Some(format!("Description for group {} var {}", i, j)),
@@ -23,6 +25,8 @@ async fn test_create_env_config() {
 			});
 		}
 		groups.push(VariableGroup {
+			id: ulid::Ulid::new().to_string(),
+			config_id: config_id.clone(),
 			name: format!("Group {}", i),
 			description: Some(format!("Description for group {}", i)),
 			sort: Some(i as i32),
@@ -30,9 +34,11 @@ async fn test_create_env_config() {
 		});
 	}
 	let config = EnvConfig {
+		id: config_id.clone(),
 		name: "Test Config".to_string(),
 		scope: "global".to_string(),
 		description: Some("This is a test config".to_string()),
+		is_active: true,
 		sort: Some(1),
 		groups: Some(groups), // 可以添加测试用的变量组
 	};

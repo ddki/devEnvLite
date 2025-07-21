@@ -38,7 +38,8 @@ settings:
   home-dir: 应用目录
   cache-dir: 缓存目录
   data-dir: 数据目录
-  env-backup-dir: 环境变量备份目录
+  env-backup-dir: 备份目录
+  log-dir: 日志目录
   directory: 目录
   save: 保存
 

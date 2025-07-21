@@ -38,7 +38,8 @@ settings:
   home-dir: Home Directory
   cache-dir: Cache Directory
   data-dir: Data Directory
-  env-backup-dir: Environment Backup Directory
+  env-backup-dir: Backup Directory
+  log-dir: Log Directory
   directory: Directory
   save: Save
 

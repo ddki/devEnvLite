@@ -3,6 +3,7 @@ interface Setting {
 	homeDir: string;
 	cacheDir: string;
 	dataDir: string;
+	logDir: string;
 	envBackupDir: string;
 }
 
