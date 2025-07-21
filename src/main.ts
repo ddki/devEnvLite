@@ -15,6 +15,8 @@ emitter.on("reloadApp", () => {
 
 const setting = await getSetting();
 
+console.log("Current settings:", setting);
+
 const i18n = createI18n({
 	locale: setting.language || "en",
 	messages,

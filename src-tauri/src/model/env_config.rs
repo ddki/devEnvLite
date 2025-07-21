@@ -9,6 +9,7 @@ pub struct EnvConfig {
 	pub name: String,
 	pub scope: String,
 	pub description: Option<String>,
+	pub is_active: bool,
 	pub sort: Option<i32>,
 	pub groups: Option<Vec<VariableGroup>>,
 }
@@ -20,6 +21,7 @@ impl From<env_config::Model> for EnvConfig {
 			name: model.name,
 			scope: model.scope,
 			description: model.description,
+			is_active: model.is_active,
 			sort: model.sort,
 			groups: Some(vec![]),
 		}
@@ -34,6 +36,7 @@ impl Into<env_config::ActiveModel> for EnvConfig {
 			name: Set(self.name),
 			scope: Set(self.scope),
 			description: Set(self.description),
+			is_active: Set(self.is_active),
 			sort: Set(self.sort),
 		}
 	}

@@ -60,6 +60,13 @@ impl QueriesService {
 		}
 	}
 
+	pub async fn list_active_env_configs(db: &DbConn) -> Result<Vec<env_config::Model>, DbErr> {
+		env_config::Entity::find()
+			.filter(env_config::Column::IsActive.eq(true))
+			.all(db)
+			.await
+	}
+
 	pub async fn list_variable_groups(
 		db: &DbConn,
 		config_id: String,

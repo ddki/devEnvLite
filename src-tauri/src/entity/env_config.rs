@@ -14,6 +14,7 @@ pub struct Model {
 	pub scope: String,
 	#[sea_orm(column_type = "Text", nullable)]
 	pub description: Option<String>,
+	pub is_active: bool,
 	pub sort: Option<i32>,
 }
 

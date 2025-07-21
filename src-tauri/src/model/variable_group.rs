@@ -8,7 +8,6 @@ pub struct VariableGroup {
 	pub config_id: String,
 	pub name: String,
 	pub description: Option<String>,
-	pub is_active: bool,
 	pub sort: Option<i32>,
 	pub variables: Option<Vec<EnvironmentVariable>>,
 }
@@ -20,7 +19,6 @@ impl From<crate::entity::variable_group::Model> for VariableGroup {
 			config_id: model.config_id,
 			name: model.name,
 			description: model.description,
-			is_active: model.is_active,
 			sort: model.sort,
 			variables: Some(vec![]),
 		}
@@ -35,7 +33,6 @@ impl Into<crate::entity::variable_group::ActiveModel> for VariableGroup {
 			config_id: sea_orm::ActiveValue::Set(self.config_id),
 			name: sea_orm::ActiveValue::Set(self.name),
 			description: sea_orm::ActiveValue::Set(self.description),
-			is_active: sea_orm::ActiveValue::Set(self.is_active),
 			sort: sea_orm::ActiveValue::Set(self.sort),
 		}
 	}

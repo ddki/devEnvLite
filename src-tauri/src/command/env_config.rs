@@ -41,6 +41,18 @@ pub async fn get_env_config_with_groups(
 }
 
 #[tauri::command]
+pub async fn list_active_env_configs(state: State<'_, AppState>) -> SResult<Vec<EnvConfig>> {
+	let db_conn = state.db_conn.clone();
+	match QueriesService::list_active_env_configs(&db_conn).await {
+		Ok(models) => {
+			let configs: Vec<EnvConfig> = models.into_iter().map(EnvConfig::from).collect();
+			Ok(Success::success(configs))
+		}
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
+	}
+}
+
+#[tauri::command]
 pub async fn create_env_config(config: EnvConfig, state: State<'_, AppState>) -> SResult<String> {
 	let db_conn = state.db_conn.clone();
 	match MutationsService::create_env_config(&db_conn, EnvConfig::into(config)).await {

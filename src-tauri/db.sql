@@ -17,6 +17,7 @@ CREATE TABLE env_config (
     name TEXT NOT NULL UNIQUE,
     scope TEXT NOT NULL CHECK (scope IN ('system', 'user')), -- 作用域: system或user
     description TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT 1,
     sort INTEGER DEFAULT 1
 );
 
@@ -26,7 +27,6 @@ CREATE TABLE variable_group (
     config_id TEXT NOT NULL,
     name TEXT NOT NULL UNIQUE,
     description TEXT,
-    is_active BOOLEAN NOT NULL DEFAULT 1,
     sort INTEGER DEFAULT 1,
     FOREIGN KEY (config_id) REFERENCES env_config(id)
 );
