@@ -22,9 +22,9 @@ import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
 const Config = defineAsyncComponent({
-    loader: () => import('@/views/config/index.vue'),
-    errorComponent: () => import('@/components/common/ComponentError.vue'),
-})
+	loader: () => import("@/views/config/index.vue"),
+	errorComponent: () => import("@/components/common/ComponentError.vue"),
+});
 
 const GroupEnv = defineAsyncComponent({
 	loader: () => import("@/views/groupenv/index.vue"),
@@ -36,29 +36,39 @@ const activeConfigId = ref("");
 const selectedConfigId = ref("");
 
 onMounted(async () => {
-    const activeConfig = await getActiveConfig();
-    if (activeConfig?.activeConfigId && activeConfig.activeConfigId.length > 0) {
-        activeConfigId.value = activeConfig.activeConfigId;
-        selectedConfigId.value = activeConfigId.value;
-        await invoke("config_check", { configId: activeConfig.activeConfigId })
-            .then(() => {
-                toast({
-                    title: `${t("operate.check")} ${t("config.text")}`,
-                    description: t("message.success"),
-                });
-            })
-            .catch((e) => {
-                toast({
-                    title: `${t("operate.check")} ${t("config.text")}`,
-                    description: `${t("message.error")}: ${e.message}`,
-                    variant: "destructive",
-                });
-                console.log("application startup config_check error: ", e);
-            });
-    }
+	const activeEnvConfigs = await invoke("list_active_env_configs")
+		.then((res) => res.data)
+		.catch((e) => {
+			toast({
+				title: `${t("operate.check")} ${t("config.text")}`,
+				description: `${t("message.error")}: ${e.message}`,
+				variant: "destructive",
+			});
+			console.error("Failed to load active environment configs: ", e);
+		});
+	console.log("application startup activeEnvConfigs: ", activeEnvConfigs);
+	// if (activeConfig?.activeConfigId && activeConfig.activeConfigId.length > 0) {
+	//     activeConfigId.value = activeConfig.activeConfigId;
+	//     selectedConfigId.value = activeConfigId.value;
+	//     await invoke("config_check", { configId: activeConfig.activeConfigId })
+	//         .then(() => {
+	//             toast({
+	//                 title: `${t("operate.check")} ${t("config.text")}`,
+	//                 description: t("message.success"),
+	//             });
+	//         })
+	//         .catch((e) => {
+	//             toast({
+	//                 title: `${t("operate.check")} ${t("config.text")}`,
+	//                 description: `${t("message.error")}: ${e.message}`,
+	//                 variant: "destructive",
+	//             });
+	//             console.log("application startup config_check error: ", e);
+	//         });
+	// }
 });
 
 watch(selectedConfigId, (newValue, oldValue) => {
-    console.log("selectedConfigId changed from ", oldValue, " to ", newValue);
+	console.log("selectedConfigId changed from ", oldValue, " to ", newValue);
 });
 </script>

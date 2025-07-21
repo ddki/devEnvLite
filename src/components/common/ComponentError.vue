@@ -1,5 +1,11 @@
 <template>
     <div class="">
-        <span>组件加载失败</span>
+        <span>{{ t('component.loading-error') }}</span>
     </div>
 </template>
+
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+</script>

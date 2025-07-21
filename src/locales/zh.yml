@@ -144,3 +144,5 @@ footer:
 
 version: 版本
 
+component:
+  loading-error: 加载组件失败

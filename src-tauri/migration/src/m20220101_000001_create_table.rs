@@ -49,6 +49,11 @@ impl MigrationTrait for Migration {
 							.check("scope IN ('system', 'user')"),
 					)
 					.col(ColumnDef::new(EnvConfig::Description).string())
+					.col(
+						ColumnDef::new(EnvConfig::IsActive)
+							.boolean()
+							.default(true),
+					)
 					.col(ColumnDef::new(EnvConfig::Sort).integer().default(1))
 					.to_owned(),
 			)
@@ -69,11 +74,6 @@ impl MigrationTrait for Migration {
 							.unique_key(),
 					)
 					.col(ColumnDef::new(VariableGroup::Description).string())
-					.col(
-						ColumnDef::new(VariableGroup::IsActive)
-							.boolean()
-							.default(true),
-					)
 					.col(ColumnDef::new(VariableGroup::Sort).integer().default(1))
 					.foreign_key(
 						ForeignKey::create()
@@ -169,6 +169,8 @@ enum EnvConfig {
 	Scope,
 	#[sea_orm(iden = "description")]
 	Description,
+	#[sea_orm(iden = "is_active")]
+	IsActive,
 	#[sea_orm(iden = "sort")]
 	Sort,
 }
@@ -185,8 +187,6 @@ enum VariableGroup {
 	Name,
 	#[sea_orm(iden = "description")]
 	Description,
-	#[sea_orm(iden = "is_active")]
-	IsActive,
 	#[sea_orm(iden = "sort")]
 	Sort,
 }

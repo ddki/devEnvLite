@@ -15,5 +15,6 @@
 	"[typescript,javascript,json,jsonc]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
-	"i18n-ally.keystyle": "nested"
+	"i18n-ally.keystyle": "nested",
+	"i18n-ally.sourceLanguage": "zh"
 }

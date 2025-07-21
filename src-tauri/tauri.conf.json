@@ -13,11 +13,23 @@
 		"windows": [
 			{
 				"title": "DevEnvLite",
-				"label": "main",
-				"url": "index.html",
+				"label": "splashscreen",
+				"url": "/splashscreen",
 				"width": 1200,
 				"height": 800,
 				"visible": true,
+				"resizable": true,
+				"center": true,
+				"shadow": true,
+				"fullscreen": false
+			},
+			{
+				"title": "DevEnvLite",
+				"label": "main",
+				"url": "/",
+				"width": 1200,
+				"height": 800,
+				"visible": false,
 				"resizable": true,
 				"center": true,
 				"shadow": true,

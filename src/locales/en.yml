@@ -143,3 +143,5 @@ footer:
   connect-failed: Connect to server for updating failed.
 
 version: Version
+component:
+  loading-error: Failed to load component.

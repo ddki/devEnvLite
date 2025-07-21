@@ -114,26 +114,26 @@ const { t } = useI18n();
 const configs = ref<ConfigData[]>([]);
 
 const loadStore = async () => {
-	const configIds = (await invoke("get_config_ids")) as string[];
-	const storeConfigs = (await getConfigs(configIds))
-		.filter((item) => item.id && item.name)
-		.map((item) => item as ConfigData)
-		.map((item) => {
-			if (item.id === props.activeConfigId) {
-				item.isActive = true;
-			}
-			if (item.id === props.selectedConfigId) {
-				item.activeClass = "bg-secondary";
-			}
-			return item;
-		})
-		.sort((a, b) => {
-			if (a.isActive === b.isActive) {
-				return a.sort - b.sort;
-			}
-			return a.isActive ? -1 : 1;
-		});
-	configs.value = storeConfigs;
+	// const configIds = (await invoke("get_config_ids")) as string[];
+	// const storeConfigs = (await getConfigs(configIds))
+	// 	.filter((item) => item.id && item.name)
+	// 	.map((item) => item as ConfigData)
+	// 	.map((item) => {
+	// 		if (item.id === props.activeConfigId) {
+	// 			item.isActive = true;
+	// 		}
+	// 		if (item.id === props.selectedConfigId) {
+	// 			item.activeClass = "bg-secondary";
+	// 		}
+	// 		return item;
+	// 	})
+	// 	.sort((a, b) => {
+	// 		if (a.isActive === b.isActive) {
+	// 			return a.sort - b.sort;
+	// 		}
+	// 		return a.isActive ? -1 : 1;
+	// 	});
+	// configs.value = storeConfigs;
 };
 
 await loadStore();
