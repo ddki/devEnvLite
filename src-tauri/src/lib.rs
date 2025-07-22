@@ -16,7 +16,7 @@ pub struct AppState {
 	pub db_conn: DatabaseConnection,
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
+#[cfg(desktop)]
 #[tokio::main]
 pub async fn run() {
 	// db
@@ -35,14 +35,13 @@ pub async fn run() {
 		.plugin(tauri_plugin_updater::Builder::new().build())
 		.plugin(
 			tauri_plugin_log::Builder::default()
-				.target(tauri_plugin_log::Target::new(
-					tauri_plugin_log::TargetKind::Stdout,
-				))
-				.target(tauri_plugin_log::Target::new(
-					tauri_plugin_log::TargetKind::LogDir {
-						file_name: Some("logs".to_string()),
-					},
-				))
+				.targets([
+					tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
+					tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
+						file_name: None,
+					}),
+					tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview),
+				])
 				.level_for("tauri", log::LevelFilter::Error)
 				.level_for("hyper", log::LevelFilter::Off)
 				.level_for("tracing", log::LevelFilter::Info)
@@ -52,23 +51,33 @@ pub async fn run() {
 				.build(),
 		)
 		.setup(|app| {
+			let app_handle = app.handle();
 			#[cfg(desktop)]
-			let _ = app.handle()
-				.plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}));
+			let _ = app_handle.plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}));
 			#[cfg(desktop)]
-			let _ = app.handle()
-				.plugin(tauri_plugin_window_state::Builder::default().build());
+			let _ = app_handle.plugin(tauri_plugin_window_state::Builder::default().build());
 			#[cfg(desktop)]
-			let _ = app.handle().plugin(tauri_plugin_autostart::init(
+			let _ = app_handle.plugin(tauri_plugin_autostart::init(
 				tauri_plugin_autostart::MacosLauncher::LaunchAgent,
 				Some(vec!["--flag1", "--flag2"]), /* 传递给应用程序的任意数量的参数 */
 			));
 			let main = app.get_webview_window("main").unwrap();
 			let theme = main.theme().unwrap();
 			info!("theme: {}", theme);
+
+			// 在新的异步任务中执行异步操作
+			let async_app_handle = app_handle.clone();
+			tokio::spawn(async move {
+				let settings = command::settings::get_settings(async_app_handle)
+					.await
+					.unwrap();
+				info!("settings: {:?}", settings);
+			});
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
+			// settings
+			command::settings::get_settings,
 			// env_config
 			command::env_config::list_env_configs,
 			command::env_config::list_active_env_configs,

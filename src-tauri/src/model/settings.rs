@@ -1,10 +1,7 @@
-use std::sync::Arc;
-
-use log::debug;
 use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
-use tauri_plugin_store::{Store, StoreExt};
+use tauri_plugin_store::StoreExt;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Getter, Setter)]
 pub struct Settings {
@@ -15,6 +12,8 @@ pub struct Settings {
 	cache_dir: String,
 	#[serde(rename = "dataDir")]
 	data_dir: String,
+	#[serde(rename = "logDir")]
+	log_dir: String,
 	#[serde(rename = "envBackupDir")]
 	env_backup_dir: String,
 }
@@ -23,122 +22,68 @@ impl Settings {
 	pub fn default<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Self {
 		let home_dir = app
 			.path()
-			.app_data_dir()
+			.app_local_data_dir()
 			.expect("Failed to get home directory");
 		let cache_dir = home_dir.join("cache");
 		let data_dir = home_dir.join("data");
+		let log_dir = app
+			.path()
+			.app_log_dir()
+			.expect("Failed to get log directory");
 		let env_backup_dir = home_dir.join("backup");
-		Self {
-			language: String::from("en"),
+		let settings = Self {
+			language: String::from("zh-CN"),
 			home_dir: home_dir.into_os_string().to_string_lossy().to_string(),
 			cache_dir: cache_dir.into_os_string().to_string_lossy().to_string(),
 			data_dir: data_dir.into_os_string().to_string_lossy().to_string(),
+			log_dir: log_dir.into_os_string().to_string_lossy().to_string(),
 			env_backup_dir: env_backup_dir
 				.into_os_string()
 				.to_string_lossy()
 				.to_string(),
-		}
-	}
-
-	pub fn build_form_store<R: tauri::Runtime>(
-		app: tauri::AppHandle<R>,
-		store: &tauri_plugin_store::Store<R>,
-	) -> Self {
-		let store_language = store
-			.get("language")
-			.and_then(|v| v.as_str().map(String::from))
-			.unwrap_or_else(|| "en".to_owned());
-
-		let home_dir = app
-			.path()
-			.app_data_dir()
-			.expect("Failed to get home directory");
-
-		let store_home_dir = store
-			.get("homeDir")
-			.and_then(|v| v.as_str().map(String::from))
-			.unwrap_or_else(|| {
-				home_dir
-					.clone()
-					.into_os_string()
-					.to_string_lossy()
-					.to_string()
-			});
-
-		let store_cache_dir = store
-			.get("cacheDir")
-			.and_then(|v| v.as_str().map(String::from))
-			.unwrap_or_else(|| {
-				home_dir
-					.clone()
-					.join("cache")
-					.into_os_string()
-					.to_string_lossy()
-					.to_string()
-			});
-
-		let store_data_dir = store
-			.get("dataDir")
-			.and_then(|v| v.as_str().map(String::from))
-			.unwrap_or_else(|| {
-				home_dir
-					.clone()
-					.join("data")
-					.into_os_string()
-					.to_string_lossy()
-					.to_string()
-			});
-
-		let store_env_backup_dir = store
-			.get("envBackupDir")
-			.and_then(|v| v.as_str().map(String::from))
-			.unwrap_or_else(|| {
-				home_dir
-					.clone()
-					.join("backup")
-					.into_os_string()
-					.to_string_lossy()
-					.to_string()
-			});
-
-		Self {
-			language: store_language,
-			home_dir: store_home_dir,
-			cache_dir: store_cache_dir,
-			data_dir: store_data_dir,
-			env_backup_dir: store_env_backup_dir,
-		}
-	}
-
-	pub fn save_to_store<R: tauri::Runtime>(&self, store: Arc<Store<R>>) -> anyhow::Result<()> {
-		store.set("language".to_string(), self.language.as_str());
-		store.set("homeDir".to_string(), self.home_dir.as_str());
-		store.set("cacheDir".to_string(), self.cache_dir.as_str());
-		store.set("dataDir".to_string(), self.data_dir.as_str());
-		store.set("envBackupDir".to_string(), self.env_backup_dir.as_str());
-		store.save().expect("Failed to save settings to store");
-		Ok(())
+		};
+		settings.create_dir().expect("Failed to create directories");
+		return settings;
 	}
 
 	pub fn load_from_store<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> anyhow::Result<Self> {
 		let store = app.store("settings.json")?;
-		match store.reload() {
-			Ok(()) => {
-				let settings = Self::build_form_store(app, &store);
-				settings.save_to_store(store)?;
-				settings.create_dir()?;
-				Ok(settings)
-			}
-			Err(e) => {
-				debug!("Failed to load settings from store: {}", e);
-				let settings = Self::default(app);
-				settings.save_to_store(store)?;
-				Ok(settings)
-			}
-		}
+		let default_settings = Self::default(app);
+		let language = store
+			.get("language")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.language);
+		let home_dir = store
+			.get("home_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.home_dir);
+		let cache_dir = store
+			.get("cache_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.cache_dir);
+		let data_dir = store
+			.get("data_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.data_dir);
+		let log_dir = store
+			.get("log_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.log_dir);
+		let env_backup_dir = store
+			.get("env_backup_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.env_backup_dir);
+		Ok(Self {
+			language,
+			home_dir,
+			cache_dir,
+			data_dir,
+			log_dir,
+			env_backup_dir,
+		})
 	}
 
-	pub fn create_dir(&self) -> anyhow::Result<()> {
+	fn create_dir(&self) -> anyhow::Result<()> {
 		let home_dir = std::path::Path::new(&self.home_dir);
 		let cache_dir = std::path::Path::new(&self.cache_dir);
 		let data_dir = std::path::Path::new(&self.data_dir);

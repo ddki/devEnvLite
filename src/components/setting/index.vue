@@ -115,11 +115,11 @@ const context = getCurrentInstance();
 
 const languageList = [
 	{
-		value: "zh",
+		value: "zh-CN",
 		label: "简体中文",
 	},
 	{
-		value: "en",
+		value: "en-US",
 		label: "English",
 	},
 ];
