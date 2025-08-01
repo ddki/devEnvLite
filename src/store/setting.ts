@@ -12,13 +12,16 @@ const getSetting = async (): Promise<Setting> => {
 		cacheDir: (await store.get<string>("cacheDir")) || (await path.appCacheDir()),
 		dataDir: (await store.get<string>("dataDir")) || (await path.appDataDir()),
 		logDir: (await store.get<string>("logDir")) || (await path.appLogDir()),
-		envBackupDir: (await store.get<string>("envBackupDir")) || (await createDir("backup")),
+		envBackupDir: (await store.get<string>("envBackupDir")) || "",
 	};
 };
 
 const createDir = async (dirName: string): Promise<string> => {
+	console.log("createDir", dirName);
 	await mkdir(dirName, { baseDir: BaseDirectory.AppData });
-	return path.join(await path.appDataDir(), dirName);
+	const dirPath = path.join(await path.appDataDir(), dirName);
+	console.log("createDir", dirPath);
+	return dirPath;
 };
 
 const saveSetting = async (setting: Setting): Promise<boolean> => {

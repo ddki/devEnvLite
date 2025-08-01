@@ -104,10 +104,12 @@ import {
 } from "@/components/ui/select";
 import { getSetting, saveSetting } from "@/store";
 import { getVersion } from "@tauri-apps/api/app";
+import { invoke } from "@tauri-apps/api/core";
 import { Settings } from "lucide-vue-next";
 import { getCurrentInstance, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
+import { Setting } from "@/store/type";
 
 const appVersion = await getVersion();
 const { t } = useI18n();
@@ -124,7 +126,32 @@ const languageList = [
 	},
 ];
 
-const setting = await getSetting();
+const setting: Setting = await invoke("get_settings")
+	.then((res) => {
+		if (res.code === "200") {
+			return res.data as Setting;
+		}
+	})
+	.catch(() => {
+		return {
+			language: "zh-CN",
+			homeDir: "",
+			cacheDir: "",
+			dataDir: "",
+			logDir: "",
+			envBackupDir: "",
+		};
+	})
+	.finally(() => {
+		return {
+			language: "zh-CN",
+			homeDir: "",
+			cacheDir: "",
+			dataDir: "",
+			logDir: "",
+			envBackupDir: "",
+		};
+	});
 console.log("setting", setting);
 
 const settingData = reactive({

@@ -78,6 +78,7 @@ pub async fn run() {
 		.invoke_handler(tauri::generate_handler![
 			// settings
 			command::settings::get_settings,
+			command::settings::save_settings,
 			// env_config
 			command::env_config::list_env_configs,
 			command::env_config::list_active_env_configs,

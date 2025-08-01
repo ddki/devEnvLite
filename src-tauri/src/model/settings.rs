@@ -1,5 +1,6 @@
 use lombok::{Getter, Setter};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use tauri::Manager;
 use tauri_plugin_store::StoreExt;
 
@@ -102,5 +103,22 @@ impl Settings {
 			std::fs::create_dir_all(env_backup_dir)?;
 		}
 		Ok(())
+	}
+
+	pub fn save_to_store<R: tauri::Runtime>(&self, app: tauri::AppHandle<R>) -> anyhow::Result<()> {
+		let store = app.store("settings.json")?;
+		store.set("language", json!(&self.language));
+		store.set("home_dir", json!(&self.home_dir));
+		store.set("cache_dir", json!(&self.cache_dir));
+		store.set("data_dir", json!(&self.data_dir));
+		store.set("log_dir", json!(&self.log_dir));
+		store.set("env_backup_dir", json!(&self.env_backup_dir));
+		match self.create_dir() {
+			Ok(()) => {
+				store.save()?;
+				Ok(())
+			}
+			Err(e) => Err(e),
+		}
 	}
 }
