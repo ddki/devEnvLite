@@ -1,19 +1,27 @@
 <template>
-    <main class="border overflow-auto">
-        <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel :default-size="30">
-                <Config v-model:activeConfigId="activeConfigId" v-model:selectedConfigId="selectedConfigId" />
-            </ResizablePanel>
-            <ResizableHandle />
-            <ResizablePanel :default-size="70">
-                <GroupEnv :configId="selectedConfigId" />
-            </ResizablePanel>
-        </ResizablePanelGroup>
-    </main>
+	<Suspense>
+		<div class="grid grid-rows-[3.5rem_1fr_1.5rem] grid-cols-1 h-dvh overflow-hidden">
+			<Header />
+			<main class="border overflow-auto">
+				<ResizablePanelGroup direction="horizontal">
+					<ResizablePanel :default-size="30">
+						<Config v-model:activeConfigId="activeConfigId" v-model:selectedConfigId="selectedConfigId" />
+					</ResizablePanel>
+					<ResizableHandle />
+					<ResizablePanel :default-size="70">
+						<GroupEnv :configId="selectedConfigId" />
+					</ResizablePanel>
+				</ResizablePanelGroup>
+			</main>
+			<Footer />
+		</div>
+	</Suspense>
 </template>
 
 
 <script setup lang="ts">
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { getActiveConfig } from "@/store/index";
 import { invoke } from "@tauri-apps/api/core";

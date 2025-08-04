@@ -22,4 +22,3 @@ export {
 	deleteGroupEnv,
 	deleteEnv,
 } from "./config.ts";
-export { saveSetting, getSetting } from "./setting.ts";

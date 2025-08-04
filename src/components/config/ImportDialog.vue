@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateConfigFromEnvs } from "@/store/config";
-import type { Config } from "@/store/type";
+import type { EnvConfig, Res } from "@/types";
 import { validateUrl } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
@@ -77,16 +77,19 @@ const importFromSystem = async () => {
 		});
 		return;
 	}
-	await invoke("get_envs", { scope: systemScope.value })
+	await invoke<Res<Record<string, string>>>("get_os_environment_variables", {
+		scope: systemScope.value,
+	})
 		.then(async (res) => {
-			if (res) {
-				const resMap = new Map<string, string>(Object.entries(res));
+			if (res.code === "200") {
+				const resMap = new Map<string, string>(Object.entries(res.data));
 				console.log(typeof resMap);
-				const config: Config = {
+				const config: EnvConfig = {
 					id: uuidv4(),
 					scope: systemScope.value,
 					name: systemConfigName.value,
-					note: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
+					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
+					isActive: false,
 					sort: 1,
 				};
 				await generateConfigFromEnvs(config, resMap)
@@ -107,6 +110,12 @@ const importFromSystem = async () => {
 							variant: "destructive",
 						});
 					});
+			} else {
+				toast({
+					title: t("config.import-config.types.env.text"),
+					description: `${t("message.error")} : ${res.message}`,
+					variant: "destructive",
+				});
 			}
 		})
 		.catch((err) => {

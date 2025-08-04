@@ -1,8 +1,8 @@
 <template>
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
-		<div class="flex flex-row flex-2 justify-start items-center gap-2 border-b px-2">
-			<ImportDialog @callback="loadStore" />
-			<EditPopover operate="new" @callback="loadStore">
+		<div class="flex flex-row flex-2 justify-center items-center gap-2 border-b px-2">
+			<ImportDialog @callback="loadSettings" />
+			<EditPopover operate="new" @callback="loadSettings">
 				<Button variant="outline">
 					<FilePlus class="mr-2 h-6 w-6" />
 					{{ t("operate.new", { name: t("config.text") }) }}
@@ -23,12 +23,12 @@
 						<div class="grid grid-flow-row w-full justify-start items-center">
 							<span>{{ item.name }}</span>
 							<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
-								{{ item.note }}
+								{{ item.description }}
 							</span>
 						</div>
 					</div>
 					<div class="grid grid-flow-col">
-						<EditPopover operate="edit" :id="item.id" @callback="loadStore">
+						<EditPopover operate="edit" :id="item.id" @callback="loadSettings">
 							<Button variant="ghost" size="icon">
 								<Pencil class="h-4 w-4" />
 							</Button>
@@ -79,8 +79,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { deleteConfig, getConfigs, setActiveConfigId } from "@/store";
-import type { Config } from "@/store/type";
+import { deleteConfig, setActiveConfigId } from "@/store";
+import type { EnvConfig } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import {
 	CircleCheck,
@@ -97,9 +97,8 @@ import { getCurrentInstance, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
-interface ConfigData extends Config {
+interface ConfigData extends EnvConfig {
 	activeClass?: string;
-	isActive?: boolean;
 }
 
 const props = defineProps({
@@ -113,30 +112,24 @@ const { t } = useI18n();
 
 const configs = ref<ConfigData[]>([]);
 
-const loadStore = async () => {
-	// const configIds = (await invoke("get_config_ids")) as string[];
-	// const storeConfigs = (await getConfigs(configIds))
-	// 	.filter((item) => item.id && item.name)
-	// 	.map((item) => item as ConfigData)
-	// 	.map((item) => {
-	// 		if (item.id === props.activeConfigId) {
-	// 			item.isActive = true;
-	// 		}
-	// 		if (item.id === props.selectedConfigId) {
-	// 			item.activeClass = "bg-secondary";
-	// 		}
-	// 		return item;
-	// 	})
-	// 	.sort((a, b) => {
-	// 		if (a.isActive === b.isActive) {
-	// 			return a.sort - b.sort;
-	// 		}
-	// 		return a.isActive ? -1 : 1;
-	// 	});
-	// configs.value = storeConfigs;
+const loadSettings = async () => {
+	const activeEnvConfigs = await invoke<EnvConfig[]>("list_active_env_configs");
+	// 设置 configs
+	configs.value = activeEnvConfigs
+		.map((item) => {
+			return {
+				...item,
+				activeClass: item.isActive ? "bg-secondary" : "",
+			} as ConfigData;
+		})
+		.sort((a, b) => {
+			if (a.isActive === b.isActive) {
+				// 处理 sort 可能为 undefined 的情况，若为 undefined 则视为 0
+				return (a.sort || 0) - (b.sort || 0);
+			}
+			return a.isActive ? -1 : 1;
+		});
 };
-
-await loadStore();
 
 const resetConfigsActiveClass = () => {
 	configs.value = configs.value.map((item) => {
@@ -161,7 +154,7 @@ const dropdownMenuActive = async (config: ConfigData) => {
 const dropdownMenuCheck = async (config: ConfigData) => {
 	await invoke("config_check", { configId: config.id })
 		.then(async () => {
-			await loadStore();
+			await loadSettings();
 			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
 			toast({
 				title: `${t("operate.check")} ${t("config.text")}`,
@@ -182,7 +175,7 @@ const dropdownMenuCheck = async (config: ConfigData) => {
 const dropdownMenuApply = async (config: ConfigData) => {
 	await invoke("config_apply", { configId: config.id })
 		.then(async () => {
-			await loadStore();
+			await loadSettings();
 			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
 			toast({
 				title: `${t("operate.apply")} ${t("config.text")}`,
@@ -203,7 +196,7 @@ const dropdownMenuApply = async (config: ConfigData) => {
 const dropdownMenuDelete = async (config: ConfigData) => {
 	await deleteConfig(config.id)
 		.then(async () => {
-			await loadStore();
+			await loadSettings();
 			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
 			toast({
 				title: `${t("operate.delete", { name: t("config.text") })}`,
@@ -242,7 +235,7 @@ watch(
 	() => props.activeConfigId,
 	async (newValue, oldValue) => {
 		if (newValue && newValue !== oldValue) {
-			await loadStore();
+			await loadSettings();
 		}
 	},
 );

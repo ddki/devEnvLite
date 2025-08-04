@@ -34,6 +34,7 @@ header:
   theme: 主题
 
 settings:
+  theme: 主题
   language: 语言
   home-dir: 应用目录
   cache-dir: 缓存目录

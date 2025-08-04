@@ -16,5 +16,5 @@
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"i18n-ally.keystyle": "nested",
-	"i18n-ally.sourceLanguage": "zh"
+	"i18n-ally.sourceLanguage": "zh-CN"
 }

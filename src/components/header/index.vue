@@ -4,9 +4,9 @@
 			<Collate />
 			<Backup />
 			<Recover />
+			<a href="/splashscreen">splashscreen</a>
 		</div>
 		<div class="flex flex-row items-start gap-2">
-			<ThemeChange :placeholder="t('header.theme')" />
 			<Setting />
 		</div>
 	</header>
@@ -14,10 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { ThemeChange } from "@/components/common";
 import Setting from "@/components/setting/index.vue";
-import { useI18n } from "vue-i18n";
 import { Backup, Collate, Recover } from "./index";
-
-const { t } = useI18n();
 </script>

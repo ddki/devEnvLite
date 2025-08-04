@@ -13,6 +13,23 @@
 			</DialogHeader>
 			<div class="grid gap-4 py-4">
 				<div class="grid grid-cols-4 items-center gap-4">
+					<Label for="theme" class="text-right">
+						{{ t('settings.theme') }}
+					</Label>
+					<Select v-model="settingData.theme">
+						<SelectTrigger class="col-span-3">
+							<SelectValue :placeholder="t('settings.theme')" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								<SelectItem v-for="(item, index) in themeList" :key="index" :value="item.value">
+									{{ item.label }}
+								</SelectItem>
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="language" class="text-right">
 						{{ t('settings.language') }}
 					</Label>
@@ -102,14 +119,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { getSetting, saveSetting } from "@/store";
-import { getVersion } from "@tauri-apps/api/app";
+import { getVersion, setTheme } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { Settings } from "lucide-vue-next";
 import { getCurrentInstance, reactive, ref, watch } from "vue";
+import { useColorMode } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import { Setting } from "@/store/type";
+import type { Setting, Res } from "@/types";
 
 const appVersion = await getVersion();
 const { t } = useI18n();
@@ -126,73 +143,93 @@ const languageList = [
 	},
 ];
 
-const setting: Setting = await invoke("get_settings")
+const themeList = [
+	{
+		value: "auto",
+		label: "自动",
+	},
+	{
+		value: "light",
+		label: "浅色",
+	},
+	{
+		value: "dark",
+		label: "深色",
+	},
+];
+
+/**
+ * 切换主题
+ * @param changeTheme 切换主题
+ */
+const setAppTheme = async (changeTheme: string) => {
+	if (changeTheme.includes("light")) {
+		setTheme("light");
+		theme.value = "light";
+	} else if (changeTheme.includes("dark")) {
+		setTheme("dark");
+		theme.value = "dark";
+	} else {
+		setTheme(null);
+		theme.value = "auto";
+	}
+};
+
+const theme = useColorMode();
+
+const setting = (await invoke<Res<Setting>>("get_settings")
 	.then((res) => {
 		if (res.code === "200") {
-			return res.data as Setting;
+			return res.data;
 		}
 	})
 	.catch(() => {
-		return {
-			language: "zh-CN",
-			homeDir: "",
-			cacheDir: "",
-			dataDir: "",
-			logDir: "",
-			envBackupDir: "",
-		};
-	})
-	.finally(() => {
-		return {
-			language: "zh-CN",
-			homeDir: "",
-			cacheDir: "",
-			dataDir: "",
-			logDir: "",
-			envBackupDir: "",
-		};
-	});
-console.log("setting", setting);
-
-const settingData = reactive({
-	language: setting.language,
-	homeDir: setting.homeDir,
-	cacheDir: setting.cacheDir,
-	dataDir: setting.dataDir,
-	logDir: setting.logDir,
-	envBackupDir: setting.envBackupDir,
-});
-const open = ref(false);
-
-const onSave = async () => {
-	const save = await saveSetting({
-		language: settingData.language,
-		homeDir: settingData.homeDir,
-		cacheDir: settingData.cacheDir,
-		dataDir: settingData.dataDir,
-		logDir: settingData.logDir,
-		envBackupDir: settingData.envBackupDir,
-	});
-	if (save) {
-		open.value = false;
-		context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
-	} else {
 		toast({
 			title: t("header.setting"),
 			description: t("message.operate-failure", { operate: t("operate.save") }),
 			variant: "destructive",
 		});
-	}
+	})) || {
+	theme: "auto",
+	language: "zh-CN",
+	homeDir: "",
+	cacheDir: "",
+	dataDir: "",
+	logDir: "",
+	envBackupDir: "",
+};
+console.log("setting", setting);
+// 初始化获取配置主题
+await setAppTheme(setting.theme);
+
+const settingData = reactive<Setting>({
+	...setting,
+});
+const open = ref(false);
+
+const onSave = async () => {
+	await invoke<Res<boolean>>("save_settings", {
+		settings: settingData,
+	})
+		.then(async (res) => {
+			if (res.code === "200") {
+				await setAppTheme(settingData.theme);
+				open.value = false;
+				context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
+			}
+		})
+		.catch(() => {
+			toast({
+				title: t("header.setting"),
+				description: t("message.operate-failure", { operate: t("operate.save") }),
+				variant: "destructive",
+			});
+		});
 };
 
 watch(open, async (newValue) => {
 	if (!newValue) {
-		const setting = await getSetting();
-		settingData.language = setting.language;
-		settingData.homeDir = setting.homeDir;
-		settingData.cacheDir = setting.cacheDir;
-		settingData.dataDir = setting.dataDir;
-		settingData.envBackupDir = setting.envBackupDir;
+		Object.assign(settingData, setting);
 	}
 });
 </script>

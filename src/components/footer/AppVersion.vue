@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getVersion } from "@tauri-apps/api/app";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { check, Update } from "@tauri-apps/plugin-updater";
+import { check, type Update } from "@tauri-apps/plugin-updater";
 import { Tag } from "lucide-vue-next";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -12,6 +12,7 @@ const appVersion = await getVersion();
 const { t } = useI18n();
 
 const update = ref<boolean>(false);
+// biome-ignore lint/suspicious/noConfusingVoidType: <explanation>
 const checkResult = ref<Update | null | void>(null);
 
 const checkUpdate = async () => {

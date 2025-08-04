@@ -4,8 +4,38 @@ use serde_json::json;
 use tauri::Manager;
 use tauri_plugin_store::StoreExt;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Theme {
+	#[serde(rename = "auto")]
+	Auto,
+	#[serde(rename = "light")]
+	Light,
+	#[serde(rename = "dark")]
+	Dark,
+}
+
+impl Theme {
+	pub fn to_string(&self) -> String {
+		match self {
+			Theme::Auto => String::from("auto"),
+			Theme::Light => String::from("light"),
+			Theme::Dark => String::from("dark"),
+		}
+	}
+
+	pub fn from_string(s: &str) -> Self {
+		match s {
+			"auto" => Theme::Auto,
+			"light" => Theme::Light,
+			"dark" => Theme::Dark,
+			_ => Theme::Auto,
+		}
+	}
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Getter, Setter)]
 pub struct Settings {
+	theme: Theme,
 	language: String,
 	#[serde(rename = "homeDir")]
 	home_dir: String,
@@ -33,6 +63,7 @@ impl Settings {
 			.expect("Failed to get log directory");
 		let env_backup_dir = home_dir.join("backup");
 		let settings = Self {
+			theme: Theme::Auto,
 			language: String::from("zh-CN"),
 			home_dir: home_dir.into_os_string().to_string_lossy().to_string(),
 			cache_dir: cache_dir.into_os_string().to_string_lossy().to_string(),
@@ -50,6 +81,10 @@ impl Settings {
 	pub fn load_from_store<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> anyhow::Result<Self> {
 		let store = app.store("settings.json")?;
 		let default_settings = Self::default(app);
+		let theme = store
+			.get("theme")
+			.and_then(|v| v.as_str().map(Theme::from_string))
+			.unwrap_or_else(|| default_settings.theme);
 		let language = store
 			.get("language")
 			.and_then(|v| v.as_str().map(String::from))
@@ -75,6 +110,7 @@ impl Settings {
 			.and_then(|v| v.as_str().map(String::from))
 			.unwrap_or_else(|| default_settings.env_backup_dir);
 		Ok(Self {
+			theme,
 			language,
 			home_dir,
 			cache_dir,
@@ -107,6 +143,7 @@ impl Settings {
 
 	pub fn save_to_store<R: tauri::Runtime>(&self, app: tauri::AppHandle<R>) -> anyhow::Result<()> {
 		let store = app.store("settings.json")?;
+		store.set("theme", json!(&self.theme.to_string()));
 		store.set("language", json!(&self.language));
 		store.set("home_dir", json!(&self.home_dir));
 		store.set("cache_dir", json!(&self.cache_dir));

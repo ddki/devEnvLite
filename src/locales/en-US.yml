@@ -34,6 +34,7 @@ header:
   theme: Theme
 
 settings:
+  theme: Theme
   language: Language
   home-dir: Home Directory
   cache-dir: Cache Directory
