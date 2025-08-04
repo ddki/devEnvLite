@@ -2,13 +2,13 @@ import messages from "@intlify/unplugin-vue-i18n/messages";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 
-import router from "./router";
 import App from "./App.vue";
+import router from "./router";
 import "./styles/index.css";
-import mitt from "mitt";
-import { disableContextMenu, disableRefresh } from "./utils/Webview";
 import { invoke } from "@tauri-apps/api/core";
+import mitt from "mitt";
 import type { Res, Setting } from "./types";
+import { disableContextMenu, disableRefresh } from "./utils/Webview";
 
 const emitter = mitt();
 emitter.on("reloadApp", () => {
@@ -38,8 +38,13 @@ const i18n = createI18n({
 const app = createApp(App);
 app.config.globalProperties.$emitter = emitter;
 app.use(i18n);
-app.use(router)
+app.use(router);
 app.mount("#main");
 
-// disableRefresh();
-disableContextMenu();
+const setup = async () => {
+	console.log("app setup...");
+	disableRefresh(false);
+	disableContextMenu(true);
+};
+
+await setup();

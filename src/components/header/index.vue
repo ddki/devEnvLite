@@ -4,7 +4,6 @@
 			<Collate />
 			<Backup />
 			<Recover />
-			<a href="/splashscreen">splashscreen</a>
 		</div>
 		<div class="flex flex-row items-start gap-2">
 			<Setting />

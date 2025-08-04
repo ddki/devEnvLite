@@ -16,7 +16,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2.3.0", features = [] }
 
 [dependencies]
-tauri = { version = "2.6.2", features = ["devtools", "config-json5"] }
+tauri = { version = "2.6.2", features = ["devtools", "config-json5", "tray-icon"] }
 tauri-plugin-shell = "2.3.0"
 tauri-plugin-dialog = "2.3.0"
 tauri-plugin-updater = "2.9.0"
@@ -38,6 +38,7 @@ dotenvy = "0.15.7"
 migration = { version = "0.1.0", path = "migration" }
 tokio = { version = "1.20.0", features = ["rt-multi-thread", "macros"] }
 tauri-plugin-notification = "2"
+tauri-plugin-devtools = "2.0.0"
 
 [dependencies.sea-orm]
 version = "1.1.13"

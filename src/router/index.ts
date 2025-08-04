@@ -1,16 +1,11 @@
-import { createMemoryHistory, createRouter, type RouteRecordRaw } from "vue-router";
+import { type RouteRecordRaw, createMemoryHistory, createRouter } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
-	{
-		path: "/splashscreen",
-		name: "Splashscreen",
-		component: () => import("@/views/Splashscreen.vue"),
-	},
 	{
 		path: "/",
 		name: "Home",
 		component: () => import("@/views/Home.vue"),
-	}
+	},
 ];
 
 const router = createRouter({
