@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { cn } from "@/lib/utils";
-import { reactiveOmit } from "@vueuse/core";
-import { Check } from "lucide-vue-next";
+import type { ContextMenuCheckboxItemEmits, ContextMenuCheckboxItemProps } from "reka-ui"
+import type { HTMLAttributes } from "vue"
+import { reactiveOmit } from "@vueuse/core"
+import { Check } from "lucide-vue-next"
 import {
-	ContextMenuCheckboxItem,
-	type ContextMenuCheckboxItemEmits,
-	type ContextMenuCheckboxItemProps,
-	ContextMenuItemIndicator,
-	useForwardPropsEmits,
-} from "reka-ui";
-import type { HTMLAttributes } from "vue";
+  ContextMenuCheckboxItem,
 
-const props = defineProps<ContextMenuCheckboxItemProps & { class?: HTMLAttributes["class"] }>();
-const emits = defineEmits<ContextMenuCheckboxItemEmits>();
+  ContextMenuItemIndicator,
+  useForwardPropsEmits,
+} from "reka-ui"
+import { cn } from "@/lib/utils"
 
-const delegatedProps = reactiveOmit(props, "class");
+const props = defineProps<ContextMenuCheckboxItemProps & { class?: HTMLAttributes["class"] }>()
+const emits = defineEmits<ContextMenuCheckboxItemEmits>()
 
-const forwarded = useForwardPropsEmits(delegatedProps, emits);
+const delegatedProps = reactiveOmit(props, "class")
+
+const forwarded = useForwardPropsEmits(delegatedProps, emits)
 </script>
 
 <template>
