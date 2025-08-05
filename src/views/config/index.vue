@@ -1,6 +1,6 @@
 <template>
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
-		<div class="flex flex-row flex-2 justify-center items-center gap-2 border-b px-2">
+		<div class="flex flex-row flex-2 justify-start items-center gap-2 border-b px-2">
 			<ImportDialog @callback="loadSettings" />
 			<EditPopover operate="new" @callback="loadSettings">
 				<Button variant="outline">
@@ -15,9 +15,9 @@
 					{{ t("config.emptyText") }}
 				</p>
 				<div
-					:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.activeClass}`"
+					:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.currentSelectedClass}`"
 					v-for="item in configs">
-					<div class="flex flex-row gap-2 h-full items-center p-2" @click="onClickConfig(item)">
+					<div class="flex flex-row gap-2 h-full items-center p-2" @click="selectedConfig(item)">
 						<CircleCheckBig class="text-destructive" v-if="item.isActive" />
 						<File />
 						<div class="grid grid-flow-row w-full justify-start items-center">
@@ -43,14 +43,6 @@
 								<DropdownMenuItem @click="dropdownMenuActive(item)">
 									<CircleCheckBig class="mr-2 h-4 w-4" />
 									<span>{{ t("operate.active") }}</span>
-								</DropdownMenuItem>
-								<DropdownMenuItem @click="dropdownMenuCheck(item)">
-									<SearchCheck class="mr-2 h-4 w-4" />
-									<span>{{ t("operate.check") }}</span>
-								</DropdownMenuItem>
-								<DropdownMenuItem @click="dropdownMenuApply(item)">
-									<CircleCheck class="mr-2 h-4 w-4" />
-									<span>{{ t("operate.apply") }}</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem @click="dropdownMenuDelete(item)">
 									<Trash2 class="mr-2 h-4 w-4 text-destructive" />
@@ -79,33 +71,30 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { deleteConfig, setActiveConfigId } from "@/store";
-import type { EnvConfig } from "@/types";
+import type { EnvConfig, Res } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import {
-	CircleCheck,
 	CircleCheckBig,
 	Ellipsis,
 	File,
 	FileDown,
 	FilePlus,
 	Pencil,
-	SearchCheck,
 	Trash2,
 } from "lucide-vue-next";
-import { getCurrentInstance, ref, watch } from "vue";
+import { getCurrentInstance, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
 interface ConfigData extends EnvConfig {
-	activeClass?: string;
+	// 当前选择项的样式
+	currentSelectedClass?: string;
 }
 
 const props = defineProps({
-	activeConfigId: String,
-	selectedConfigId: String,
+	currentConfigId: String,
 });
-const emits = defineEmits(["update:activeConfigId", "update:selectedConfigId"]);
+const emits = defineEmits(["update:currentConfigId"]);
 const context = getCurrentInstance();
 
 const { t } = useI18n();
@@ -113,95 +102,61 @@ const { t } = useI18n();
 const configs = ref<ConfigData[]>([]);
 
 const loadSettings = async () => {
-	const activeEnvConfigs = await invoke<EnvConfig[]>("list_active_env_configs");
+	const envConfigs = await invoke<EnvConfig[]>("list_env_configs");
 	// 设置 configs
-	configs.value = activeEnvConfigs
-		.map((item) => {
-			return {
-				...item,
-				activeClass: item.isActive ? "bg-secondary" : "",
-			} as ConfigData;
-		})
-		.sort((a, b) => {
-			if (a.isActive === b.isActive) {
-				// 处理 sort 可能为 undefined 的情况，若为 undefined 则视为 0
-				return (a.sort || 0) - (b.sort || 0);
-			}
-			return a.isActive ? -1 : 1;
-		});
+	configs.value = envConfigs;
+	// 设置第一个为选择项
+	if (configs.value.length > 0) {
+		selectedConfig(configs.value[0]);
+	}
 };
 
-const resetConfigsActiveClass = () => {
-	configs.value = configs.value.map((item) => {
-		item.activeClass = "";
-		return item;
-	});
-};
-
-const onClickConfig = (config: ConfigData) => {
-	resetConfigsActiveClass();
-	config.activeClass = "bg-secondary";
-	emits("update:selectedConfigId", config.id);
+const selectedConfig = (config: ConfigData) => {
+	config.currentSelectedClass = "bg-secondary";
+	emits("update:currentConfigId", config.id);
 };
 
 // 激活
 const dropdownMenuActive = async (config: ConfigData) => {
-	await setActiveConfigId(config.id);
-	emits("update:activeConfigId", config.id);
-};
-
-// 检查
-const dropdownMenuCheck = async (config: ConfigData) => {
-	await invoke("config_check", { configId: config.id })
-		.then(async () => {
+	await invoke<Res<void>>("update_env_config", { configId: config.id, isActive: true })
+	.then(async (res) => {
+		if (res.code === '200') {
 			await loadSettings();
-			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
+		} else {
 			toast({
-				title: `${t("operate.check")} ${t("config.text")}`,
-				description: t("message.success"),
-			});
-		})
-		.catch((e) => {
-			toast({
-				title: `${t("operate.check")} ${t("config.text")}`,
-				description: `${t("message.error")}: ${e.message}`,
+				title: t("operate.active"),
+				description: res.message || t("message.error"),
 				variant: "destructive",
 			});
-			console.log("application startup config_check error: ", e);
+		}
+	})
+	.catch((e) => {
+		toast({
+			title: t("operate.active"),
+			description: `${t("message.error")}: ${e.message}`,
+			variant: "destructive",
 		});
-};
-
-// 应用
-const dropdownMenuApply = async (config: ConfigData) => {
-	await invoke("config_apply", { configId: config.id })
-		.then(async () => {
-			await loadSettings();
-			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
-			toast({
-				title: `${t("operate.apply")} ${t("config.text")}`,
-				description: t("message.success"),
-			});
-		})
-		.catch((e) => {
-			toast({
-				title: `${t("operate.apply")} ${t("config.text")}`,
-				description: `${t("message.error")}: ${e.message}`,
-				variant: "destructive",
-			});
-			console.log("application startup config_check error: ", e);
-		});
+	});
 };
 
 // 删除
 const dropdownMenuDelete = async (config: ConfigData) => {
-	await deleteConfig(config.id)
-		.then(async () => {
-			await loadSettings();
-			context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
-			toast({
-				title: `${t("operate.delete", { name: t("config.text") })}`,
-				description: t("message.success"),
-			});
+	await invoke<Res<void>>("delete_env_config", { configId: config.id })
+		.then(async (res) => {
+			if (res.code === '200') {
+				await loadSettings();
+				context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
+				toast({
+					title: `${t("operate.delete", { name: t("config.text") })}`,
+					description: t("message.success"),
+				});
+			} else {
+				toast({
+					title: `${t("operate.delete", { name: t("config.text") })}`,
+					description: res.message || t("message.error"),
+					variant: "destructive",
+				});
+			}
 		})
 		.catch((e) => {
 			toast({
@@ -209,18 +164,25 @@ const dropdownMenuDelete = async (config: ConfigData) => {
 				description: `${t("message.error")}: ${e.message}`,
 				variant: "destructive",
 			});
-			console.log("application startup config_check error: ", e);
 		});
 };
 
 // 导出配置
 const dropdownMenuExport = async (config: ConfigData) => {
-	await invoke("config_export", { configId: config.id })
-		.then(async () => {
-			toast({
-				title: `${t("operate.export", { name: t("config.text") })}`,
-				description: t("message.success"),
-			});
+	await invoke<Res<void>>("export_env_config", { configId: config.id })
+		.then(async (res) => {
+			if (res.code === '200') {
+				toast({
+					title: `${t("operate.export", { name: t("config.text") })}`,
+					description: t("message.success"),
+				});
+			} else {
+				toast({
+					title: `${t("operate.export", { name: t("config.text") })}`,
+					description: res.message || t("message.error"),
+					variant: "destructive",
+				});
+			}
 		})
 		.catch((e) => {
 			toast({
@@ -230,13 +192,4 @@ const dropdownMenuExport = async (config: ConfigData) => {
 			});
 		});
 };
-
-watch(
-	() => props.activeConfigId,
-	async (newValue, oldValue) => {
-		if (newValue && newValue !== oldValue) {
-			await loadSettings();
-		}
-	},
-);
 </script>

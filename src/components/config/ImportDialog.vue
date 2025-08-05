@@ -92,24 +92,24 @@ const importFromSystem = async () => {
 					isActive: false,
 					sort: 1,
 				};
-				await generateConfigFromEnvs(config, resMap)
-					.then(() => {
-						emit("callback");
-						toast({
-							title: t("config.import-config.types.env.text"),
-							description: `${t("config.import-config.text")}-${t(
-								"config.import-config.types.env.text",
-							)}: ${t("message.success")}`,
-						});
-					})
-					.catch((err) => {
-						console.error(err);
-						toast({
-							title: t("config.import-config.types.env.text"),
-							description: `${t("message.error")} : ${err.message}`,
-							variant: "destructive",
-						});
-					});
+				// await generateConfigFromEnvs(config, resMap)
+				// 	.then(() => {
+				// 		emit("callback");
+				// 		toast({
+				// 			title: t("config.import-config.types.env.text"),
+				// 			description: `${t("config.import-config.text")}-${t(
+				// 				"config.import-config.types.env.text",
+				// 			)}: ${t("message.success")}`,
+				// 		});
+				// 	})
+				// 	.catch((err) => {
+				// 		console.error(err);
+				// 		toast({
+				// 			title: t("config.import-config.types.env.text"),
+				// 			description: `${t("message.error")} : ${err.message}`,
+				// 			variant: "destructive",
+				// 		});
+				// 	});
 			} else {
 				toast({
 					title: t("config.import-config.types.env.text"),

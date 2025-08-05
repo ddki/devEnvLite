@@ -76,7 +76,7 @@ watch(open, (newValue) => {
 					<Label for="username" class="text-right">
 						{{ t("header.backup.folder") }}
 					</Label>
-					<LocalFileInput v-model="folder" :placeholder="t('header.backup.folder')" class="col-span-3" />
+					<LocalFileInput type="folder" v-model="folder" :placeholder="t('header.backup.folder')" class="col-span-3" />
 				</div>
 			</div>
 			<DialogFooter>

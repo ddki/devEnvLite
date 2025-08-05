@@ -1,11 +1,11 @@
 {
 	"name": "devenvlite",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
-		"build": "vite build",
+		"dev": "cross-env NODE_ENV=development vite",
+		"build": "cross-env NODE_ENV=production vite build",
 		"preview": "vite preview",
 		"tauri": "tauri",
 		"commit": "git-cz"
@@ -35,7 +35,6 @@
 		"vee-validate": "^4.15.1",
 		"vue": "^3.5.18",
 		"vue-i18n": "^11.1.11",
-		"vue-router": "^4.5.1",
 		"vue-sonner": "^2.0.2",
 		"zod": "^3.25.76"
 	},
@@ -50,6 +49,7 @@
 		"@types/node": "^22.17.0",
 		"@vitejs/plugin-vue": "^5.2.4",
 		"commitizen": "^4.3.1",
+		"cross-env": "^10.0.0",
 		"cz-git": "^1.12.0",
 		"czg": "^1.12.0",
 		"husky": "^9.1.7",
@@ -69,7 +69,9 @@
 			"biome format --write --no-errors-on-unmatched",
 			"biome lint --apply --no-errors-on-unmatched"
 		],
-		"**/*": ["git add"]
+		"**/*": [
+			"git add"
+		]
 	},
 	"volta": {
 		"node": "22.17.0",

@@ -129,7 +129,7 @@ import { toast } from "vue-sonner";
 import type { Setting, Res } from "@/types";
 
 const appVersion = await getVersion();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const context = getCurrentInstance();
 
 const languageList = [
@@ -214,6 +214,7 @@ const onSave = async () => {
 		.then(async (res) => {
 			if (res.code === "200") {
 				await setAppTheme(settingData.theme);
+				locale.value = settingData.language;
 				open.value = false;
 				context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
 			}
