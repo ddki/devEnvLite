@@ -105,17 +105,14 @@ const dropdownMenuApply = async (data: Env) => {
 		envValue: data.value,
 	})
 		.then(() => {
-			toast({
-				title: `${t("operate.apply")} ${t("env.text")}`,
+			toast.success(`${t("operate.apply")} ${t("env.text")}`, {
 				description: t("message.success"),
 			});
 			emit("callback");
 		})
 		.catch((e) => {
-			toast({
-				title: `${t("operate.apply")} ${t("env.text")}`,
+			toast.error(`${t("operate.apply")} ${t("env.text")}`, {
 				description: `${t("message.error")}: ${e.message}`,
-				variant: "destructive",
 			});
 			console.log("dropdownMenuApply error: ", e);
 		});

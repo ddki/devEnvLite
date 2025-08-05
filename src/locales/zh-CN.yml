@@ -34,7 +34,11 @@ header:
   theme: 主题
 
 settings:
-  theme: 主题
+  theme:
+    text: 主题
+    auto: 自动
+    light: 浅色
+    dark: 深色
   language: 语言
   home-dir: 应用目录
   cache-dir: 缓存目录

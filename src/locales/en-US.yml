@@ -34,7 +34,11 @@ header:
   theme: Theme
 
 settings:
-  theme: Theme
+  theme:
+    text: Theme
+    auto: Auto
+    light: Light
+    dark: Dark
   language: Language
   home-dir: Home Directory
   cache-dir: Cache Directory

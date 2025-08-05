@@ -93,38 +93,27 @@ const onClear = () => {
 };
 
 const onSave = async () => {
+	const title =
+		props.operate === "new"
+			? t("operate.new", { name: t("config.text") })
+			: t("operate.edit", { name: t("config.text") });
 	if (!data.scope) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("config.text") })
-					: t("operate.edit", { name: t("config.text") }),
+		toast.warning(title, {
 			description: t("config.error.scopesNotEmpty"),
-			variant: "destructive",
 		});
 		return;
 	}
 	if (!data.name) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("config.text") })
-					: t("operate.edit", { name: t("config.text") }),
+		toast.warning(title, {
 			description: t("config.error.nameNotEmpty"),
-			variant: "destructive",
 		});
 		return;
 	}
 	const configNames = await getActiveConfigNames();
 	console.log("configNames = ", configNames);
 	if (props.operate === "new" && configNames?.includes(data.name)) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("config.text") })
-					: t("operate.edit", { name: t("config.text") }),
+		toast.warning(title, {
 			description: t("config.error.nameExists"),
-			variant: "destructive",
 		});
 		return;
 	}
@@ -135,13 +124,8 @@ const onSave = async () => {
 	if (save) {
 		emit("callback");
 	} else {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("config.text") })
-					: t("operate.edit", { name: t("config.text") }),
+		toast.error(title, {
 			description: t("message.operate-failure", { operate: t("operate.save") }),
-			variant: "destructive",
 		});
 	}
 	if (props.operate === "new") {

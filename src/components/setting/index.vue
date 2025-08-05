@@ -14,11 +14,11 @@
 			<div class="grid gap-4 py-4">
 				<div class="grid grid-cols-4 items-center gap-4">
 					<Label for="theme" class="text-right">
-						{{ t('settings.theme') }}
+						{{ t('settings.theme.text') }}.
 					</Label>
 					<Select v-model="settingData.theme">
 						<SelectTrigger class="col-span-3">
-							<SelectValue :placeholder="t('settings.theme')" />
+							<SelectValue :placeholder="t('settings.theme.text')" />
 						</SelectTrigger>
 						<SelectContent>
 							<SelectGroup>
@@ -119,14 +119,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import type { Res, Setting } from "@/types";
 import { getVersion, setTheme } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
+import { useColorMode } from "@vueuse/core";
 import { Settings } from "lucide-vue-next";
 import { getCurrentInstance, reactive, ref, watch } from "vue";
-import { useColorMode } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import type { Setting, Res } from "@/types";
 
 const appVersion = await getVersion();
 const { t, locale } = useI18n();
@@ -146,15 +146,15 @@ const languageList = [
 const themeList = [
 	{
 		value: "auto",
-		label: "自动",
+		label: t("settings.theme.auto"),
 	},
 	{
 		value: "light",
-		label: "浅色",
+		label: t("settings.theme.light"),
 	},
 	{
 		value: "dark",
-		label: "深色",
+		label: t("settings.theme.dark"),
 	},
 ];
 
@@ -184,10 +184,8 @@ const setting = (await invoke<Res<Setting>>("get_settings")
 		}
 	})
 	.catch(() => {
-		toast({
-			title: t("header.setting"),
+		toast.warning(t("header.setting"), {
 			description: t("message.operate-failure", { operate: t("operate.save") }),
-			variant: "destructive",
 		});
 	})) || {
 	theme: "auto",
@@ -220,10 +218,8 @@ const onSave = async () => {
 			}
 		})
 		.catch(() => {
-			toast({
-				title: t("header.setting"),
+			toast.error(t("header.setting"), {
 				description: t("message.operate-failure", { operate: t("operate.save") }),
-				variant: "destructive",
 			});
 		});
 };

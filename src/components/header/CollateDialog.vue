@@ -45,10 +45,8 @@ const init = () => {
 
 const onCollate = async () => {
 	if (scopes.value.length === 0) {
-		toast({
-			title: t("header.collate.text"),
+		toast.warning(t("header.collate.text"), {
 			description: t("header.collate.error.scopesNotEmpty"),
-			variant: "destructive",
 		});
 		return;
 	}
@@ -58,10 +56,8 @@ const onCollate = async () => {
 		})
 		.catch((err) => {
 			console.error(err);
-			toast({
-				title: t("config.import-config.types.env.text"),
+			toast.error(t("config.import-config.types.env.text"), {
 				description: `${t("message.error")} : ${err.message}`,
-				variant: "destructive",
 			});
 		});
 	open.value = false;

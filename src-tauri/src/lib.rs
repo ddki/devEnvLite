@@ -152,6 +152,12 @@ mod app_init {
 	pub fn generate_handlers(
 	) -> impl Fn(tauri::ipc::Invoke<tauri::Wry>) -> bool + Send + Sync + 'static {
 		tauri::generate_handler![
+			// os_environment_variable
+			command::os_environment_variable::get_os_environment_variables,
+			command::os_environment_variable::get_os_environment_variable_keys,
+			command::os_environment_variable::collate_os_environment_variables,
+			command::os_environment_variable::backup_os_environment_variables,
+			command::os_environment_variable::recover_os_environment_variables,
 			// settings
 			command::settings::get_settings,
 			command::settings::save_settings,

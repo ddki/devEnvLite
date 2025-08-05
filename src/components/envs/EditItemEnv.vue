@@ -87,25 +87,19 @@ const onClear = () => {
 };
 
 const onSave = async () => {
+	const title =
+		props.operate === "new"
+			? t("operate.new", { name: t("env.text") })
+			: t("operate.edit", { name: t("env.text") });
 	if (!props.configId || !data.groupId) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("env.text") })
-					: t("operate.edit", { name: t("env.text") }),
+		toast.warning(title, {
 			description: t("env.error.selectGroup"),
-			variant: "destructive",
 		});
 		return;
 	}
 	if (!data.key) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("env.text") })
-					: t("operate.edit", { name: t("env.text") }),
+		toast.warning(title, {
 			description: t("env.error.keyNotEmpty"),
-			variant: "destructive",
 		});
 		return;
 	}
@@ -113,13 +107,8 @@ const onSave = async () => {
 		props.operate === "new" &&
 		(await checkGroupEnvsKeyExists(props.configId, data.groupId, data.key))
 	) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("env.text") })
-					: t("operate.edit", { name: t("env.text") }),
+		toast.warning(title, {
 			description: t("env.error.keyExists"),
-			variant: "destructive",
 		});
 		return;
 	}
@@ -130,13 +119,8 @@ const onSave = async () => {
 	if (save) {
 		emit("callback");
 	} else {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("env.text") })
-					: t("operate.edit", { name: t("env.text") }),
+		toast.error(title, {
 			description: t("message.operate-failure", { operate: t("operate.save") }),
-			variant: "destructive",
 		});
 	}
 	if (props.operate === "new") {

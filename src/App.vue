@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { Toaster } from "@/components/ui/sonner";
+import "vue-sonner/style.css";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";

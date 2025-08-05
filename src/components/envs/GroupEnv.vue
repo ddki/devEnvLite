@@ -92,17 +92,14 @@ const removeEnv = (envKey: string) => {
 const dropdownMenuApply = async (data: GroupEnv) => {
 	await invoke("group_env_apply", { configId: data.configId, groupId: data.id })
 		.then(() => {
-			toast({
-				title: `${t("operate.apply")} ${t("envGroup.text")}`,
+			toast.success(`${t("operate.apply")} ${t("envGroup.text")}`, {
 				description: t("message.success"),
 			});
 			emit("callback");
 		})
 		.catch((e) => {
-			toast({
-				title: `${t("operate.apply")} ${t("envGroup.text")}`,
+			toast.error(`${t("operate.apply")} ${t("envGroup.text")}`, {
 				description: `${t("message.error")}: ${e.message}`,
-				variant: "destructive",
 			});
 			console.log("dropdownMenuApply error: ", e);
 		});

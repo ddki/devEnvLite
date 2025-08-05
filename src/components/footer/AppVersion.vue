@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getVersion } from "@tauri-apps/api/app";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { check, type Update } from "@tauri-apps/plugin-updater";
+import { type Update, check } from "@tauri-apps/plugin-updater";
 import { Tag } from "lucide-vue-next";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -16,19 +16,17 @@ const update = ref<boolean>(false);
 const checkResult = ref<Update | null | void>(null);
 
 const checkUpdate = async () => {
-		const result = await check().catch((e) => {
+	const result = await check().catch((e) => {
 		console.error("check update error: ", e);
-		toast({
-			title: t("footer.check-update"),
+		toast.error(t("footer.check-update"), {
 			description: t("footer.connect-failed"),
-			variant: "destructive",
 		});
-		});
-		checkResult.value = result;
+	});
+	checkResult.value = result;
 	if (result?.currentVersion === result?.version) {
-			update.value = true;
-		}
-}
+		update.value = true;
+	}
+};
 
 const updateApp = async () => {
 	if (update.value) {

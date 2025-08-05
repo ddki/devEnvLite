@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 pub mod env_config;
 pub mod environment_variable;
-pub mod os_enviroment_variable;
+pub mod os_environment_variable;
 pub mod settings;
 pub mod variable_group;
 

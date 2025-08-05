@@ -119,50 +119,41 @@ const selectedConfig = (config: ConfigData) => {
 // 激活
 const dropdownMenuActive = async (config: ConfigData) => {
 	await invoke<Res<void>>("update_env_config", { configId: config.id, isActive: true })
-	.then(async (res) => {
-		if (res.code === '200') {
-			await loadSettings();
-		} else {
-			toast({
-				title: t("operate.active"),
-				description: res.message || t("message.error"),
-				variant: "destructive",
+		.then(async (res) => {
+			if (res.code === "200") {
+				await loadSettings();
+			} else {
+				toast.error(t("operate.active"), {
+					description: res.message || t("message.error"),
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(t("operate.active"), {
+				description: `${t("message.error")}: ${e.message}`,
 			});
-		}
-	})
-	.catch((e) => {
-		toast({
-			title: t("operate.active"),
-			description: `${t("message.error")}: ${e.message}`,
-			variant: "destructive",
 		});
-	});
 };
 
 // 删除
 const dropdownMenuDelete = async (config: ConfigData) => {
 	await invoke<Res<void>>("delete_env_config", { configId: config.id })
 		.then(async (res) => {
-			if (res.code === '200') {
+			if (res.code === "200") {
 				await loadSettings();
 				context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
-				toast({
-					title: `${t("operate.delete", { name: t("config.text") })}`,
+				toast.success(`${t("operate.delete", { name: t("config.text") })}`, {
 					description: t("message.success"),
 				});
 			} else {
-				toast({
-					title: `${t("operate.delete", { name: t("config.text") })}`,
+				toast.error(`${t("operate.delete", { name: t("config.text") })}`, {
 					description: res.message || t("message.error"),
-					variant: "destructive",
 				});
 			}
 		})
 		.catch((e) => {
-			toast({
-				title: `${t("operate.delete", { name: t("config.text") })}`,
+			toast.error(`${t("operate.delete", { name: t("config.text") })}`, {
 				description: `${t("message.error")}: ${e.message}`,
-				variant: "destructive",
 			});
 		});
 };
@@ -171,24 +162,19 @@ const dropdownMenuDelete = async (config: ConfigData) => {
 const dropdownMenuExport = async (config: ConfigData) => {
 	await invoke<Res<void>>("export_env_config", { configId: config.id })
 		.then(async (res) => {
-			if (res.code === '200') {
-				toast({
-					title: `${t("operate.export", { name: t("config.text") })}`,
+			if (res.code === "200") {
+				toast.success(`${t("operate.export", { name: t("config.text") })}`, {
 					description: t("message.success"),
 				});
 			} else {
-				toast({
-					title: `${t("operate.export", { name: t("config.text") })}`,
+				toast.error(`${t("operate.export", { name: t("config.text") })}`, {
 					description: res.message || t("message.error"),
-					variant: "destructive",
 				});
 			}
 		})
 		.catch((e) => {
-			toast({
-				title: `${t("operate.export", { name: t("config.text") })}`,
+			toast.error(`${t("operate.export", { name: t("config.text") })}`, {
 				description: `${t("message.error")}: ${e.message}`,
-				variant: "destructive",
 			});
 		});
 };

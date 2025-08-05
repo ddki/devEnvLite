@@ -85,36 +85,25 @@ const onClear = () => {
 };
 
 const onSave = async () => {
+	const title =
+		props.operate === "new"
+			? t("operate.new", { name: t("envGroup.text") })
+			: t("operate.edit", { name: t("envGroup.text") });
 	if (!data.configId) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("envGroup.text") })
-					: t("operate.edit", { name: t("envGroup.text") }),
+		toast.warning(title, {
 			description: t("envGroup.error.selectConfig"),
-			variant: "destructive",
 		});
 		return;
 	}
 	if (!data.name) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("envGroup.text") })
-					: t("operate.edit", { name: t("envGroup.text") }),
+		toast.warning(title, {
 			description: t("envGroup.error.nameNotEmpty"),
-			variant: "destructive",
 		});
 		return;
 	}
 	if (props.operate === "new" && (await checkGroupEnvNameExists(props.configId, data.name))) {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("envGroup.text") })
-					: t("operate.edit", { name: t("envGroup.text") }),
+		toast.warning(title, {
 			description: t("envGroup.error.nameExists"),
-			variant: "destructive",
 		});
 		return;
 	}
@@ -125,13 +114,8 @@ const onSave = async () => {
 	if (save) {
 		emit("callback");
 	} else {
-		toast({
-			title:
-				props.operate === "new"
-					? t("operate.new", { name: t("envGroup.text") })
-					: t("operate.edit", { name: t("envGroup.text") }),
+		toast.error(title, {
 			description: t("message.operate-failure", { operate: t("operate.save") }),
-			variant: "destructive",
 		});
 	}
 	if (props.operate === "new") {

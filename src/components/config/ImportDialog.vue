@@ -62,18 +62,14 @@ const init = () => {
 const importFromSystem = async () => {
 	console.log("importFromSystem, systemConfigName: ", systemConfigName);
 	if (!systemScope.value || systemScope.value.length < 0) {
-		toast({
-			title: t("config.import-config.types.env.text"),
+		toast.warning(t("config.import-config.types.env.text"), {
 			description: t("env.error.checkScope"),
-			variant: "destructive",
 		});
 		return;
 	}
 	if (!systemConfigName.value || systemConfigName.value.length < 0) {
-		toast({
-			title: t("config.import-config.types.env.text"),
+		toast.warning(t("config.import-config.types.env.text"), {
 			description: t("config.error.nameNotEmpty"),
-			variant: "destructive",
 		});
 		return;
 	}
@@ -95,52 +91,39 @@ const importFromSystem = async () => {
 				// await generateConfigFromEnvs(config, resMap)
 				// 	.then(() => {
 				// 		emit("callback");
-				// 		toast({
-				// 			title: t("config.import-config.types.env.text"),
-				// 			description: `${t("config.import-config.text")}-${t(
-				// 				"config.import-config.types.env.text",
-				// 			)}: ${t("message.success")}`,
+				// 		toast.success(t("config.import-config.types.env.text"), {
+				// 			description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}: ${t("message.success")}`,
 				// 		});
 				// 	})
 				// 	.catch((err) => {
 				// 		console.error(err);
-				// 		toast({
-				// 			title: t("config.import-config.types.env.text"),
+				// 		toast.error(t("config.import-config.types.env.text"), {
 				// 			description: `${t("message.error")} : ${err.message}`,
-				// 			variant: "destructive",
 				// 		});
 				// 	});
 			} else {
-				toast({
-					title: t("config.import-config.types.env.text"),
+				toast.error(t("config.import-config.types.env.text"), {
 					description: `${t("message.error")} : ${res.message}`,
-					variant: "destructive",
 				});
 			}
 		})
 		.catch((err) => {
 			console.error(err);
-			toast({
-				title: t("config.import-config.types.env.text"),
+			toast.error(t("config.import-config.types.env.text"), {
 				description: `${t("message.error")} : ${err.message}`,
-				variant: "destructive",
 			});
 		});
 };
 const importFromFile = async () => {
 	if (!fileConfigName.value || fileConfigName.value.length < 0) {
-		toast({
-			title: t("config.import-config.types.file.text"),
+		toast.warning(t("config.import-config.types.file.text"), {
 			description: `${t("message.field-not-empty", { field: t("config.import-config.types.file.name") })}`,
-			variant: "destructive",
 		});
 		return;
 	}
 	if (!filePath.value || filePath.value.length < 0) {
-		toast({
-			title: t("config.import-config.types.file.text"),
+		toast.warning(t("config.import-config.types.file.text"), {
 			description: `${t("message.field-not-empty", { field: t("config.import-config.types.file.file") })}`,
-			variant: "destructive",
 		});
 		return;
 	}
@@ -148,43 +131,32 @@ const importFromFile = async () => {
 	await invoke("import_config_form_file", { path: filePath.value, name: fileConfigName.value })
 		.then(async () => {
 			emit("callback");
-			toast({
-				title: `${t("config.import-config.text")} t("config.import-config.types.file.text")`,
-				description: `${t("config.import-config.text")}-${t(
-					"config.import-config.types.file.text",
-				)}: ${t("message.success")}`,
+			toast.success(`${t("config.import-config.text")} t("config.import-config.types.file.text")`, {
+				description: `${t("config.import-config.text")}-${t("config.import-config.types.file.text")}: ${t("message.success")}`,
 			});
 		})
 		.catch((err) => {
-			toast({
-				title: `${t("config.import-config.text")} t("config.import-config.types.file.text")`,
+			toast.error(`${t("config.import-config.text")} t("config.import-config.types.file.text")`, {
 				description: `${t("message.error")} : ${err.message}`,
-				variant: "destructive",
 			});
 		});
 };
 const importFromUrl = async () => {
 	if (!urlConfigName.value || urlConfigName.value.length < 0) {
-		toast({
-			title: t("config.import-config.types.url.text"),
+		toast.warning(t("config.import-config.types.url.text"), {
 			description: `${t("message.field-not-empty", { field: t("config.import-config.types.url.name") })}`,
-			variant: "destructive",
 		});
 		return;
 	}
 	if (!url.value || url.value.length < 0) {
-		toast({
-			title: t("config.import-config.types.url.text"),
+		toast.warning(t("config.import-config.types.url.text"), {
 			description: `${t("message.field-not-empty", { field: t("config.import-config.types.url.url") })}`,
-			variant: "destructive",
 		});
 		return;
 	}
 	if (!validateUrl(url.value)) {
-		toast({
-			title: t("config.import-config.types.url.text"),
+		toast.warning(t("config.import-config.types.url.text"), {
 			description: `${t("message.field-error-format", { field: t("config.import-config.types.url.url") })}`,
-			variant: "destructive",
 		});
 		return;
 	}
@@ -192,18 +164,13 @@ const importFromUrl = async () => {
 	await invoke("import_config_form_url", { url: url.value, name: urlConfigName.value })
 		.then(async () => {
 			emit("callback");
-			toast({
-				title: `${t("config.import-config.text")}-t("config.import-config.types.url.text")`,
-				description: `${t("config.import-config.text")}-${t(
-					"config.import-config.types.url.text",
-				)}: ${t("message.success")}`,
+			toast.success(`${t("config.import-config.text")}-t("config.import-config.types.url.text")`, {
+				description: `${t("config.import-config.text")}-${t("config.import-config.types.url.text")}: ${t("message.success")}`,
 			});
 		})
 		.catch((err) => {
-			toast({
-				title: `${t("config.import-config.text")}-t("config.import-config.types.url.text")`,
+			toast.error(`${t("config.import-config.text")}-t("config.import-config.types.url.text")`, {
 				description: `${t("message.error")} : ${err.message}`,
-				variant: "destructive",
 			});
 		});
 };
