@@ -1,8 +1,8 @@
 <template>
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
 		<div class="flex flex-row flex-2 justify-start items-center gap-2 border-b px-2">
-			<ImportDialog @callback="loadSettings" />
-			<EditPopover operate="new" @callback="loadSettings">
+			<ImportDialog @reload="loadSettings" />
+			<EditPopover operate="new" @reload="loadSettings">
 				<Button variant="outline">
 					<FilePlus class="mr-2 h-6 w-6" />
 					{{ `${t("operate.new")}${t("config.text")}` }}
@@ -28,7 +28,7 @@
 						</div>
 					</div>
 					<div class="grid grid-flow-col">
-						<EditPopover operate="edit" :id="item.id" @callback="loadSettings">
+						<EditPopover operate="edit" :id="item.id" @reload="loadSettings">
 							<Button variant="ghost" size="icon">
 								<Pencil class="h-4 w-4" />
 							</Button>
@@ -82,7 +82,7 @@ import {
 	Pencil,
 	Trash2,
 } from "lucide-vue-next";
-import { getCurrentInstance, ref, provide } from "vue";
+import { getCurrentInstance, provide, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -180,7 +180,7 @@ const dropdownMenuDelete = async (config: ConfigData) => {
 		});
 };
 
-// 导出配置
+// TODO 导出配置
 const dropdownMenuExport = async (config: ConfigData) => {
 	await invoke<Res<void>>("export_env_config", { configId: config.id })
 		.then(async (res) => {
@@ -203,5 +203,4 @@ const dropdownMenuExport = async (config: ConfigData) => {
 
 provide("listEnvConfigs", listEnvConfigs);
 provide("loadSettings", loadSettings);
-
 </script>

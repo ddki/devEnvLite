@@ -2,9 +2,14 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-const scopesList = [
-	{ label: t("env.scopes.user"), value: "USER" },
-	{ label: t("env.scopes.system"), value: "SYSTEM" },
+enum EnvironmentVariableScope {
+	USER = "USER",
+	SYSTEM = "SYSTEM",
+}
+
+const environmentVariableScopeList = [
+	{ label: t("env.scopes.user"), value: EnvironmentVariableScope.USER },
+	{ label: t("env.scopes.system"), value: EnvironmentVariableScope.SYSTEM },
 ];
 
 const languageList = [
@@ -33,5 +38,9 @@ const themeList = [
 	},
 ];
 
-
-export { scopesList, languageList, themeList };
+export {
+	environmentVariableScopeList as scopesList,
+	languageList,
+	themeList,
+	EnvironmentVariableScope,
+};

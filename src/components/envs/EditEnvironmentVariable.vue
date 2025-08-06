@@ -19,8 +19,8 @@
 						<Textarea v-model.trim="data.value" :placeholder="t('env.value')" class="col-span-2 h-8" />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
-						<Label for="note">{{ t('env.note') }}</Label>
-						<Textarea v-model="data.note" :placeholder="t('env.note')" class="col-span-2 h-8" />
+						<Label for="description">{{ t('env.description') }}</Label>
+						<Textarea v-model="data.description" :placeholder="t('env.description')" class="col-span-2 h-8" />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="sort">{{ t('env.sort') }}</Label>
@@ -46,19 +46,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { deleteEnv, getEnv, getGroupEnv, saveEnvToGroup } from "@/store";
-import type { Env } from "@/store/type";
-import { watch } from "vue";
-import { onMounted, reactive } from "vue";
+import type { EnvironmentVariable, Res } from "@/types";
+import { DefaultValue } from "@/types/defaultValue";
+import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
 
 interface Prop {
-	configId: string;
+	id?: string;
 	groupId: string;
-	envKey?: string;
 	maxSort?: number;
 	operate: "edit" | "new";
 }
@@ -68,22 +66,16 @@ const props = withDefaults(defineProps<Prop>(), {
 console.log("props[item-env]: ", props);
 const emit = defineEmits(["callback"]);
 
-const data = reactive({
-	configId: props.configId,
-	groupId: props.groupId,
-	key: props.envKey as string,
-	value: "",
-	note: "",
-	sort: 0,
+const data = ref<EnvironmentVariable>({
+	...DefaultValue.environmentVariable(),
+	id: props.id,
 });
 
 const onClear = () => {
-	data.configId = props.configId;
-	data.groupId = props.groupId;
-	data.key = "";
-	data.value = "";
-	data.note = "";
-	data.sort = props.maxSort + 1;
+	data.value = {
+		...DefaultValue.environmentVariable(),
+		sort: props.maxSort + 1,
+	};
 };
 
 const onSave = async () => {

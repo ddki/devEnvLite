@@ -74,7 +74,7 @@ config:
   edit-config: 编辑配置
   id: 配置唯一标识
   name: 配置名称
-  note: 配置描述
+  description: 配置描述
   sort: 配置序号
   error:
     nameNotEmpty: 名称不能为空
@@ -89,7 +89,7 @@ envGroup:
   edit: 编辑分组
   id: 分组唯一标识
   name: 分组名称
-  note: 分组描述
+  description: 分组描述
   sort: 分组序号
   error:
     selectConfig: 请先选择一个配置
@@ -103,7 +103,7 @@ env:
   edit: 编辑
   key: 键
   value: 值
-  note: 描述
+  description: 描述
   sort: 序号
   error:
     selectGroup: 请先选择一个分组

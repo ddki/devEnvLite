@@ -24,8 +24,8 @@
 						<Input v-model.trim="data.name" type="text" :placeholder="t('config.name')" class="col-span-2 h-8" />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
-						<Label for="note">{{ t('config.note') }}</Label>
-						<Textarea v-model="data.note" :placeholder="t('config.note')" class="col-span-2 h-8" />
+						<Label for="description">{{ t('config.description') }}</Label>
+						<Textarea v-model="data.description" :placeholder="t('config.description')" class="col-span-2 h-8" />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="sort">{{ t('config.sort') }}</Label>
@@ -52,14 +52,12 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { deleteConfig, getActiveConfigNames, getConfig, saveConfig } from "@/store";
-import { v4 as uuidv4 } from "uuid";
-import { inject, onMounted, reactive } from "vue";
-import { useI18n } from "vue-i18n";
-import { toast } from "vue-sonner";
 import { scopesList } from "@/constants";
 import type { EnvConfig, Res } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
+import { inject, onMounted, reactive } from "vue";
+import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
 
 const { t } = useI18n();
 
@@ -72,21 +70,18 @@ const props = withDefaults(defineProps<Prop>(), {
 	maxSort: 0,
 });
 
-const emit = defineEmits(["callback"]);
+const emit = defineEmits(["reload"]);
 
-const data = reactive({
-	id: "",
+const data = reactive<EnvConfig>({
 	scope: "USER",
 	name: "",
-	note: "",
-	sort: 0,
+	isActive: false,
 });
 
 const onClear = () => {
-	data.id = uuidv4();
+	data.id = undefined;
 	data.scope = "USER";
 	data.name = "";
-	data.note = "";
 	data.sort = props.maxSort + 1;
 };
 
@@ -115,43 +110,71 @@ const onSave = async () => {
 		});
 		return;
 	}
+
+	// 编辑
 	if (props.operate === "edit" && props.id) {
-		await invoke<Res<void>>("delete_env_config", {id: props.id})
-		.then((res) => {
-			if (res.code === "200") {
-				toast.success(`${t("operate.delete")}${t("config.text")}`, {
-					description: t("message.success"),
+		await invoke<Res<void>>("update_env_config", data)
+			.then((res) => {
+				if (res.code === "200") {
+					emit("reload");
+				} else {
+					toast.error(title, {
+						description: `${t("message.failure")}: ${res.message}`,
+					});
+					return;
+				}
+			})
+			.catch((e) => {
+				toast.error(title, {
+					description: `${t("message.error")}: ${e.message}`,
 				});
-			}
-		})
-		.catch((e) => {
-			toast.error(`${t("operate.delete")}${t("config.text")}`, {
-				description: `${t("message.error")}: ${e.message}`,
+				return;
 			});
-			return;
-		});
 	}
-	const save = await saveConfig(data);
-	if (save) {
-		emit("callback");
-	} else {
-		toast.error(title, {
-			description: `${t("operate.save")}${t("message.failure")}`,
-		});
-	}
+
+	// 新增
 	if (props.operate === "new") {
-		onClear();
+		await invoke<Res<void>>("create_env_config", data)
+			.then((res) => {
+				if (res.code === "200") {
+					emit("reload");
+				} else {
+					toast.error(title, {
+						description: `${t("message.failure")}: ${res.message}`,
+					});
+				}
+			})
+			.catch((e) => {
+				toast.error(title, {
+					description: `${t("message.error")}: ${e.message}`,
+				});
+			})
+			.finally(() => {
+				onClear();
+			});
 	}
 };
 
 onMounted(async () => {
 	if (props.operate === "edit" && props.id) {
-		const storeConfig = await getConfig(props.id);
-		data.id = storeConfig.id;
-		data.scope = storeConfig.scope;
-		data.name = storeConfig.name;
-		data.note = storeConfig.note as string;
-		data.sort = storeConfig.sort;
+		await invoke<Res<EnvConfig>>("get_env_config", { id: props.id })
+			.then((res) => {
+				if (res.code === "200") {
+					const storeConfig = res.data;
+					data.id = storeConfig.id;
+					data.scope = storeConfig.scope;
+					data.name = storeConfig.name;
+					data.isActive = storeConfig.isActive;
+					data.description = storeConfig.description as string;
+					data.sort = storeConfig.sort;
+				}
+			})
+			.catch((e) => {
+				toast.error(`${t("operate.query")}${t("config.text")}`, {
+					description: `${t("message.error")}: ${e.message}`,
+				});
+				return;
+			});
 	} else {
 		onClear();
 	}

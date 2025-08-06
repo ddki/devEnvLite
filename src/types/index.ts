@@ -1,5 +1,5 @@
 interface Setting {
-	theme: 'auto' | 'light' | 'dark';
+	theme: "auto" | "light" | "dark";
 	language: string;
 	homeDir: string;
 	cacheDir: string;
@@ -11,7 +11,7 @@ interface Setting {
 interface EnvConfig {
 	id?: string;
 	name: string;
-	scope: string;
+	scope: "USER" | "SYSTEM";
 	description?: string;
 	isActive: boolean;
 	sort?: number;

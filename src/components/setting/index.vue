@@ -119,7 +119,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { languageList, themeList } from "@/constants";
 import type { Res, Setting } from "@/types";
+import { DefaultValue } from "@/types/defaultValue";
 import { getVersion, setTheme } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { useColorMode } from "@vueuse/core";
@@ -127,7 +129,6 @@ import { Settings } from "lucide-vue-next";
 import { getCurrentInstance, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import { languageList, themeList } from "@/constants";
 
 const appVersion = await getVersion();
 const { t, locale } = useI18n();
@@ -152,25 +153,19 @@ const setAppTheme = async (changeTheme: string) => {
 
 const theme = useColorMode();
 
-const setting = (await invoke<Res<Setting>>("get_settings")
-	.then((res) => {
-		if (res.code === "200") {
-			return res.data;
-		}
-	})
-	.catch(() => {
-		toast.warning(t("header.setting"), {
-			description: `${t("operate.save")}${t("message.failure")}`,
-		});
-	})) || {
-	theme: "auto",
-	language: "zh-CN",
-	homeDir: "",
-	cacheDir: "",
-	dataDir: "",
-	logDir: "",
-	envBackupDir: "",
-};
+const setting =
+	(await invoke<Res<Setting>>("get_settings")
+		.then((res) => {
+			if (res.code === "200") {
+				return res.data;
+			}
+		})
+		.catch(() => {
+			toast.warning(t("header.setting"), {
+				description: `${t("operate.save")}${t("message.failure")}`,
+			});
+		})) || DefaultValue.setting();
+
 console.log("setting", setting);
 // 初始化获取配置主题
 await setAppTheme(setting.theme);

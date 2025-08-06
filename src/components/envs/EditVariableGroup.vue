@@ -19,8 +19,8 @@
 						<Input v-model.trim="data.name" type="text" :placeholder="t('envGroup.name')" class="col-span-2 h-8" />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
-						<Label for="note">{{ t('envGroup.note') }}</Label>
-						<Textarea v-model="data.note" :placeholder="t('envGroup.note')" class="col-span-2 h-8" />
+						<Label for="description">{{ t('envGroup.description') }}</Label>
+						<Textarea v-model="data.description" :placeholder="t('envGroup.description')" class="col-span-2 h-8" />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="sort">{{ t('envGroup.sort') }}</Label>
@@ -46,11 +46,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { deleteGroupEnv, getConfig, getGroupEnv, saveGroupEnvToConfig } from "@/store";
-import type { GroupEnv } from "@/store/type";
-import { v4 as uuidv4 } from "uuid";
-import { watch } from "vue";
-import { onMounted, reactive } from "vue";
+import type { Res, VariableGroup } from "@/types";
+import { DefaultValue } from "@/types/defaultValue";
+import { invoke } from "@tauri-apps/api/core";
+import { inject, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -66,22 +65,20 @@ const props = withDefaults(defineProps<Prop>(), {
 	maxSort: 0,
 });
 console.log("props[group-env]: ", props);
-const emit = defineEmits(["callback"]);
 
-const data = reactive({
-	id: "",
+const data = ref<VariableGroup>({
+	...DefaultValue.variableGroup(),
+	id: props.id,
 	configId: props.configId,
 	name: "",
-	note: "",
-	sort: 0,
 });
 
 const onClear = () => {
-	data.id = uuidv4();
-	data.configId = props.configId;
-	data.name = "";
-	data.note = "";
-	data.sort = props.maxSort + 1;
+	data.value = {
+		...DefaultValue.variableGroup(),
+		configId: props.configId,
+		sort: props.maxSort + 1,
+	};
 };
 
 const onSave = async () => {
@@ -89,58 +86,98 @@ const onSave = async () => {
 		props.operate === "new"
 			? `${t("operate.new")}${t("envGroup.text")}`
 			: `${t("operate.edit")}${t("envGroup.text")}`;
-	if (!data.configId) {
+	if (!data.value.configId) {
 		toast.warning(title, {
 			description: t("envGroup.error.selectConfig"),
 		});
 		return;
 	}
-	if (!data.name) {
+	if (!data.value.name) {
 		toast.warning(title, {
 			description: t("envGroup.error.nameNotEmpty"),
 		});
 		return;
 	}
-	if (props.operate === "new" && (await checkGroupEnvNameExists(props.configId, data.name))) {
+	if (checkVariableGroupNameExists(data.value.id, data.value.name)) {
 		toast.warning(title, {
 			description: t("envGroup.error.nameExists"),
 		});
 		return;
 	}
+
+	// 更新环境变量组
 	if (props.operate === "edit" && props.id) {
-		await deleteGroupEnv(props.configId, props.id);
+		await invoke<Res<void>>("update_variable_group", { group: data.value })
+			.then(async (res) => {
+				if (res.code === "200") {
+					await inject("reloadVariableGroupList");
+				} else {
+					toast.error(title, {
+						description: `${t("message.failure")}: ${res.message}`,
+					});
+				}
+			})
+			.catch((e) => {
+				toast.error(title, {
+					description: `${t("message.error")}: ${e.message}`,
+				});
+			});
 	}
-	const save = await saveGroupEnvToConfig(data);
-	if (save) {
-		emit("callback");
-	} else {
-		toast.error(title, {
-			description: `${t("operate.save")}${t("message.failure")}`,
-		});
-	}
+	// 创建环境变量组
 	if (props.operate === "new") {
-		onClear();
+		await invoke<Res<string>>("create_variable_group", { group: data.value })
+			.then(async (res) => {
+				if (res.code === "200") {
+					await inject("reloadVariableGroupList");
+				} else {
+					toast.error(title, {
+						description: `${t("message.failure")}: ${res.message}`,
+					});
+				}
+			})
+			.catch((e) => {
+				toast.error(title, {
+					description: `${t("message.error")}: ${e.message}`,
+				});
+			})
+			.finally(() => {
+				onClear();
+			});
 	}
 };
 
-const checkGroupEnvNameExists = async (configId: string, groupEnvName: string) => {
-	const result = await getConfig(configId).then((config) => {
-		if (config.groupEnvs) {
-			return config.groupEnvs.map((group: GroupEnv) => group.name).includes(groupEnvName);
-		}
-		return false;
-	});
-	return result;
+// 检查环境变量组名称是否存在
+const checkVariableGroupNameExists = (excludeId: string | undefined, newName: string) => {
+	return inject<VariableGroup[]>("variableGroupList")
+		?.filter((item) => item.id !== excludeId)
+		.map((item) => item.name)
+		.includes(newName);
+};
+// 加载环境变量组
+const loadVariableGroup = async (id: string) => {
+	const title = `${t("operate.query")}${t("envGroup.text")}`;
+	await invoke<Res<VariableGroup>>("get_variable_group", { groupId: id })
+		.then((res) => {
+			if (res.code === "200") {
+				data.value = {
+					...res.data,
+				};
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		});
 };
 
 onMounted(async () => {
 	if (props.operate === "edit" && props.configId && props.id) {
-		const store = await getGroupEnv(props.configId, props.id);
-		data.id = store.id;
-		data.configId = store.configId;
-		data.name = store.name;
-		data.note = store.note as string;
-		data.sort = store.sort;
+		await loadVariableGroup(props.id);
 	} else {
 		onClear();
 	}
@@ -148,12 +185,7 @@ onMounted(async () => {
 
 watch(props, async (newValue, _oldValue) => {
 	if (newValue.operate === "edit" && newValue.configId && newValue.id) {
-		const store = await getGroupEnv(newValue.configId, newValue.id);
-		data.id = store.id;
-		data.configId = store.configId;
-		data.name = store.name;
-		data.note = store.note as string;
-		data.sort = store.sort;
+		await loadVariableGroup(newValue.id);
 	} else {
 		onClear();
 	}

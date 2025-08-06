@@ -74,7 +74,7 @@ config:
   edit-config: Edit
   id: Config's Unique Identifier
   name: Config's Name
-  note: Config's Note
+  description: Config's Description
   sort: Config's Sort
   error:
     nameNotEmpty: Name is not empty.
@@ -89,7 +89,7 @@ envGroup:
   edit: Edit Group
   id: Group's Identifier
   name: Group's Name
-  note: Group's Note
+  description: Group's Description
   sort: Group's Sort
   error:
     selectConfig: Please select a configuration first.
@@ -103,7 +103,7 @@ env:
   edit: Edit Environment Variable
   key: Key
   value: Value
-  note: Description
+  description: Description
   sort: Serial Number
   error:
     selectGroup: Please select a group first.

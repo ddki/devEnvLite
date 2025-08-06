@@ -5,32 +5,24 @@
 			<div class="grid grid-flow-row h-full w-full justify-center">
 				<div class="grid grid-flow-col gap-2 w-full justify-start items-center">
 					<div class="grid grid-flow-col gap-1 items-center">
-						<CheckCircle class="h-4 w-4" v-if="props.data.isApplied" />
-						<AlertCircle class="h-4 w-4 text-destructive" v-else />
 						<span>{{ props.data.key }}</span>
 					</div>
 					<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
-						{{ props.data.note }}
+						{{ props.data.description }}
 					</span>
 				</div>
 				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground">
 					{{ props.data.value }}
 				</span>
-				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground" v-if="!props.data.isSame">
-					{{ props.data.currentValue }}
-				</span>
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
-			<EditItemEnv operate="edit" :configId="props.configId" :groupId="props.data.groupId" :env-key="props.data.key"
+			<EditEnvironmentVariable operate="edit" :configId="props.configId" :groupId="props.data.groupId" :env-key="props.data.key"
 				@callback="emit('callback')">
 				<Button variant="ghost" size="icon">
 					<Pencil class="h-4 w-4" />
 				</Button>
-			</EditItemEnv>
-			<Button variant="ghost" size="icon" @click="dropdownMenuApply(props.data)">
-				<CircleCheck class="h-4 w-4" />
-			</Button>
+			</EditEnvironmentVariable>
 			<Button variant="ghost" size="icon" @click="dropdownMenuDelete(props.data)">
 				<Trash2 class="h-4 w-4 text-destructive" />
 			</Button>
@@ -67,75 +59,56 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Env } from "@/store/type";
+import type { EnvironmentVariable, Res } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
-import {
-	AlertCircle,
-	CheckCircle,
-	CircleCheck,
-	Copy,
-	Pencil,
-	TerminalSquare,
-	Trash2,
-} from "lucide-vue-next";
+import { Copy, Pencil, TerminalSquare, Trash2 } from "lucide-vue-next";
+import { inject } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import { EditItemEnv } from ".";
+import { EditEnvironmentVariable } from ".";
 
 interface Props {
 	configId: string;
-	data: Env;
+	data: EnvironmentVariable;
 }
 const props = defineProps<Props>();
-const emit = defineEmits<{
-	(e: "callback"): void;
-	(e: "remove", envKey: string): void;
-}>();
 
 const { t } = useI18n();
 
-// 应用
-const dropdownMenuApply = async (data: Env) => {
-	// todo
-	await invoke("env_apply", {
-		configId: props.configId,
-		groupId: data.groupId,
-		envKey: data.key,
-		envValue: data.value,
-	})
-		.then(() => {
-			toast.success(`${t("operate.apply")} ${t("env.text")}`, {
-				description: t("message.success"),
-			});
-			emit("callback");
+// 删除
+const dropdownMenuDelete = async (data: EnvironmentVariable) => {
+	const title = `${t("operate.delete")}${t("env.text")}`;
+	await invoke<Res<void>>("delete_environment_variable", { id: data.id })
+		.then(async (res) => {
+			if (res.code === "200") {
+				await inject("reloadVariableGroupList");
+			} else {
+				toast.error(title, {
+					description: `${t("message.error")}: ${res.message}`,
+				});
+			}
 		})
 		.catch((e) => {
-			toast.error(`${t("operate.apply")} ${t("env.text")}`, {
+			toast.error(title, {
 				description: `${t("message.error")}: ${e.message}`,
 			});
-			console.log("dropdownMenuApply error: ", e);
 		});
 };
 
-// 删除
-const dropdownMenuDelete = (data: Env) => {
-	emit("remove", data.key);
-};
-
 // 复制键值
-const dropdownMenuCopyKeyValue = async (data: Env) => {
+const dropdownMenuCopyKeyValue = async (data: EnvironmentVariable) => {
 	const text = `${data.key}=${data.value}`;
 	await writeText(text);
 };
 
 // 复制键
-const dropdownMenuCopyKey = async (data: Env) => {
+const dropdownMenuCopyKey = async (data: EnvironmentVariable) => {
 	await writeText(data.key);
 };
 
 // 复制值
-const dropdownMenuCopyValue = async (data: Env) => {
+const dropdownMenuCopyValue = async (data: EnvironmentVariable) => {
 	await writeText(data.value);
 };
 </script>

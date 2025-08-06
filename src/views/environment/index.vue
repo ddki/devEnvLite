@@ -1,0 +1,82 @@
+<template>
+	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
+		<div class="flex flex-row justify-start items-center px-2 border-b">
+			<EditEnvironmentGroup operate="new" :configId="props.configId" @reload="loadVariableGroupList(props.configId)">
+				<Button variant="outline">
+					<PlusSquare class="mr-2" />
+					{{ `${t("operate.new")}${t("envGroup.text")}` }}
+				</Button>
+			</EditEnvironmentGroup>
+		</div>
+		<ScrollArea class="h-full w-full p-2">
+			<div class="grid grid-flow-row gap-2 overflow-auto">
+				<EnvironmentGroup v-for="group in variableGroupListState" :data="group" @reload="loadVariableGroupList(group.configId)" />
+			</div>
+		</ScrollArea>
+	</div>
+</template>
+
+<script setup lang="ts">
+import { EditEnvironmentGroup, EnvironmentGroup } from "@/components/envs";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { Res, VariableGroup } from "@/types";
+import { invoke } from "@tauri-apps/api/core";
+import { PlusSquare } from "lucide-vue-next";
+import { provide, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
+
+const props = defineProps({
+	configId: {
+		type: String,
+		required: true,
+	},
+});
+
+console.log("props[group-env-index]:", props);
+
+const { t } = useI18n();
+
+const variableGroupListState = ref<VariableGroup[]>([]);
+
+// 根据配置ID加载环境变量组列表
+const loadVariableGroupList = async (configId: string | undefined) => {
+	const title = `${t("operate.query")}${t("envGroup.text")}`;
+	if (!configId) {
+		toast.error(title, {
+			description: `${t("config.id")}${t("message.not-empty")}`,
+		});
+		return;
+	}
+	await invoke<Res<VariableGroup[]>>("list_variable_groups", { config_id: configId })
+		.then(async (res) => {
+			if (res.code === "200") {
+				variableGroupListState.value = res.data || [];
+			} else {
+				toast.error(title, {
+					description: `${t("message.error")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		});
+};
+
+// 初始化加载环境变量组列表
+await loadVariableGroupList(props.configId);
+
+// 监听配置ID变化，重新加载环境变量组列表
+watch(
+	() => props.configId,
+	async (newValue, _oldValue) => {
+		await loadVariableGroupList(newValue);
+	},
+);
+
+provide("reloadVariableGroupList", loadVariableGroupList);
+provide<VariableGroup[]>("variableGroupList", variableGroupListState.value);
+</script>

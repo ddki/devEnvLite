@@ -141,6 +141,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EnvironmentVariableScope, scopesList } from "@/constants";
 import type { EnvConfig, Res, VariableGroup } from "@/types";
 import { validateUrl } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
@@ -148,11 +149,10 @@ import { Import } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import { scopesList } from "@/constants";
 
 const { t } = useI18n();
 
-const emit = defineEmits(["callback"]);
+const emit = defineEmits(["reload"]);
 
 const dialogOpen = ref(false);
 
@@ -190,7 +190,7 @@ const createEnvConfig = async (title: string, config: EnvConfig) => {
 	await invoke<Res<string>>("create_env_config_transaction", { config })
 		.then((creteRes) => {
 			if (creteRes.code === "200") {
-				emit("callback");
+				emit("reload");
 				toast.success(title, {
 					description: t("message.success"),
 				});
@@ -207,6 +207,7 @@ const createEnvConfig = async (title: string, config: EnvConfig) => {
 		});
 };
 
+// 按钮功能：从系统环境变量导入
 const importFromSystem = async () => {
 	console.log("importFromSystem, systemConfigName: ", systemConfigName);
 	if (!systemScope.value || systemScope.value.length < 0) {
@@ -228,7 +229,7 @@ const importFromSystem = async () => {
 			if (res.code === "200") {
 				const resMap = new Map<string, string>(Object.entries(res.data));
 				const config: EnvConfig = {
-					scope: systemScope.value,
+					scope: systemScope.value as EnvironmentVariableScope,
 					name: systemConfigName.value,
 					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
 					isActive: false,
@@ -250,6 +251,8 @@ const importFromSystem = async () => {
 			});
 		});
 };
+
+// 按钮功能：从文件导入
 const importFromFile = async () => {
 	// TODO fix
 	if (!fileConfigName.value || fileConfigName.value.length < 0) {
@@ -267,7 +270,7 @@ const importFromFile = async () => {
 
 	// TODO file tranform to config
 	const config = {
-		scope: "USER", // 从配置文件中提取
+		scope: EnvironmentVariableScope.USER, // 从配置文件中提取
 		name: "", // 从配置文件中提取
 		isActive: false,
 		sort: 1,
@@ -275,6 +278,8 @@ const importFromFile = async () => {
 	const title = `${t("config.import-config.text")}-${t("config.import-config.types.file.text")}`;
 	await createEnvConfig(title, config);
 };
+
+// 按钮功能：从URL导入
 const importFromUrl = async () => {
 	// TODO fix
 	if (!urlConfigName.value || urlConfigName.value.length < 0) {
@@ -298,7 +303,7 @@ const importFromUrl = async () => {
 
 	// TODO url tranform to config
 	const config = {
-		scope: "USER", // 从配置文件中提取
+		scope: EnvironmentVariableScope.USER, // 从配置文件中提取
 		name: "", // 从配置文件中提取
 		isActive: false,
 		sort: 1,

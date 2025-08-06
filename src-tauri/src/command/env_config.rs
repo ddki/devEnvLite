@@ -27,6 +27,7 @@ pub async fn get_env_config(id: String, state: State<'_, AppState>) -> SResult<E
 	}
 }
 
+// 尚未使用
 #[tauri::command]
 pub async fn get_env_config_with_groups(
 	id: String,
@@ -40,6 +41,7 @@ pub async fn get_env_config_with_groups(
 	}
 }
 
+// 尚未使用
 #[tauri::command]
 pub async fn list_active_env_configs(state: State<'_, AppState>) -> SResult<Vec<EnvConfig>> {
 	let db_conn = state.db_conn.clone();

@@ -1,4 +1,4 @@
-export { default as GroupEnv } from "./GroupEnv.vue";
-export { default as ItemEnv } from "./ItemEnv.vue";
-export { default as EditGroupEnv } from "./EditGroupEnv.vue";
-export { default as EditItemEnv } from "./EditItemEnv.vue";
+export { default as EditEnvironmentVariable } from "./EditEnvironmentVariable.vue";
+export { default as EditEnvironmentGroup } from "./EditEnvironmentGroup.vue";
+export { default as EnvironmentVariable } from "./EnvironmentVariable.vue";
+export { default as EnvironmentGroup } from "./EnvironmentGroup.vue";

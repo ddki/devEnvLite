@@ -9,7 +9,7 @@
 					</ResizablePanel>
 					<ResizableHandle />
 					<ResizablePanel :default-size="70">
-						<GroupEnv :configId="currentConfigId" />
+						<EnvironmentGroup :configId="currentConfigId" />
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			</main>
@@ -33,8 +33,8 @@ const Config = defineAsyncComponent({
 	errorComponent: () => import("@/components/common/ComponentError.vue"),
 });
 
-const GroupEnv = defineAsyncComponent({
-	loader: () => import("@/views/groupenv/index.vue"),
+const EnvironmentGroup = defineAsyncComponent({
+	loader: () => import("@/views/environment/index.vue"),
 	errorComponent: () => import("@/components/common/ComponentError.vue"),
 });
 
