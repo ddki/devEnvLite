@@ -54,16 +54,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { deleteConfig, getActiveConfigNames, getConfig, saveConfig } from "@/store";
 import { v4 as uuidv4 } from "uuid";
-import { onMounted, reactive } from "vue";
+import { inject, onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
+import { scopesList } from "@/constants";
+import type { EnvConfig, Res } from "@/types";
+import { invoke } from "@tauri-apps/api/core";
 
 const { t } = useI18n();
-
-const scopesList = [
-	{ label: t("env.scopes.user"), value: "USER" },
-	{ label: t("env.scopes.system"), value: "SYSTEM" },
-];
 
 interface Prop {
 	id?: string;
@@ -95,8 +93,8 @@ const onClear = () => {
 const onSave = async () => {
 	const title =
 		props.operate === "new"
-			? t("operate.new", { name: t("config.text") })
-			: t("operate.edit", { name: t("config.text") });
+			? `${t("operate.new")}${t("config.text")}`
+			: `${t("operate.edit")}${t("config.text")}`;
 	if (!data.scope) {
 		toast.warning(title, {
 			description: t("config.error.scopesNotEmpty"),
@@ -109,7 +107,7 @@ const onSave = async () => {
 		});
 		return;
 	}
-	const configNames = await getActiveConfigNames();
+	const configNames = await inject<EnvConfig[]>("listEnvConfigs")?.map((item) => item.name);
 	console.log("configNames = ", configNames);
 	if (props.operate === "new" && configNames?.includes(data.name)) {
 		toast.warning(title, {
@@ -118,14 +116,27 @@ const onSave = async () => {
 		return;
 	}
 	if (props.operate === "edit" && props.id) {
-		await deleteConfig(props.id);
+		await invoke<Res<void>>("delete_env_config", {id: props.id})
+		.then((res) => {
+			if (res.code === "200") {
+				toast.success(`${t("operate.delete")}${t("config.text")}`, {
+					description: t("message.success"),
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(`${t("operate.delete")}${t("config.text")}`, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+			return;
+		});
 	}
 	const save = await saveConfig(data);
 	if (save) {
 		emit("callback");
 	} else {
 		toast.error(title, {
-			description: t("message.operate-failure", { operate: t("operate.save") }),
+			description: `${t("operate.save")}${t("message.failure")}`,
 		});
 	}
 	if (props.operate === "new") {

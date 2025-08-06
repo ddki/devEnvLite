@@ -127,36 +127,11 @@ import { Settings } from "lucide-vue-next";
 import { getCurrentInstance, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
+import { languageList, themeList } from "@/constants";
 
 const appVersion = await getVersion();
 const { t, locale } = useI18n();
 const context = getCurrentInstance();
-
-const languageList = [
-	{
-		value: "zh-CN",
-		label: "简体中文",
-	},
-	{
-		value: "en-US",
-		label: "English",
-	},
-];
-
-const themeList = [
-	{
-		value: "auto",
-		label: t("settings.theme.auto"),
-	},
-	{
-		value: "light",
-		label: t("settings.theme.light"),
-	},
-	{
-		value: "dark",
-		label: t("settings.theme.dark"),
-	},
-];
 
 /**
  * 切换主题
@@ -185,7 +160,7 @@ const setting = (await invoke<Res<Setting>>("get_settings")
 	})
 	.catch(() => {
 		toast.warning(t("header.setting"), {
-			description: t("message.operate-failure", { operate: t("operate.save") }),
+			description: `${t("operate.save")}${t("message.failure")}`,
 		});
 	})) || {
 	theme: "auto",
@@ -219,7 +194,7 @@ const onSave = async () => {
 		})
 		.catch(() => {
 			toast.error(t("header.setting"), {
-				description: t("message.operate-failure", { operate: t("operate.save") }),
+				description: `${t("operate.save")}${t("message.failure")}`,
 			});
 		});
 };

@@ -120,15 +120,16 @@ env:
     user: 用户
 
 operate:
-  new: 新增{name}
-  edit: 编辑{name}
-  delete: 删除{name}
-  export: 导出{name}
+  new: 新增
+  edit: 编辑
+  delete: 删除
+  query: 获取
+  export: 导出
   apply: 应用
   check: 检查
   active: 激活
-  move: 移动到{name}
-  copy: 复制{name}
+  move: 移动到
+  copy: 复制
   save: 保存
   close: 关闭
   clear: 清空
@@ -139,10 +140,8 @@ message:
   failure: 失败
   confirm: 确认
   cancel: 取消
-  field-not-empty: "{field}不能为空"
-  field-error-format: "{field}格式不正确"
-  operate-success: "{operate}成功"
-  operate-failure: "{operate}失败"
+  not-empty: 不能为空
+  error-format: 格式不正确
 
 footer:
   check-update: 检查更新
@@ -152,3 +151,6 @@ version: 版本
 
 component:
   loading-error: 加载组件失败
+
+common:
+  default: 默认

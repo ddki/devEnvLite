@@ -9,7 +9,7 @@ interface Setting {
 }
 
 interface EnvConfig {
-	id: string;
+	id?: string;
 	name: string;
 	scope: string;
 	description?: string;
@@ -19,8 +19,8 @@ interface EnvConfig {
 }
 
 interface VariableGroup {
-	id: string;
-	configId: string;
+	id?: string;
+	configId?: string;
 	name: string;
 	description?: string;
 	sort?: number;
@@ -28,7 +28,7 @@ interface VariableGroup {
 }
 
 interface EnvironmentVariable {
-	id: string;
+	id?: string;
 	key: string;
 	value: string;
 	description?: string;

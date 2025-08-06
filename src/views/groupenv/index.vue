@@ -4,7 +4,7 @@
 			<EditGroupEnv operate="new" :configId="props.configId" @callback="loadStore(props.configId)">
 				<Button variant="outline">
 					<PlusSquare class="mr-2" />
-					{{ t("operate.new", { name: t("envGroup.text") }) }}
+					{{ `${t("operate.new")}${t("envGroup.text")}` }}
 				</Button>
 			</EditGroupEnv>
 		</div>

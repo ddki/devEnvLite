@@ -89,8 +89,8 @@ const onClear = () => {
 const onSave = async () => {
 	const title =
 		props.operate === "new"
-			? t("operate.new", { name: t("env.text") })
-			: t("operate.edit", { name: t("env.text") });
+			? `${t("operate.new")}${t("env.text")}`
+			: `${t("operate.edit")}${t("env.text")}`;
 	if (!props.configId || !data.groupId) {
 		toast.warning(title, {
 			description: t("env.error.selectGroup"),
@@ -120,7 +120,7 @@ const onSave = async () => {
 		emit("callback");
 	} else {
 		toast.error(title, {
-			description: t("message.operate-failure", { operate: t("operate.save") }),
+			description: `${t("operate.save")}${t("message.failure")}`,
 		});
 	}
 	if (props.operate === "new") {

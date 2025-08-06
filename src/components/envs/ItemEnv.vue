@@ -43,15 +43,15 @@
 				<DropdownMenuContent>
 					<DropdownMenuItem @click="dropdownMenuCopyKeyValue(props.data)">
 						<Copy class="mr-2 h-4 w-4" />
-						<span>{{ t("operate.copy", { name: `${t("env.key")}-${t("env.value")}` }) }}</span>
+						<span>{{ `${t("operate.copy")}${t("env.key")}-${t("env.value")}` }}</span>
 					</DropdownMenuItem>
 					<DropdownMenuItem @click="dropdownMenuCopyKey(props.data)">
 						<Copy class="mr-2 h-4 w-4" />
-						<span>{{ t("operate.copy", { name: t("env.key") }) }}</span>
+						<span>{{ `${t("operate.copy")}${t("env.key")}` }}</span>
 					</DropdownMenuItem>
 					<DropdownMenuItem @click="dropdownMenuCopyValue(props.data)">
 						<Copy class="mr-2 h-4 w-4" />
-						<span>{{ t("operate.copy", { name: t("env.value") }) }}</span>
+						<span>{{ `${t("operate.copy")}${t("env.value")}` }}</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

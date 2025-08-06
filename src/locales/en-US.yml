@@ -120,18 +120,19 @@ env:
     user: User
 
 operate:
-  new: New {name}
-  edit: Edit {name}
-  delete: Delete {name}
-  export: Export {name}
-  apply: Apply
-  check: Check
-  active: Active
-  move: Move to {name}
-  copy: Copy {name}
-  save: Save
-  close: Close
-  clear: Clear
+  new: "New "
+  edit: "Edit "
+  delete: "Delete "
+  query: "Get "
+  export: "Export "
+  apply: "Apply "
+  check: "Check "
+  active: "Active "
+  move: "Move to "
+  copy: "Copy "
+  save: "Save "
+  close: "Close "
+  clear: "Clear "
 message:
   error: An error has occurred.
   warning: Warning
@@ -139,10 +140,8 @@ message:
   failure: Failure
   confirm: Confirm
   cancel: Cancel
-  field-not-empty: "{field} is not empty"
-  field-error-format: "{field} is not in the correct format"
-  operate-success: "{operate} Success"
-  operate-failure: "{operate} Failure"
+  not-empty: " is not empty"
+  error-format: " is not in the correct format"
 
 footer:
   check-update: Check Update
@@ -151,3 +150,6 @@ footer:
 version: Version
 component:
   loading-error: Failed to load component.
+
+common:
+  default: Default

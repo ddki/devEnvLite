@@ -1,187 +1,3 @@
-<script setup lang="ts">
-import { LocalFileInput } from "@/components/common";
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { generateConfigFromEnvs } from "@/store/config";
-import type { EnvConfig, Res } from "@/types";
-import { validateUrl } from "@/utils/ValidateUtil";
-import { invoke } from "@tauri-apps/api/core";
-import { Import } from "lucide-vue-next";
-import { v4 as uuidv4 } from "uuid";
-import { ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { toast } from "vue-sonner";
-
-const { t } = useI18n();
-
-const scopesList = [
-	{ label: t("env.scopes.user"), value: "USER" },
-	{ label: t("env.scopes.system"), value: "SYSTEM" },
-];
-
-const emit = defineEmits(["callback"]);
-
-const dialogOpen = ref(false);
-
-const systemConfigName = ref("");
-const systemScope = ref("USER");
-const fileConfigName = ref("");
-const urlConfigName = ref("");
-const filePath = ref("");
-const url = ref("");
-
-const init = () => {
-	systemConfigName.value = "";
-	fileConfigName.value = "";
-	urlConfigName.value = "";
-	filePath.value = "";
-	url.value = "";
-};
-
-const importFromSystem = async () => {
-	console.log("importFromSystem, systemConfigName: ", systemConfigName);
-	if (!systemScope.value || systemScope.value.length < 0) {
-		toast.warning(t("config.import-config.types.env.text"), {
-			description: t("env.error.checkScope"),
-		});
-		return;
-	}
-	if (!systemConfigName.value || systemConfigName.value.length < 0) {
-		toast.warning(t("config.import-config.types.env.text"), {
-			description: t("config.error.nameNotEmpty"),
-		});
-		return;
-	}
-	await invoke<Res<Record<string, string>>>("get_os_environment_variables", {
-		scope: systemScope.value,
-	})
-		.then(async (res) => {
-			if (res.code === "200") {
-				const resMap = new Map<string, string>(Object.entries(res.data));
-				console.log(typeof resMap);
-				const config: EnvConfig = {
-					id: uuidv4(),
-					scope: systemScope.value,
-					name: systemConfigName.value,
-					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
-					isActive: false,
-					sort: 1,
-				};
-				// await generateConfigFromEnvs(config, resMap)
-				// 	.then(() => {
-				// 		emit("callback");
-				// 		toast.success(t("config.import-config.types.env.text"), {
-				// 			description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}: ${t("message.success")}`,
-				// 		});
-				// 	})
-				// 	.catch((err) => {
-				// 		console.error(err);
-				// 		toast.error(t("config.import-config.types.env.text"), {
-				// 			description: `${t("message.error")} : ${err.message}`,
-				// 		});
-				// 	});
-			} else {
-				toast.error(t("config.import-config.types.env.text"), {
-					description: `${t("message.error")} : ${res.message}`,
-				});
-			}
-		})
-		.catch((err) => {
-			console.error(err);
-			toast.error(t("config.import-config.types.env.text"), {
-				description: `${t("message.error")} : ${err.message}`,
-			});
-		});
-};
-const importFromFile = async () => {
-	if (!fileConfigName.value || fileConfigName.value.length < 0) {
-		toast.warning(t("config.import-config.types.file.text"), {
-			description: `${t("message.field-not-empty", { field: t("config.import-config.types.file.name") })}`,
-		});
-		return;
-	}
-	if (!filePath.value || filePath.value.length < 0) {
-		toast.warning(t("config.import-config.types.file.text"), {
-			description: `${t("message.field-not-empty", { field: t("config.import-config.types.file.file") })}`,
-		});
-		return;
-	}
-
-	await invoke("import_config_form_file", { path: filePath.value, name: fileConfigName.value })
-		.then(async () => {
-			emit("callback");
-			toast.success(`${t("config.import-config.text")} t("config.import-config.types.file.text")`, {
-				description: `${t("config.import-config.text")}-${t("config.import-config.types.file.text")}: ${t("message.success")}`,
-			});
-		})
-		.catch((err) => {
-			toast.error(`${t("config.import-config.text")} t("config.import-config.types.file.text")`, {
-				description: `${t("message.error")} : ${err.message}`,
-			});
-		});
-};
-const importFromUrl = async () => {
-	if (!urlConfigName.value || urlConfigName.value.length < 0) {
-		toast.warning(t("config.import-config.types.url.text"), {
-			description: `${t("message.field-not-empty", { field: t("config.import-config.types.url.name") })}`,
-		});
-		return;
-	}
-	if (!url.value || url.value.length < 0) {
-		toast.warning(t("config.import-config.types.url.text"), {
-			description: `${t("message.field-not-empty", { field: t("config.import-config.types.url.url") })}`,
-		});
-		return;
-	}
-	if (!validateUrl(url.value)) {
-		toast.warning(t("config.import-config.types.url.text"), {
-			description: `${t("message.field-error-format", { field: t("config.import-config.types.url.url") })}`,
-		});
-		return;
-	}
-
-	await invoke("import_config_form_url", { url: url.value, name: urlConfigName.value })
-		.then(async () => {
-			emit("callback");
-			toast.success(`${t("config.import-config.text")}-t("config.import-config.types.url.text")`, {
-				description: `${t("config.import-config.text")}-${t("config.import-config.types.url.text")}: ${t("message.success")}`,
-			});
-		})
-		.catch((err) => {
-			toast.error(`${t("config.import-config.text")}-t("config.import-config.types.url.text")`, {
-				description: `${t("message.error")} : ${err.message}`,
-			});
-		});
-};
-
-watch(dialogOpen, (newValue) => {
-	if (!newValue) {
-		init();
-	}
-});
-</script>
-
 <template>
 	<Dialog v-model:open="dialogOpen">
 		<DialogTrigger as-child>
@@ -299,3 +115,202 @@ watch(dialogOpen, (newValue) => {
 		</DialogContent>
 	</Dialog>
 </template>
+
+<script setup lang="ts">
+import { LocalFileInput } from "@/components/common";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { EnvConfig, Res, VariableGroup } from "@/types";
+import { validateUrl } from "@/utils/ValidateUtil";
+import { invoke } from "@tauri-apps/api/core";
+import { Import } from "lucide-vue-next";
+import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
+import { scopesList } from "@/constants";
+
+const { t } = useI18n();
+
+const emit = defineEmits(["callback"]);
+
+const dialogOpen = ref(false);
+
+const systemConfigName = ref("");
+const systemScope = ref("USER");
+const fileConfigName = ref("");
+const urlConfigName = ref("");
+const filePath = ref("");
+const url = ref("");
+
+const init = () => {
+	systemConfigName.value = "";
+	fileConfigName.value = "";
+	urlConfigName.value = "";
+	filePath.value = "";
+	url.value = "";
+};
+
+// 设置环境变量组
+const setGroupsForEnvConfig = (config: EnvConfig, envs: Map<string, string>) => {
+	const group: VariableGroup = {
+		name: `${t("common.default")}-${t("envGroup.text")}`,
+		sort: 1,
+		variables: Array.from(envs).map(([key, value], index) => ({
+			key,
+			value,
+			sort: index + 1,
+		})),
+	};
+	config.groups = [...(config.groups || []), group];
+};
+
+// 创建/导入环境变量配置
+const createEnvConfig = async (title: string, config: EnvConfig) => {
+	await invoke<Res<string>>("create_env_config_transaction", { config })
+		.then((creteRes) => {
+			if (creteRes.code === "200") {
+				emit("callback");
+				toast.success(title, {
+					description: t("message.success"),
+				});
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")} : ${creteRes.message}`,
+				});
+			}
+		})
+		.catch((err) => {
+			toast.error(title, {
+				description: `${t("message.error")} : ${err.message}`,
+			});
+		});
+};
+
+const importFromSystem = async () => {
+	console.log("importFromSystem, systemConfigName: ", systemConfigName);
+	if (!systemScope.value || systemScope.value.length < 0) {
+		toast.warning(t("config.import-config.types.env.text"), {
+			description: t("env.error.checkScope"),
+		});
+		return;
+	}
+	if (!systemConfigName.value || systemConfigName.value.length < 0) {
+		toast.warning(t("config.import-config.types.env.text"), {
+			description: t("config.error.nameNotEmpty"),
+		});
+		return;
+	}
+	await invoke<Res<Record<string, string>>>("get_os_environment_variables", {
+		scope: systemScope.value,
+	})
+		.then(async (res) => {
+			if (res.code === "200") {
+				const resMap = new Map<string, string>(Object.entries(res.data));
+				const config: EnvConfig = {
+					scope: systemScope.value,
+					name: systemConfigName.value,
+					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
+					isActive: false,
+					sort: 1,
+				};
+				// 设置变量组
+				setGroupsForEnvConfig(config, resMap);
+				const title = `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`;
+				await createEnvConfig(title, config);
+			} else {
+				toast.error(t("config.import-config.types.env.text"), {
+					description: `${t("message.error")} : ${res.message}`,
+				});
+			}
+		})
+		.catch((err) => {
+			toast.error(t("config.import-config.types.env.text"), {
+				description: `${t("message.error")} : ${err.message}`,
+			});
+		});
+};
+const importFromFile = async () => {
+	// TODO fix
+	if (!fileConfigName.value || fileConfigName.value.length < 0) {
+		toast.warning(t("config.import-config.types.file.text"), {
+			description: `${t("config.import-config.types.file.name")}${t("message.not-empty")}`,
+		});
+		return;
+	}
+	if (!filePath.value || filePath.value.length < 0) {
+		toast.warning(t("config.import-config.types.file.text"), {
+			description: `${t("config.import-config.types.file.file")}${t("message.not-empty")}`,
+		});
+		return;
+	}
+
+	// TODO file tranform to config
+	const config = {
+		scope: "USER", // 从配置文件中提取
+		name: "", // 从配置文件中提取
+		isActive: false,
+		sort: 1,
+	};
+	const title = `${t("config.import-config.text")}-${t("config.import-config.types.file.text")}`;
+	await createEnvConfig(title, config);
+};
+const importFromUrl = async () => {
+	// TODO fix
+	if (!urlConfigName.value || urlConfigName.value.length < 0) {
+		toast.warning(t("config.import-config.types.url.text"), {
+			description: `${t("config.import-config.types.url.name")}${t("message.not-empty")}`,
+		});
+		return;
+	}
+	if (!url.value || url.value.length < 0) {
+		toast.warning(t("config.import-config.types.url.text"), {
+			description: `${t("config.import-config.types.url.url")}${t("message.not-empty")}`,
+		});
+		return;
+	}
+	if (!validateUrl(url.value)) {
+		toast.warning(t("config.import-config.types.url.text"), {
+			description: `${t("config.import-config.types.url.url")}${t("message.error-format")}`,
+		});
+		return;
+	}
+
+	// TODO url tranform to config
+	const config = {
+		scope: "USER", // 从配置文件中提取
+		name: "", // 从配置文件中提取
+		isActive: false,
+		sort: 1,
+	};
+	const title = `${t("config.import-config.text")}-${t("config.import-config.types.url.text")}`;
+	await createEnvConfig(title, config);
+};
+
+watch(dialogOpen, (newValue) => {
+	if (!newValue) {
+		init();
+	}
+});
+</script>
+

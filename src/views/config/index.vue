@@ -5,7 +5,7 @@
 			<EditPopover operate="new" @callback="loadSettings">
 				<Button variant="outline">
 					<FilePlus class="mr-2 h-6 w-6" />
-					{{ t("operate.new", { name: t("config.text") }) }}
+					{{ `${t("operate.new")}${t("config.text")}` }}
 				</Button>
 			</EditPopover>
 		</div>
@@ -82,7 +82,7 @@ import {
 	Pencil,
 	Trash2,
 } from "lucide-vue-next";
-import { getCurrentInstance, ref } from "vue";
+import { getCurrentInstance, ref, provide } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -101,16 +101,38 @@ const { t } = useI18n();
 
 const configs = ref<ConfigData[]>([]);
 
-const loadSettings = async () => {
-	const envConfigs = await invoke<EnvConfig[]>("list_env_configs");
-	// 设置 configs
-	configs.value = envConfigs;
-	// 设置第一个为选择项
-	if (configs.value.length > 0) {
-		selectedConfig(configs.value[0]);
-	}
+// 从后端获取配置列表
+const listEnvConfigs = async () => {
+	return await invoke<Res<EnvConfig[]>>("list_env_configs")
+		.then((res) => {
+			if (res.code === "200") {
+				return res.data;
+			}
+			toast.error(`${t("operate.query")}${t("config.text")}`, {
+				description: res.message || t("message.error"),
+			});
+		})
+		.catch((e) => {
+			toast.error(`${t("operate.query")}${t("config.text")}`, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		});
 };
 
+// 加载配置列表，并设置第一个为选中项
+const loadSettings = async () => {
+	await listEnvConfigs().then((res) => {
+		if (res) {
+			configs.value = res;
+			// 设置第一个为选中项
+			if (configs.value.length > 0) {
+				selectedConfig(configs.value[0]);
+			}
+		}
+	});
+};
+
+// 设置选中项
 const selectedConfig = (config: ConfigData) => {
 	config.currentSelectedClass = "bg-secondary";
 	emits("update:currentConfigId", config.id);
@@ -142,17 +164,17 @@ const dropdownMenuDelete = async (config: ConfigData) => {
 			if (res.code === "200") {
 				await loadSettings();
 				context?.appContext.config.globalProperties.$emitter.emit("reloadApp");
-				toast.success(`${t("operate.delete", { name: t("config.text") })}`, {
+				toast.success(`${t("operate.delete")}${t("config.text")}`, {
 					description: t("message.success"),
 				});
 			} else {
-				toast.error(`${t("operate.delete", { name: t("config.text") })}`, {
+				toast.error(`${t("operate.delete")}${t("config.text")}`, {
 					description: res.message || t("message.error"),
 				});
 			}
 		})
 		.catch((e) => {
-			toast.error(`${t("operate.delete", { name: t("config.text") })}`, {
+			toast.error(`${t("operate.delete")}${t("config.text")}`, {
 				description: `${t("message.error")}: ${e.message}`,
 			});
 		});
@@ -163,19 +185,23 @@ const dropdownMenuExport = async (config: ConfigData) => {
 	await invoke<Res<void>>("export_env_config", { configId: config.id })
 		.then(async (res) => {
 			if (res.code === "200") {
-				toast.success(`${t("operate.export", { name: t("config.text") })}`, {
+				toast.success(`${t("operate.export")}${t("config.text")}`, {
 					description: t("message.success"),
 				});
 			} else {
-				toast.error(`${t("operate.export", { name: t("config.text") })}`, {
+				toast.error(`${t("operate.export")}${t("config.text")}`, {
 					description: res.message || t("message.error"),
 				});
 			}
 		})
 		.catch((e) => {
-			toast.error(`${t("operate.export", { name: t("config.text") })}`, {
+			toast.error(`${t("operate.export")}${t("config.text")}`, {
 				description: `${t("message.error")}: ${e.message}`,
 			});
 		});
 };
+
+provide("listEnvConfigs", listEnvConfigs);
+provide("loadSettings", loadSettings);
+
 </script>
