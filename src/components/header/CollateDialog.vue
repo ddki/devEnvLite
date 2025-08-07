@@ -11,6 +11,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { getEnvironmentVariableScopeList } from "@/constants";
 import { invoke } from "@tauri-apps/api/core";
 import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -22,6 +23,13 @@ interface CheckInfo {
 	checked: boolean;
 }
 
+const defaultScopes = (): CheckInfo[] => {
+	return getEnvironmentVariableScopeList().map((item) => ({
+		...item,
+		checked: false,
+	}));
+};
+
 const { t } = useI18n();
 
 const open = ref(false);
@@ -30,16 +38,10 @@ const scopes = ref([]);
 const keys = ref([]);
 const keyList = ref<CheckInfo[]>([]);
 
-let scopesList: CheckInfo[] = reactive<CheckInfo[]>([
-	{ label: t("header.collate.env-scopes.user"), value: "USER", checked: false },
-	{ label: t("header.collate.env-scopes.system"), value: "SYSTEM", checked: false },
-]);
+let scopesList: CheckInfo[] = reactive<CheckInfo[]>(defaultScopes());
 
 const init = () => {
-	scopesList = [
-		{ label: t("header.collate.env-scopes.user"), value: "USER", checked: false },
-		{ label: t("header.collate.env-scopes.system"), value: "SYSTEM", checked: false },
-	];
+	scopesList = defaultScopes();
 	keyList.value = [];
 };
 

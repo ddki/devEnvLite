@@ -11,25 +11,23 @@
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
-			<EditEnvironmentVariable operate="new" :configId="props.data.configId" :groupId="props.data.id"
-				@callback="editItemEnvCallback">
+			<EditEnvironmentVariable operate="new" :configId="props.data.configId" :groupId="id">
 				<Button variant="ghost" size="icon">
 					<PlusSquare class="mr-2 h-4 w-4" />
 				</Button>
 			</EditEnvironmentVariable>
-			<EditEnvironmentGroup operate="edit" :configId="props.data.configId" :id="props.data.id" @callback="emit('callback')">
+			<EditVariableGroup operate="edit" :configId="configId" :id="props.data.id">
 				<Button variant="ghost" size="icon">
 					<Pencil class="h-4 w-4" />
 				</Button>
-			</EditEnvironmentGroup>
+			</EditVariableGroup>
 			<Button variant="ghost" size="icon" @click="dropdownMenuDelete(props.data)">
 				<Trash2 class="h-4 w-4 text-destructive" />
 			</Button>
 		</div>
 	</div>
 	<div class="grid grid-flow-row items-center gap-1" v-if="showItems">
-		<EnvironmentVariable v-for="env in props.data.variables" :configId="props.data.configId" :data="env" @callback="emit('callback')"
-			@remove="removeEnv(env.key)"></EnvironmentVariable>
+		<EnvironmentVariable v-for="variable in props.data.variables" :groupId="id" :data="variable"></EnvironmentVariable>
 	</div>
 </template>
 
@@ -38,10 +36,10 @@ import { Button } from "@/components/ui/button";
 import type { Res, VariableGroup } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { PanelBottomClose, PanelBottomOpen, Pencil, PlusSquare, Trash2 } from "lucide-vue-next";
-import { inject, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import { EditEnvironmentGroup, EditEnvironmentVariable, EnvironmentVariable } from ".";
+import { EditEnvironmentVariable, EditVariableGroup, EnvironmentVariable } from ".";
 
 interface Props {
 	data: VariableGroup;
@@ -51,6 +49,21 @@ const props = defineProps<Props>();
 const { t } = useI18n();
 
 const showItems = ref(false);
+const id = computed(() => {
+	if (props.data.id) {
+		return props.data.id;
+	}
+	toast.error(`${t("envGroup.id")}${t("message.not-empty")}`);
+	return "";
+});
+
+const configId = computed(() => {
+	if (props.data.configId) {
+		return props.data.configId;
+	}
+	toast.error(`${t("config.id")}${t("message.not-empty")}`);
+	return "";
+});
 
 // 删除环境变量组
 const dropdownMenuDelete = async (data: VariableGroup) => {

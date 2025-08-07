@@ -1,23 +1,23 @@
 <template>
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
 		<div class="flex flex-row justify-start items-center px-2 border-b">
-			<EditEnvironmentGroup operate="new" :configId="props.configId" @reload="loadVariableGroupList(props.configId)">
+			<EditVariableGroup operate="new" :configId="props.configId" @reload="loadVariableGroupList(props.configId)">
 				<Button variant="outline">
 					<PlusSquare class="mr-2" />
 					{{ `${t("operate.new")}${t("envGroup.text")}` }}
 				</Button>
-			</EditEnvironmentGroup>
+			</EditVariableGroup>
 		</div>
 		<ScrollArea class="h-full w-full p-2">
 			<div class="grid grid-flow-row gap-2 overflow-auto">
-				<EnvironmentGroup v-for="group in variableGroupListState" :data="group" @reload="loadVariableGroupList(group.configId)" />
+				<VariableGroupComponent v-for="group in variableGroupListState" :data="group" @reload="loadVariableGroupList(group.configId)" />
 			</div>
 		</ScrollArea>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { EditEnvironmentGroup, EnvironmentGroup } from "@/components/envs";
+import { EditVariableGroup, VariableGroup as VariableGroupComponent } from "@/components/envs";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Res, VariableGroup } from "@/types";
@@ -77,6 +77,7 @@ watch(
 	},
 );
 
+provide("configId", props.configId);
 provide("reloadVariableGroupList", loadVariableGroupList);
 provide<VariableGroup[]>("variableGroupList", variableGroupListState.value);
 </script>

@@ -1,7 +1,7 @@
 use super::*;
 use crate::model::EnvironmentVariable;
-use crate::service::MutationsService;
 use crate::service::QueriesService;
+use crate::service::TransactionService;
 use crate::AppState;
 use tauri::State;
 
@@ -35,29 +35,33 @@ pub async fn get_environment_variable(
 
 #[tauri::command]
 pub async fn create_environment_variable(
+	group_id: String,
 	variable: EnvironmentVariable,
 	state: State<'_, AppState>,
 ) -> SResult<String> {
 	let db_conn = state.db_conn.clone();
-	match MutationsService::create_environment_variable(
+	match TransactionService::create_environment_variable(
 		&db_conn,
+		group_id,
 		EnvironmentVariable::into(variable),
 	)
 	.await
 	{
-		Ok(result) => Ok(Success::success(result)),
+		Ok(variable_id) => Ok(Success::success(variable_id)),
 		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }
 
 #[tauri::command]
 pub async fn update_environment_variable(
+	group_id: String,
 	variable: EnvironmentVariable,
 	state: State<'_, AppState>,
 ) -> SResult<()> {
 	let db_conn = state.db_conn.clone();
-	match MutationsService::update_environment_variable(
+	match TransactionService::update_environment_variable(
 		&db_conn,
+		group_id,
 		EnvironmentVariable::into(variable),
 	)
 	.await
@@ -68,9 +72,13 @@ pub async fn update_environment_variable(
 }
 
 #[tauri::command]
-pub async fn delete_environment_variable(id: String, state: State<'_, AppState>) -> SResult<()> {
+pub async fn delete_environment_variable(
+	group_id: String,
+	id: String,
+	state: State<'_, AppState>,
+) -> SResult<()> {
 	let db_conn = state.db_conn.clone();
-	match MutationsService::delete_environment_variable(&db_conn, id).await {
+	match TransactionService::delete_environment_variable(&db_conn, group_id, id).await {
 		Ok(_) => Ok(Success::success(())),
 		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}

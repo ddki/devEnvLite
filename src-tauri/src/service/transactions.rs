@@ -2,7 +2,7 @@ use sea_orm::*;
 
 use crate::{
 	entity::{env_config, environment_variable, variable_group, variable_group_mapping},
-	model::EnvConfig,
+	model::{EnvConfig, EnvironmentVariable},
 };
 
 // 负责复杂的事务操作，比如多表联合写入、批量操作等。用于保证数据一致性和原子性
@@ -15,8 +15,9 @@ impl TransactionService {
 	) -> Result<String, TransactionError<DbErr>> {
 		db.transaction::<_, String, DbErr>(|txn| {
 			Box::pin(async move {
+				let config_id = ulid::Ulid::new().to_string();
 				env_config::ActiveModel {
-					id: Set(ulid::Ulid::new().to_string()),
+					id: Set(config_id.clone()),
 					name: Set(config.name),
 					scope: Set(config.scope),
 					description: Set(config.description),
@@ -29,15 +30,15 @@ impl TransactionService {
 				let mut groups = Vec::<variable_group::ActiveModel>::new();
 
 				for group_item in config.groups.unwrap_or_default() {
+					let group_id = ulid::Ulid::new().to_string();
 					let group = variable_group::ActiveModel {
-						id: Set(ulid::Ulid::new().to_string()),
-						config_id: Set(config.id.clone()),
+						id: Set(group_id.clone()),
+						config_id: Set(config_id.clone()),
 						name: Set(group_item.name),
 						description: Set(group_item.description),
 						sort: Set(group_item.sort),
 						..Default::default()
 					};
-					let group_id = group.id.clone().unwrap();
 					groups.push(group);
 
 					let mut variables = Vec::<environment_variable::ActiveModel>::new();
@@ -45,14 +46,14 @@ impl TransactionService {
 						Vec::<variable_group_mapping::ActiveModel>::new();
 
 					for variable_item in group_item.variables.unwrap_or_default() {
+						let variable_id = ulid::Ulid::new().to_string();
 						let variable = environment_variable::ActiveModel {
-							id: Set(ulid::Ulid::new().to_string()),
+							id: Set(variable_id.clone()),
 							key: Set(variable_item.key),
 							value: Set(variable_item.value),
 							description: Set(variable_item.description),
 							..Default::default()
 						};
-						let variable_id = variable.id.clone().unwrap();
 						variables.push(variable);
 						let mapping = variable_group_mapping::ActiveModel {
 							variable_id: Set(variable_id),
@@ -79,7 +80,91 @@ impl TransactionService {
 						.exec(txn)
 						.await?;
 				}
-				Ok(config.id)
+				Ok(config_id)
+			})
+		})
+		.await
+	}
+
+	pub async fn create_environment_variable(
+		db: &DbConn,
+		group_id: String,
+		variable: EnvironmentVariable,
+	) -> Result<String, TransactionError<DbErr>> {
+		db.transaction::<_, String, DbErr>(|txn| {
+			Box::pin(async move {
+				let variable_id = ulid::Ulid::new().to_string();
+				environment_variable::ActiveModel {
+					id: Set(variable_id.clone()),
+					key: Set(variable.key),
+					value: Set(variable.value),
+					description: Set(variable.description),
+					..Default::default()
+				}
+				.insert(txn)
+				.await?;
+				variable_group_mapping::ActiveModel {
+					variable_id: Set(variable_id.clone()),
+					group_id: Set(group_id),
+					sort: Set(variable.sort),
+					..Default::default()
+				}
+				.insert(txn)
+				.await?;
+				Ok(variable_id.clone())
+			})
+		})
+		.await
+	}
+
+	pub async fn update_environment_variable(
+		db: &DbConn,
+		group_id: String,
+		variable: EnvironmentVariable,
+	) -> Result<String, TransactionError<DbErr>> {
+		db.transaction::<_, String, DbErr>(|txn| {
+			let variable_id = variable.id.clone();
+			Box::pin(async move {
+				environment_variable::ActiveModel {
+					id: Set(variable_id.clone()),
+					key: Set(variable.key),
+					value: Set(variable.value),
+					description: Set(variable.description),
+					..Default::default()
+				}
+				.update(txn)
+				.await?;
+
+				variable_group_mapping::ActiveModel {
+					variable_id: Set(variable_id.clone()),
+					group_id: Set(group_id),
+					sort: Set(variable.sort),
+					..Default::default()
+				}
+				.update(txn)
+				.await?;
+				Ok(variable_id.clone())
+			})
+		})
+		.await
+	}
+
+	pub async fn delete_environment_variable(
+		db: &DbConn,
+		group_id: String,
+		variable_id: String,
+	) -> Result<(), TransactionError<DbErr>> {
+		db.transaction::<_, (), DbErr>(|txn| {
+			Box::pin(async move {
+				environment_variable::Entity::delete_by_id(variable_id.clone())
+					.exec(txn)
+					.await?;
+				variable_group_mapping::Entity::delete_many()
+					.filter(variable_group_mapping::Column::VariableId.eq(variable_id.clone()))
+					.filter(variable_group_mapping::Column::GroupId.eq(group_id.clone()))
+					.exec(txn)
+					.await?;
+				Ok(())
 			})
 		})
 		.await

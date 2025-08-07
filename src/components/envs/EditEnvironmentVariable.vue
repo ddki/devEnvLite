@@ -7,10 +7,6 @@
 			<div class="grid gap-4">
 				<div class="grid gap-2">
 					<div class="grid grid-cols-3 items-center gap-4">
-						<Label for="groupId">{{ t('envGroup.id') }}</Label>
-						<Input v-model="data.groupId" type="text" :placeholder="t('envGroup.id')" class="col-span-2 h-8" readonly />
-					</div>
-					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="key">{{ t('env.key') }}</Label>
 						<Input v-model="data.key" type="text" :placeholder="t('env.key')" class="col-span-2 h-8" />
 					</div>
@@ -48,7 +44,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import type { EnvironmentVariable, Res } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
-import { onMounted, ref, watch } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+import { inject, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -63,8 +60,6 @@ interface Prop {
 const props = withDefaults(defineProps<Prop>(), {
 	maxSort: 0,
 });
-console.log("props[item-env]: ", props);
-const emit = defineEmits(["callback"]);
 
 const data = ref<EnvironmentVariable>({
 	...DefaultValue.environmentVariable(),
@@ -83,83 +78,137 @@ const onSave = async () => {
 		props.operate === "new"
 			? `${t("operate.new")}${t("env.text")}`
 			: `${t("operate.edit")}${t("env.text")}`;
-	if (!props.configId || !data.groupId) {
-		toast.warning(title, {
-			description: t("env.error.selectGroup"),
-		});
-		return;
-	}
-	if (!data.key) {
+	if (!data.value.key) {
 		toast.warning(title, {
 			description: t("env.error.keyNotEmpty"),
 		});
 		return;
 	}
-	if (
-		props.operate === "new" &&
-		(await checkGroupEnvsKeyExists(props.configId, data.groupId, data.key))
-	) {
-		toast.warning(title, {
-			description: t("env.error.keyExists"),
+
+	// 检查变量名是否存在在配置中
+	await invoke<Res<boolean>>("check_variable_key_exists_in_config", {
+		config_id: await inject("configId"),
+		exclude_variable_id: props.id,
+		key: data.value.key,
+	})
+		.then((res) => {
+			if (res.code === "200") {
+				if (res.data) {
+					toast.warning(title, {
+						description: t("env.error.keyExists"),
+					});
+					return;
+				}
+			} else {
+				toast.error(title, {
+					description: `${t("message.error")} : ${res.message}`,
+				});
+				return;
+			}
+		})
+		.catch((err) => {
+			toast.error(title, {
+				description: `${t("message.error")} : ${err.message}`,
+			});
+			return;
 		});
-		return;
+
+	// 更新环境变量
+	if (props.operate === "edit" && props.id) {
+		await invoke<Res<boolean>>("update_environment_variable", {
+			group_id: props.groupId,
+			variable: data.value,
+		})
+			.then((res) => {
+				if (res.code === "200") {
+					if (res.data) {
+						toast.success(title, {
+							description: t("message.success"),
+						});
+						return;
+					}
+				} else {
+					toast.error(title, {
+						description: `${t("message.error")} : ${res.message}`,
+					});
+					return;
+				}
+			})
+			.catch((err) => {
+				toast.error(title, {
+					description: `${t("message.error")} : ${err.message}`,
+				});
+				return;
+			})
+			.finally(() => {
+				onClear();
+			});
 	}
-	if (props.operate === "edit" && props.envKey) {
-		await deleteEnv(props.configId, props.groupId, props.envKey);
-	}
-	const save = await saveEnvToGroup(props.configId, data);
-	if (save) {
-		emit("callback");
-	} else {
-		toast.error(title, {
-			description: `${t("operate.save")}${t("message.failure")}`,
+
+	// 创建环境变量
+	await invoke<Res<boolean>>("create_environment_variable", {
+		group_id: props.groupId,
+		variable: data.value,
+	})
+		.then((res) => {
+			if (res.code === "200") {
+				if (res.data) {
+					toast.success(title, {
+						description: t("message.success"),
+					});
+					return;
+				}
+			} else {
+				toast.error(title, {
+					description: `${t("message.error")} : ${res.message}`,
+				});
+				return;
+			}
+		})
+		.catch((err) => {
+			toast.error(title, {
+				description: `${t("message.error")} : ${err.message}`,
+			});
+			return;
+		})
+		.finally(() => {
+			onClear();
 		});
-	}
-	if (props.operate === "new") {
-		onClear();
-	}
 };
 
-const checkGroupEnvsKeyExists = async (configId: string, groupId: string, envKey: string) => {
-	if (props.envKey === envKey) {
-		return false;
-	}
-	const result = await getGroupEnv(configId, groupId).then((group) => {
-		if (group?.envs) {
-			return group.envs.map((env: Env) => env.key).includes(envKey);
-		}
-		return false;
-	});
-	return result;
+// 加载环境变量组
+const loadVariable = async (id: string) => {
+	const title = `${t("operate.query")}${t("env.text")}`;
+	await invoke<Res<EnvironmentVariable>>("get_environment_variable", { id })
+		.then((res) => {
+			if (res.code === "200") {
+				data.value = {
+					...res.data,
+				};
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		});
 };
 
 onMounted(async () => {
-	if (props.operate === "edit" && props.configId && props.groupId && props.envKey) {
-		await getEnv(props.configId, props.groupId, props.envKey).then((env) => {
-			if (env) {
-				data.groupId = env.groupId;
-				data.key = env.key;
-				data.value = env.value;
-				data.note = env.note as string;
-				data.sort = env.sort;
-			}
-		});
+	if (props.operate === "edit" && props.groupId && props.id) {
+		await loadVariable(props.id);
 	} else {
 		onClear();
 	}
 });
 
 watch(props, async (newValue, _oldValue) => {
-	if (newValue.operate === "edit" && newValue.configId && newValue.groupId && newValue.envKey) {
-		await getEnv(newValue.configId, newValue.groupId, newValue.envKey).then((env) => {
-			if (env) {
-				data.groupId = env.groupId;
-				data.key = env.key;
-				data.value = env.value;
-				data.note = env.note as string;
-				data.sort = env.sort;
-			}
-		});
+	if (newValue.operate === "edit" && newValue.groupId && newValue.id) {
+		await loadVariable(newValue.id);
 	} else {
 		onClear();
 	}

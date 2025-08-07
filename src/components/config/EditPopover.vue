@@ -52,7 +52,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { scopesList } from "@/constants";
+import { getEnvironmentVariableScopeList } from "@/constants";
 import type { EnvConfig, Res } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { inject, onMounted, reactive } from "vue";
@@ -60,6 +60,7 @@ import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const scopesList = getEnvironmentVariableScopeList();
 
 interface Prop {
 	id?: string;

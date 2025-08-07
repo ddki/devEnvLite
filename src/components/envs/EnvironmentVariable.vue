@@ -17,8 +17,7 @@
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
-			<EditEnvironmentVariable operate="edit" :configId="props.configId" :groupId="props.data.groupId" :env-key="props.data.key"
-				@callback="emit('callback')">
+			<EditEnvironmentVariable operate="edit" :groupId="props.groupId" :env-key="props.data.key">
 				<Button variant="ghost" size="icon">
 					<Pencil class="h-4 w-4" />
 				</Button>
@@ -69,7 +68,7 @@ import { toast } from "vue-sonner";
 import { EditEnvironmentVariable } from ".";
 
 interface Props {
-	configId: string;
+	groupId: string;
 	data: EnvironmentVariable;
 }
 const props = defineProps<Props>();
@@ -79,7 +78,7 @@ const { t } = useI18n();
 // 删除
 const dropdownMenuDelete = async (data: EnvironmentVariable) => {
 	const title = `${t("operate.delete")}${t("env.text")}`;
-	await invoke<Res<void>>("delete_environment_variable", { id: data.id })
+	await invoke<Res<void>>("delete_environment_variable", { group_id: props.groupId, id: data.id })
 		.then(async (res) => {
 			if (res.code === "200") {
 				await inject("reloadVariableGroupList");

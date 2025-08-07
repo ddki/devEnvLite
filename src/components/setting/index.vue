@@ -119,7 +119,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { languageList, themeList } from "@/constants";
+import { getThemeList, languageList } from "@/constants";
 import type { Res, Setting } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
 import { getVersion, setTheme } from "@tauri-apps/api/app";
@@ -132,6 +132,7 @@ import { toast } from "vue-sonner";
 
 const appVersion = await getVersion();
 const { t, locale } = useI18n();
+const themeList = getThemeList();
 const context = getCurrentInstance();
 
 /**

@@ -5,7 +5,7 @@ use crate::{entity::env_config, model::VariableGroup};
 
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct EnvConfig {
-	pub id: String,
+	pub id: Option<String>,
 	pub name: String,
 	pub scope: String,
 	pub description: Option<String>,
@@ -17,7 +17,7 @@ pub struct EnvConfig {
 impl From<env_config::Model> for EnvConfig {
 	fn from(model: env_config::Model) -> Self {
 		EnvConfig {
-			id: model.id,
+			id: Some(model.id),
 			name: model.name,
 			scope: model.scope,
 			description: model.description,
@@ -30,7 +30,11 @@ impl From<env_config::Model> for EnvConfig {
 
 impl Into<env_config::ActiveModel> for EnvConfig {
 	fn into(self) -> env_config::ActiveModel {
-		let id = if self.id.is_empty() { ulid::Ulid::new().to_string() } else { self.id };
+		let id = if self.id.is_none() {
+			ulid::Ulid::new().to_string()
+		} else {
+			self.id.unwrap()
+		};
 		env_config::ActiveModel {
 			id: Set(id),
 			name: Set(self.name),

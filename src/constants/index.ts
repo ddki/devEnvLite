@@ -1,16 +1,17 @@
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
-
 enum EnvironmentVariableScope {
 	USER = "USER",
 	SYSTEM = "SYSTEM",
 }
 
-const environmentVariableScopeList = [
-	{ label: t("env.scopes.user"), value: EnvironmentVariableScope.USER },
-	{ label: t("env.scopes.system"), value: EnvironmentVariableScope.SYSTEM },
-];
+const getEnvironmentVariableScopeList = () => {
+	const { t } = useI18n();
+	return [
+		{ label: t("env.scopes.user"), value: EnvironmentVariableScope.USER },
+		{ label: t("env.scopes.system"), value: EnvironmentVariableScope.SYSTEM },
+	];
+};
 
 const languageList = [
 	{
@@ -23,24 +24,22 @@ const languageList = [
 	},
 ];
 
-const themeList = [
-	{
-		value: "auto",
-		label: t("settings.theme.auto"),
-	},
-	{
-		value: "light",
-		label: t("settings.theme.light"),
-	},
-	{
-		value: "dark",
-		label: t("settings.theme.dark"),
-	},
-];
-
-export {
-	environmentVariableScopeList as scopesList,
-	languageList,
-	themeList,
-	EnvironmentVariableScope,
+const getThemeList = () => {
+	const { t } = useI18n();
+	return [
+		{
+			value: "auto",
+			label: t("settings.theme.auto"),
+		},
+		{
+			value: "light",
+			label: t("settings.theme.light"),
+		},
+		{
+			value: "dark",
+			label: t("settings.theme.dark"),
+		},
+	];
 };
+
+export { getEnvironmentVariableScopeList, languageList, getThemeList, EnvironmentVariableScope };

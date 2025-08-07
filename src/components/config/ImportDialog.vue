@@ -141,8 +141,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EnvironmentVariableScope, scopesList } from "@/constants";
+import { EnvironmentVariableScope, getEnvironmentVariableScopeList } from "@/constants";
 import type { EnvConfig, Res, VariableGroup } from "@/types";
+import { DefaultValue } from "@/types/defaultValue";
 import { validateUrl } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
@@ -151,6 +152,7 @@ import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
+const scopesList = getEnvironmentVariableScopeList();
 
 const emit = defineEmits(["reload"]);
 
@@ -229,6 +231,8 @@ const importFromSystem = async () => {
 			if (res.code === "200") {
 				const resMap = new Map<string, string>(Object.entries(res.data));
 				const config: EnvConfig = {
+					...DefaultValue.envConfig(),
+					id: "123",
 					scope: systemScope.value as EnvironmentVariableScope,
 					name: systemConfigName.value,
 					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,

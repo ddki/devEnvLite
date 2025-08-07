@@ -163,13 +163,13 @@ mod app_init {
 			command::settings::save_settings,
 			// env_config
 			command::env_config::list_env_configs,
-			command::env_config::list_active_env_configs,
 			command::env_config::get_env_config,
 			command::env_config::get_env_config_with_groups,
 			command::env_config::create_env_config,
 			command::env_config::create_env_config_transaction,
 			command::env_config::update_env_config,
 			command::env_config::delete_env_config,
+			command::env_config::check_variable_key_exists_in_config,
 			// variable_groups
 			command::variable_group::list_variable_groups,
 			command::variable_group::get_variable_group,

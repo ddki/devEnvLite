@@ -156,7 +156,7 @@ const checkVariableGroupNameExists = (excludeId: string | undefined, newName: st
 // 加载环境变量组
 const loadVariableGroup = async (id: string) => {
 	const title = `${t("operate.query")}${t("envGroup.text")}`;
-	await invoke<Res<VariableGroup>>("get_variable_group", { groupId: id })
+	await invoke<Res<VariableGroup>>("get_variable_group", { id })
 		.then((res) => {
 			if (res.code === "200") {
 				data.value = {
