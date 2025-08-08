@@ -1,3 +1,5 @@
+import type { EnvironmentVariableScope } from "@/constants";
+
 interface Setting {
 	theme: "auto" | "light" | "dark";
 	language: string;
@@ -9,9 +11,9 @@ interface Setting {
 }
 
 interface EnvConfig {
-	id?: string;
+	id: string;
 	name: string;
-	scope: "USER" | "SYSTEM";
+	scope: EnvironmentVariableScope;
 	description?: string;
 	isActive: boolean;
 	sort?: number;

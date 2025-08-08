@@ -1,3 +1,4 @@
+import { EnvironmentVariableScope } from "@/constants";
 import type { EnvConfig, EnvironmentVariable, Setting, VariableGroup } from ".";
 
 export const DefaultValue = {
@@ -14,9 +15,9 @@ export const DefaultValue = {
 	},
 	envConfig: (): EnvConfig => {
 		return {
-			id: undefined,
+			id: "0",
 			name: "",
-			scope: "USER",
+			scope: EnvironmentVariableScope.USER,
 			isActive: false,
 			description: "",
 			sort: 0,
@@ -25,8 +26,8 @@ export const DefaultValue = {
 	},
 	variableGroup: (): VariableGroup => {
 		return {
-			id: undefined,
-			configId: undefined,
+			id: "0",
+			configId: "0",
 			name: "",
 			description: "",
 			sort: 0,
@@ -35,7 +36,7 @@ export const DefaultValue = {
 	},
 	environmentVariable: (): EnvironmentVariable => {
 		return {
-			id: undefined,
+			id: "0",
 			key: "",
 			value: "",
 			description: "",

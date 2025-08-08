@@ -9,7 +9,7 @@
 -- 存储所有环境变量的键值对及描述信息
 CREATE TABLE environment_variable (
     id TEXT PRIMARY KEY NOT NULL,            -- 变量唯一标识，UUID格式
-    key TEXT NOT NULL UNIQUE,               -- 变量名，全局唯一
+    key TEXT NOT NULL,                      -- 变量名，同一配置内唯一
     value TEXT NOT NULL,                    -- 变量值，可为任意文本
     description TEXT                        -- 变量描述信息，用于说明用途
 );
@@ -28,9 +28,9 @@ CREATE TABLE env_config (
 -- 变量分组表
 -- 对环境变量进行逻辑分组，便于管理
 CREATE TABLE variable_group (
-    id TEXT PRIMARY KEY NOT NULL,            -- 分组唯一标识，UUID格式
+    id TEXT PRIMARY KEY NOT NULL,           -- 分组唯一标识，UUID格式
     config_id TEXT NOT NULL,                -- 所属配置ID，关联env_config表
-    name TEXT NOT NULL UNIQUE,              -- 分组名称，同一配置内唯一
+    name TEXT NOT NULL,                     -- 分组名称，同一配置内唯一
     description TEXT,                       -- 分组描述信息
     sort INTEGER DEFAULT 1,                 -- 排序权重，数值越小越靠前
     FOREIGN KEY (config_id) REFERENCES env_config(id) -- 外键约束，确保引用有效性

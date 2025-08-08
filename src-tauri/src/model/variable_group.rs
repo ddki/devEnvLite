@@ -5,6 +5,7 @@ use crate::model::EnvironmentVariable;
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct VariableGroup {
 	pub id: String,
+	#[serde(rename = "configId")]
 	pub config_id: String,
 	pub name: String,
 	pub description: Option<String>,

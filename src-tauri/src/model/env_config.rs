@@ -5,10 +5,11 @@ use crate::{entity::env_config, model::VariableGroup};
 
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct EnvConfig {
-	pub id: Option<String>,
+	pub id: String,
 	pub name: String,
 	pub scope: String,
 	pub description: Option<String>,
+	#[serde(rename = "isActive")]
 	pub is_active: bool,
 	pub sort: Option<i32>,
 	pub groups: Option<Vec<VariableGroup>>,
@@ -17,7 +18,7 @@ pub struct EnvConfig {
 impl From<env_config::Model> for EnvConfig {
 	fn from(model: env_config::Model) -> Self {
 		EnvConfig {
-			id: Some(model.id),
+			id: model.id,
 			name: model.name,
 			scope: model.scope,
 			description: model.description,
@@ -30,10 +31,10 @@ impl From<env_config::Model> for EnvConfig {
 
 impl Into<env_config::ActiveModel> for EnvConfig {
 	fn into(self) -> env_config::ActiveModel {
-		let id = if self.id.is_none() {
+		let id = if self.id.is_empty() {
 			ulid::Ulid::new().to_string()
 		} else {
-			self.id.unwrap()
+			self.id
 		};
 		env_config::ActiveModel {
 			id: Set(id),

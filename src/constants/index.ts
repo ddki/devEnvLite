@@ -1,8 +1,8 @@
 import { useI18n } from "vue-i18n";
 
 enum EnvironmentVariableScope {
-	USER = "USER",
-	SYSTEM = "SYSTEM",
+	USER = "user",
+	SYSTEM = "system",
 }
 
 const getEnvironmentVariableScopeList = () => {

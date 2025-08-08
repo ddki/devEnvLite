@@ -27,8 +27,6 @@ impl TransactionService {
 				.insert(txn)
 				.await?;
 
-				let mut groups = Vec::<variable_group::ActiveModel>::new();
-
 				for group_item in config.groups.unwrap_or_default() {
 					let group_id = ulid::Ulid::new().to_string();
 					let group = variable_group::ActiveModel {
@@ -39,7 +37,11 @@ impl TransactionService {
 						sort: Set(group_item.sort),
 						..Default::default()
 					};
-					groups.push(group);
+
+					// 先插入 group 为 group-mapping 提供外键
+					variable_group::Entity::insert(group)
+						.exec(txn)
+						.await?;
 
 					let mut variables = Vec::<environment_variable::ActiveModel>::new();
 					let mut variable_group_mapping =
@@ -73,12 +75,6 @@ impl TransactionService {
 							.exec(txn)
 							.await?;
 					}
-				}
-
-				if groups.len() > 0 {
-					variable_group::Entity::insert_many(groups)
-						.exec(txn)
-						.await?;
 				}
 				Ok(config_id)
 			})

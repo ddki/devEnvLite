@@ -159,7 +159,7 @@ const emit = defineEmits(["reload"]);
 const dialogOpen = ref(false);
 
 const systemConfigName = ref("");
-const systemScope = ref("USER");
+const systemScope = ref(EnvironmentVariableScope.USER);
 const fileConfigName = ref("");
 const urlConfigName = ref("");
 const filePath = ref("");
@@ -176,9 +176,12 @@ const init = () => {
 // 设置环境变量组
 const setGroupsForEnvConfig = (config: EnvConfig, envs: Map<string, string>) => {
 	const group: VariableGroup = {
+		...DefaultValue.variableGroup(),
+		configId: config.id,
 		name: `${t("common.default")}-${t("envGroup.text")}`,
 		sort: 1,
 		variables: Array.from(envs).map(([key, value], index) => ({
+			...DefaultValue.environmentVariable(),
 			key,
 			value,
 			sort: index + 1,
@@ -189,7 +192,9 @@ const setGroupsForEnvConfig = (config: EnvConfig, envs: Map<string, string>) => 
 
 // 创建/导入环境变量配置
 const createEnvConfig = async (title: string, config: EnvConfig) => {
-	await invoke<Res<string>>("create_env_config_transaction", { config })
+	await invoke<Res<string>>("create_env_config_transaction", {
+		config: config,
+	})
 		.then((creteRes) => {
 			if (creteRes.code === "200") {
 				emit("reload");
@@ -232,7 +237,6 @@ const importFromSystem = async () => {
 				const resMap = new Map<string, string>(Object.entries(res.data));
 				const config: EnvConfig = {
 					...DefaultValue.envConfig(),
-					id: "123",
 					scope: systemScope.value as EnvironmentVariableScope,
 					name: systemConfigName.value,
 					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
@@ -274,6 +278,7 @@ const importFromFile = async () => {
 
 	// TODO file tranform to config
 	const config = {
+		...DefaultValue.envConfig(),
 		scope: EnvironmentVariableScope.USER, // 从配置文件中提取
 		name: "", // 从配置文件中提取
 		isActive: false,
@@ -307,6 +312,7 @@ const importFromUrl = async () => {
 
 	// TODO url tranform to config
 	const config = {
+		...DefaultValue.envConfig(),
 		scope: EnvironmentVariableScope.USER, // 从配置文件中提取
 		name: "", // 从配置文件中提取
 		isActive: false,

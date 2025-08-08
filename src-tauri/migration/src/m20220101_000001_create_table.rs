@@ -1,4 +1,4 @@
-use sea_orm_migration::{prelude::*, schema::*};
+use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -12,13 +12,13 @@ impl MigrationTrait for Migration {
 				Table::create()
 					.table(EnvironmentVariable::Table)
 					.if_not_exists()
-					.col(pk_auto(EnvironmentVariable::Id))
 					.col(
-						ColumnDef::new(EnvironmentVariable::Key)
+						ColumnDef::new(EnvironmentVariable::Id)
 							.string()
 							.not_null()
-							.unique_key(),
+							.primary_key(),
 					)
+					.col(ColumnDef::new(EnvironmentVariable::Key).string().not_null())
 					.col(
 						ColumnDef::new(EnvironmentVariable::Value)
 							.string()
@@ -35,7 +35,12 @@ impl MigrationTrait for Migration {
 				Table::create()
 					.table(EnvConfig::Table)
 					.if_not_exists()
-					.col(pk_auto(EnvConfig::Id))
+					.col(
+						ColumnDef::new(EnvConfig::Id)
+							.string()
+							.not_null()
+							.primary_key(),
+					)
 					.col(
 						ColumnDef::new(EnvConfig::Name)
 							.string()
@@ -46,14 +51,10 @@ impl MigrationTrait for Migration {
 						ColumnDef::new(EnvConfig::Scope)
 							.string()
 							.not_null()
-							.check("scope IN ('system', 'user')"),
+							.check(Expr::col(EnvConfig::Scope).is_in(vec!["system", "user"])),
 					)
 					.col(ColumnDef::new(EnvConfig::Description).string())
-					.col(
-						ColumnDef::new(EnvConfig::IsActive)
-							.boolean()
-							.default(true),
-					)
+					.col(ColumnDef::new(EnvConfig::IsActive).boolean().default(true))
 					.col(ColumnDef::new(EnvConfig::Sort).integer().default(1))
 					.to_owned(),
 			)
@@ -65,14 +66,14 @@ impl MigrationTrait for Migration {
 				Table::create()
 					.table(VariableGroup::Table)
 					.if_not_exists()
-					.col(pk_auto(VariableGroup::Id))
-					.col(ColumnDef::new(VariableGroup::ConfigId).integer().not_null())
 					.col(
-						ColumnDef::new(VariableGroup::Name)
+						ColumnDef::new(VariableGroup::Id)
 							.string()
 							.not_null()
-							.unique_key(),
+							.primary_key(),
 					)
+					.col(ColumnDef::new(VariableGroup::ConfigId).integer().not_null())
+					.col(ColumnDef::new(VariableGroup::Name).string().not_null())
 					.col(ColumnDef::new(VariableGroup::Description).string())
 					.col(ColumnDef::new(VariableGroup::Sort).integer().default(1))
 					.foreign_key(

@@ -54,16 +54,16 @@ impl EnvironmentVarsType {
 	// 为枚举变体提供对应的字符串表示
 	pub fn as_str(&self) -> &'static str {
 		match self {
-			EnvironmentVarsType::USER => "USER",
-			EnvironmentVarsType::SYSTEM => "SYSTEM",
+			EnvironmentVarsType::USER => "user",
+			EnvironmentVarsType::SYSTEM => "system",
 		}
 	}
 
 	// 根据字符串返回对应的枚举变体
 	pub fn from_str(value: &str) -> Result<Self, &'static str> {
 		match value {
-			"USER" => Ok(EnvironmentVarsType::USER),
-			"SYSTEM" => Ok(EnvironmentVarsType::SYSTEM),
+			"user" => Ok(EnvironmentVarsType::USER),
+			"system" => Ok(EnvironmentVarsType::SYSTEM),
 			_ => Err("Invalid environment variable type"),
 		}
 	}
@@ -72,8 +72,8 @@ impl EnvironmentVarsType {
 impl std::fmt::Display for EnvironmentVarsType {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			EnvironmentVarsType::SYSTEM => write!(f, "SYSTEM"),
-			EnvironmentVarsType::USER => write!(f, "USER"),
+			EnvironmentVarsType::SYSTEM => write!(f, "system"),
+			EnvironmentVarsType::USER => write!(f, "user"),
 		}
 	}
 }

@@ -52,10 +52,11 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { getEnvironmentVariableScopeList } from "@/constants";
+import { EnvironmentVariableScope, getEnvironmentVariableScopeList } from "@/constants";
 import type { EnvConfig, Res } from "@/types";
+import { DefaultValue } from "@/types/defaultValue";
 import { invoke } from "@tauri-apps/api/core";
-import { inject, onMounted, reactive } from "vue";
+import { inject, onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -73,17 +74,15 @@ const props = withDefaults(defineProps<Prop>(), {
 
 const emit = defineEmits(["reload"]);
 
-const data = reactive<EnvConfig>({
-	scope: "USER",
-	name: "",
-	isActive: false,
+const data = ref<EnvConfig>({
+	...DefaultValue.envConfig(),
 });
 
 const onClear = () => {
-	data.id = undefined;
-	data.scope = "USER";
-	data.name = "";
-	data.sort = props.maxSort + 1;
+	data.value = {
+		...DefaultValue.envConfig(),
+		sort: props.maxSort + 1,
+	};
 };
 
 const onSave = async () => {
@@ -91,13 +90,13 @@ const onSave = async () => {
 		props.operate === "new"
 			? `${t("operate.new")}${t("config.text")}`
 			: `${t("operate.edit")}${t("config.text")}`;
-	if (!data.scope) {
+	if (!data.value.scope) {
 		toast.warning(title, {
 			description: t("config.error.scopesNotEmpty"),
 		});
 		return;
 	}
-	if (!data.name) {
+	if (!data.value.name) {
 		toast.warning(title, {
 			description: t("config.error.nameNotEmpty"),
 		});
@@ -105,7 +104,7 @@ const onSave = async () => {
 	}
 	const configNames = await inject<EnvConfig[]>("listEnvConfigs")?.map((item) => item.name);
 	console.log("configNames = ", configNames);
-	if (props.operate === "new" && configNames?.includes(data.name)) {
+	if (props.operate === "new" && configNames?.includes(data.value.name)) {
 		toast.warning(title, {
 			description: t("config.error.nameExists"),
 		});
@@ -114,7 +113,7 @@ const onSave = async () => {
 
 	// 编辑
 	if (props.operate === "edit" && props.id) {
-		await invoke<Res<void>>("update_env_config", data)
+		await invoke<Res<void>>("update_env_config", data.value)
 			.then((res) => {
 				if (res.code === "200") {
 					emit("reload");
@@ -135,7 +134,7 @@ const onSave = async () => {
 
 	// 新增
 	if (props.operate === "new") {
-		await invoke<Res<void>>("create_env_config", data)
+		await invoke<Res<void>>("create_env_config", data.value)
 			.then((res) => {
 				if (res.code === "200") {
 					emit("reload");
@@ -162,12 +161,9 @@ onMounted(async () => {
 			.then((res) => {
 				if (res.code === "200") {
 					const storeConfig = res.data;
-					data.id = storeConfig.id;
-					data.scope = storeConfig.scope;
-					data.name = storeConfig.name;
-					data.isActive = storeConfig.isActive;
-					data.description = storeConfig.description as string;
-					data.sort = storeConfig.sort;
+					data.value = {
+						...storeConfig
+					}
 				}
 			})
 			.catch((e) => {
