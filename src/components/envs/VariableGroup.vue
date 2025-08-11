@@ -26,13 +26,16 @@
 			</Button>
 		</div>
 	</div>
-	<div class="grid grid-flow-row items-center gap-1" v-if="showItems">
-		<EnvironmentVariable v-for="variable in props.data.variables" :groupId="id" :data="variable"></EnvironmentVariable>
-	</div>
+	<ScrollArea class="h-full w-full p-2">
+		<div class="grid grid-flow-row items-center gap-1" v-if="showItems">
+			<EnvironmentVariable v-for="variable in props.data.variables" :groupId="id" :data="variable"></EnvironmentVariable>
+		</div>
+	</ScrollArea>
 </template>
 
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Res, VariableGroup } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { PanelBottomClose, PanelBottomOpen, Pencil, PlusSquare, Trash2 } from "lucide-vue-next";

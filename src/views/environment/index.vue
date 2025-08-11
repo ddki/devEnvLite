@@ -1,6 +1,12 @@
 <template>
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
-		<div class="flex flex-row justify-start items-center px-2 border-b">
+		<div class="flex flex-row justify-between items-center px-2 border-b">
+			<div class="flex flex-row gap-1 items-center">
+				<span>{{ config.name }}</span>
+				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
+					{{ config.description }}
+				</span>
+			</div>
 			<EditVariableGroup operate="new" :configId="config.id" @reload="loadVariableGroupList(config.id)">
 				<Button variant="outline">
 					<PlusSquare class="mr-2" />
@@ -21,12 +27,12 @@ import { EditVariableGroup, VariableGroup as VariableGroupComponent } from "@/co
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Res, VariableGroup } from "@/types";
+import type { EnvConfig } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { PlusSquare } from "lucide-vue-next";
 import { provide, ref, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import type { EnvConfig } from "@/types";
 
 interface Props {
 	config: EnvConfig;
@@ -51,7 +57,7 @@ const loadVariableGroupList = async (configId: string | undefined) => {
 		});
 		return;
 	}
-	await invoke<Res<VariableGroup[]>>("list_variable_groups", { configId })
+	await invoke<Res<VariableGroup[]>>("list_variable_groups_with_variables", { configId })
 		.then(async (res) => {
 			if (res.code === "200") {
 				variableGroupListState.value = res.data || [];

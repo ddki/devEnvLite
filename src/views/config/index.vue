@@ -17,7 +17,7 @@
 				<div
 					:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.currentSelectedClass}`"
 					v-for="item in configs">
-					<div class="flex flex-row gap-2 h-full items-center p-2" @click="selectedConfig(item)">
+					<div class="flex flex-row gap-2 h-full items-center p-2" @click="selectedConfig(configs, item)">
 						<CircleCheckBig class="text-destructive" v-if="item.isActive" />
 						<File />
 						<div class="grid grid-flow-row w-full justify-start items-center">
@@ -91,10 +91,9 @@ interface ConfigData extends EnvConfig {
 	currentSelectedClass?: string;
 }
 
-// TODO 完善此项的数据同步
-const config = defineModel<EnvConfig>();
+const model = defineModel<EnvConfig>();
 
-const emits = defineEmits(["update:currentConfigId"]);
+const emits = defineEmits(["update:modelValue"]);
 const context = getCurrentInstance();
 
 const { t } = useI18n();
@@ -126,7 +125,7 @@ const loadSettings = async () => {
 			configs.value = res;
 			// 设置第一个为选中项
 			if (configs.value.length > 0) {
-				selectedConfig(configs.value[0]);
+				selectedConfig(configs.value, configs.value[0]);
 			}
 		}
 	});
@@ -137,9 +136,18 @@ onMounted(() => {
 });
 
 // 设置选中项
-const selectedConfig = (config: ConfigData) => {
-	config.currentSelectedClass = "bg-secondary";
-	emits("update:currentConfigId", config.id);
+const selectedConfig = (configs: ConfigData[], config: ConfigData) => {
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	configs.forEach((item) => {
+		if (item.id === config.id) {
+			item.currentSelectedClass = "bg-secondary";
+			return;
+		}
+		item.currentSelectedClass = "";
+	});
+	model.value = {
+		...config,
+	};
 };
 
 // 激活

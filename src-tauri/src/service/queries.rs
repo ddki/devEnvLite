@@ -92,6 +92,23 @@ impl QueriesService {
 			.await
 	}
 
+	pub async fn list_variable_groups_with_variables(
+		db: &DbConn,
+		config_id: String,
+	) -> Result<Vec<VariableGroup>, DbErr> {
+		let groups = variable_group::Entity::find()
+			.filter(variable_group::Column::ConfigId.eq(config_id))
+			.all(db)
+			.await?;
+
+		let mut vg_list = Vec::new();
+		for group in groups.iter() {
+			let group = Self::build_variable_group_with_variables(db, group.clone()).await?;
+			vg_list.push(group);
+		}
+		Ok(vg_list)
+	}
+
 	pub async fn get_variable_group(
 		db: &DbConn,
 		id: String,

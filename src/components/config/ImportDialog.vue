@@ -235,11 +235,12 @@ const importFromSystem = async () => {
 		.then(async (res) => {
 			if (res.code === "200") {
 				const resMap = new Map<string, string>(Object.entries(res.data));
+				const scopeLabel = scopesList.find((item) => item.value === systemScope.value)?.label;
 				const config: EnvConfig = {
 					...DefaultValue.envConfig(),
 					scope: systemScope.value as EnvironmentVariableScope,
 					name: systemConfigName.value,
-					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}`,
+					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}(${scopeLabel})`,
 					isActive: false,
 					sort: 1,
 				};

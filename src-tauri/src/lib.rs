@@ -173,6 +173,7 @@ mod app_init {
 			command::env_config::check_variable_key_exists_in_config,
 			// variable_groups
 			command::variable_group::list_variable_groups,
+			command::variable_group::list_variable_groups_with_variables,
 			command::variable_group::get_variable_group,
 			command::variable_group::get_variable_group_with_variables,
 			command::variable_group::create_variable_group,

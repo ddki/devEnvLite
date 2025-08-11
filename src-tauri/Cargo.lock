@@ -1403,6 +1403,7 @@ dependencies = [
  "anyhow",
  "cargo-edit",
  "dotenvy",
+ "futures",
  "log 0.4.27",
  "lombok",
  "migration",

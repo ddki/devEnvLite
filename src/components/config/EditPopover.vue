@@ -134,7 +134,9 @@ const onSave = async () => {
 
 	// 新增
 	if (props.operate === "new") {
-		await invoke<Res<void>>("create_env_config", data.value)
+		await invoke<Res<void>>("create_env_config", {
+			config: data.value,
+		})
 			.then((res) => {
 				if (res.code === "200") {
 					emit("reload");
@@ -162,8 +164,8 @@ onMounted(async () => {
 				if (res.code === "200") {
 					const storeConfig = res.data;
 					data.value = {
-						...storeConfig
-					}
+						...storeConfig,
+					};
 				}
 			})
 			.catch((e) => {

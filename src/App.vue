@@ -5,11 +5,11 @@
 			<main class="border overflow-auto">
 				<ResizablePanelGroup direction="horizontal">
 					<ResizablePanel :default-size="30">
-						<Config v-model:currentConfigId="currentConfigId" />
+						<Config v-model:model-value="currentConfig" />
 					</ResizablePanel>
 					<ResizableHandle />
 					<ResizablePanel :default-size="70">
-						<EnvironmentPanel v-model:config="currentConfig" />
+						<EnvironmentPanel v-if="currentConfig.id" v-model:config="currentConfig" />
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			</main>
@@ -26,7 +26,7 @@ import "vue-sonner/style.css";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { defineAsyncComponent, ref } from "vue";
+import { defineAsyncComponent, ref, watch } from "vue";
 import type { EnvConfig } from "./types";
 
 const Config = defineAsyncComponent({
@@ -39,6 +39,9 @@ const EnvironmentPanel = defineAsyncComponent({
 	errorComponent: () => import("@/components/common/ComponentError.vue"),
 });
 
-const currentConfigId = ref("");
 const currentConfig = ref<EnvConfig>({} as EnvConfig);
+
+watch(currentConfig, (newVal) => {
+	console.log("selectedConfig: ", newVal);
+});
 </script>

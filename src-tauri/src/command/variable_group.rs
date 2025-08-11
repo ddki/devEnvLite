@@ -21,6 +21,21 @@ pub async fn list_variable_groups(
 }
 
 #[tauri::command]
+pub async fn list_variable_groups_with_variables(
+	config_id: String,
+	state: State<'_, AppState>,
+) -> SResult<Vec<VariableGroup>> {
+	let db_conn = state.db_conn.clone();
+	match QueriesService::list_variable_groups_with_variables(&db_conn, config_id).await {
+		Ok(models) => {
+			let groups = models.into_iter().map(VariableGroup::from).collect();
+			Ok(Success::success(groups))
+		}
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
+	}
+}
+
+#[tauri::command]
 pub async fn get_variable_group(id: String, state: State<'_, AppState>) -> SResult<VariableGroup> {
 	let db_conn = state.db_conn.clone();
 	match QueriesService::get_variable_group(&db_conn, id).await {

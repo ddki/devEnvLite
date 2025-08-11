@@ -78,7 +78,7 @@ const { t } = useI18n();
 // 删除
 const dropdownMenuDelete = async (data: EnvironmentVariable) => {
 	const title = `${t("operate.delete")}${t("env.text")}`;
-	await invoke<Res<void>>("delete_environment_variable", { group_id: props.groupId, id: data.id })
+	await invoke<Res<void>>("delete_environment_variable", { groupId: props.groupId, id: data.id })
 		.then(async (res) => {
 			if (res.code === "200") {
 				await inject("reloadVariableGroupList");
