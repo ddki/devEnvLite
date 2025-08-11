@@ -8,7 +8,7 @@ import { disableContextMenu, disableRefresh } from "./utils/Webview";
 
 const emitter = mitt();
 emitter.on("reloadApp", () => {
-	window.location.reload();
+	// window.location.reload();
 });
 
 const app = createApp(App);

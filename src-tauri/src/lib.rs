@@ -169,10 +169,12 @@ mod app_init {
 			command::env_config::create_env_config_transaction,
 			command::env_config::update_env_config,
 			command::env_config::delete_env_config,
+			command::env_config::delete_env_config_transaction,
 			command::env_config::check_variable_key_exists_in_config,
 			// variable_groups
 			command::variable_group::list_variable_groups,
 			command::variable_group::get_variable_group,
+			command::variable_group::get_variable_group_with_variables,
 			command::variable_group::create_variable_group,
 			command::variable_group::update_variable_group,
 			command::variable_group::delete_variable_group,
@@ -189,7 +191,7 @@ mod app_init {
 	pub fn init_core_async(app_handle: &tauri::AppHandle) {
 		let async_app_handle = app_handle.clone();
 		tokio::spawn(async move {
-			// todo 在这里调用 command::settings::get_settings(app_handle.clone()) 并打印结果
+			// 在这里调用 command::settings::get_settings(app_handle.clone()) 并打印结果
 			let settings = command::settings::get_settings(async_app_handle).await;
 			info!("settings: {:?}", settings);
 		});

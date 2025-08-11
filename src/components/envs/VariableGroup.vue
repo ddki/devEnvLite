@@ -11,7 +11,7 @@
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
-			<EditEnvironmentVariable operate="new" :configId="props.data.configId" :groupId="id">
+			<EditEnvironmentVariable operate="new" :groupId="id">
 				<Button variant="ghost" size="icon">
 					<PlusSquare class="mr-2 h-4 w-4" />
 				</Button>
@@ -45,6 +45,8 @@ interface Props {
 	data: VariableGroup;
 }
 const props = defineProps<Props>();
+
+console.log("variable group: ", props.data);
 
 const { t } = useI18n();
 

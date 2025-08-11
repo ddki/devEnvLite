@@ -9,7 +9,7 @@
 					</ResizablePanel>
 					<ResizableHandle />
 					<ResizablePanel :default-size="70">
-						<EnvironmentGroup :configId="currentConfigId" />
+						<EnvironmentPanel v-model:config="currentConfig" />
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			</main>
@@ -27,16 +27,18 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { defineAsyncComponent, ref } from "vue";
+import type { EnvConfig } from "./types";
 
 const Config = defineAsyncComponent({
 	loader: () => import("@/views/config/index.vue"),
 	errorComponent: () => import("@/components/common/ComponentError.vue"),
 });
 
-const EnvironmentGroup = defineAsyncComponent({
+const EnvironmentPanel = defineAsyncComponent({
 	loader: () => import("@/views/environment/index.vue"),
 	errorComponent: () => import("@/components/common/ComponentError.vue"),
 });
 
 const currentConfigId = ref("");
+const currentConfig = ref<EnvConfig>({} as EnvConfig);
 </script>

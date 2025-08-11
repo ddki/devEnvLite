@@ -31,6 +31,19 @@ pub async fn get_variable_group(id: String, state: State<'_, AppState>) -> SResu
 }
 
 #[tauri::command]
+pub async fn get_variable_group_with_variables(
+	id: String,
+	state: State<'_, AppState>,
+) -> SResult<VariableGroup> {
+	let db_conn = state.db_conn.clone();
+	match QueriesService::get_variable_group_with_variables(&db_conn, id).await {
+		Ok(Some(group)) => Ok(Success::success(group)),
+		Ok(None) => Err(Fail::fail("404", String::from("没有找到环境变量分组"))),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
+	}
+}
+
+#[tauri::command]
 pub async fn create_variable_group(
 	group: VariableGroup,
 	state: State<'_, AppState>,

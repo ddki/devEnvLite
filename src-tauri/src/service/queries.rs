@@ -31,33 +31,55 @@ impl QueriesService {
 		if let Some((config, groups)) = env_configs.into_iter().next() {
 			let mut vg_list = Vec::new();
 			for g in groups {
-				let variables = Self::list_environment_variables(db, g.id.clone()).await?;
-				let variable_group_mappings = variable_group_mapping::Entity::find()
-					.filter(variable_group_mapping::Column::GroupId.eq(g.id.clone()))
-					.all(db)
-					.await?;
-				let mut group = VariableGroup::from(g);
-				group.variables = Some(
-					variables
-						.into_iter()
-						.map(EnvironmentVariable::from)
-						.map(|mut var| {
-							variable_group_mappings
-								.iter()
-								.find(|m| m.variable_id == var.id)
-								.map(|m| {
-									var.sort = m.sort;
-								});
-							var
-						})
-						.collect(),
-				);
+				let group = Self::build_variable_group_with_variables(db, g).await?;
 				vg_list.push(group);
 			}
 			Ok(Some(EnvConfig::from(config)))
 		} else {
 			Ok(None)
 		}
+	}
+
+	pub async fn get_variable_group_with_variables(
+		db: &DbConn,
+		id: String,
+	) -> Result<Option<VariableGroup>, DbErr> {
+		let group = Self::get_variable_group(db, id.clone()).await?;
+		match group {
+			Some(g) => {
+				let group = Self::build_variable_group_with_variables(db, g).await?;
+				Ok(Some(group))
+			}
+			None => Ok(None),
+		}
+	}
+
+	async fn build_variable_group_with_variables(
+		db: &DbConn,
+		group: variable_group::Model,
+	) -> Result<VariableGroup, DbErr> {
+		let variables = Self::list_environment_variables(db, group.id.clone()).await?;
+		let variable_group_mappings = variable_group_mapping::Entity::find()
+			.filter(variable_group_mapping::Column::GroupId.eq(group.id.clone()))
+			.all(db)
+			.await?;
+		let mut group = VariableGroup::from(group);
+		group.variables = Some(
+			variables
+				.into_iter()
+				.map(EnvironmentVariable::from)
+				.map(|mut var| {
+					variable_group_mappings
+						.iter()
+						.find(|m| m.variable_id == var.id)
+						.map(|m| {
+							var.sort = m.sort;
+						});
+					var
+				})
+				.collect(),
+		);
+		Ok(group)
 	}
 
 	pub async fn list_variable_groups(

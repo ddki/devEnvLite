@@ -82,7 +82,7 @@ import {
 	Pencil,
 	Trash2,
 } from "lucide-vue-next";
-import { getCurrentInstance, provide, ref } from "vue";
+import { getCurrentInstance, onMounted, provide, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -91,9 +91,9 @@ interface ConfigData extends EnvConfig {
 	currentSelectedClass?: string;
 }
 
-const props = defineProps({
-	currentConfigId: String,
-});
+// TODO 完善此项的数据同步
+const config = defineModel<EnvConfig>();
+
 const emits = defineEmits(["update:currentConfigId"]);
 const context = getCurrentInstance();
 
@@ -132,6 +132,10 @@ const loadSettings = async () => {
 	});
 };
 
+onMounted(() => {
+	loadSettings();
+});
+
 // 设置选中项
 const selectedConfig = (config: ConfigData) => {
 	config.currentSelectedClass = "bg-secondary";
@@ -159,7 +163,7 @@ const dropdownMenuActive = async (config: ConfigData) => {
 
 // 删除
 const dropdownMenuDelete = async (config: ConfigData) => {
-	await invoke<Res<void>>("delete_env_config", { configId: config.id })
+	await invoke<Res<void>>("delete_env_config_transaction", { id: config.id })
 		.then(async (res) => {
 			if (res.code === "200") {
 				await loadSettings();

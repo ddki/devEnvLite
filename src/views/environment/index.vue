@@ -1,7 +1,7 @@
 <template>
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
 		<div class="flex flex-row justify-start items-center px-2 border-b">
-			<EditVariableGroup operate="new" :configId="props.configId" @reload="loadVariableGroupList(props.configId)">
+			<EditVariableGroup operate="new" :configId="config.id" @reload="loadVariableGroupList(config.id)">
 				<Button variant="outline">
 					<PlusSquare class="mr-2" />
 					{{ `${t("operate.new")}${t("envGroup.text")}` }}
@@ -23,16 +23,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Res, VariableGroup } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { PlusSquare } from "lucide-vue-next";
-import { provide, ref, watch } from "vue";
+import { provide, ref, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
+import type { EnvConfig } from "@/types";
 
-const props = defineProps({
-	configId: {
-		type: String,
-		required: true,
-	},
-});
+interface Props {
+	config: EnvConfig;
+}
+
+const props = defineProps<Props>();
+
+const { config } = toRefs(props);
 
 console.log("props[group-env-index]:", props);
 
@@ -49,7 +51,7 @@ const loadVariableGroupList = async (configId: string | undefined) => {
 		});
 		return;
 	}
-	await invoke<Res<VariableGroup[]>>("list_variable_groups", { config_id: configId })
+	await invoke<Res<VariableGroup[]>>("list_variable_groups", { configId })
 		.then(async (res) => {
 			if (res.code === "200") {
 				variableGroupListState.value = res.data || [];
@@ -67,17 +69,17 @@ const loadVariableGroupList = async (configId: string | undefined) => {
 };
 
 // 初始化加载环境变量组列表
-await loadVariableGroupList(props.configId);
+await loadVariableGroupList(config.value.id);
 
 // 监听配置ID变化，重新加载环境变量组列表
 watch(
-	() => props.configId,
+	() => config.value.id,
 	async (newValue, _oldValue) => {
 		await loadVariableGroupList(newValue);
 	},
 );
 
-provide("configId", props.configId);
+provide("configId", config.value.id);
 provide("reloadVariableGroupList", loadVariableGroupList);
 provide<VariableGroup[]>("variableGroupList", variableGroupListState.value);
 </script>

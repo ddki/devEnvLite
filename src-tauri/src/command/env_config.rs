@@ -4,7 +4,6 @@ use crate::service::MutationsService;
 use crate::service::QueriesService;
 use crate::service::TransactionService;
 use crate::AppState;
-use log::info;
 use tauri::State;
 
 #[tauri::command]
@@ -74,10 +73,21 @@ pub async fn create_env_config_transaction(
 	config: EnvConfig,
 	state: State<'_, AppState>,
 ) -> SResult<String> {
-	info!("create_env_config_transaction {:?}", config);
 	let db_conn = state.db_conn.clone();
 	match TransactionService::create_env_config(&db_conn, EnvConfig::into(config)).await {
 		Ok(result) => Ok(Success::success(result)),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
+	}
+}
+
+#[tauri::command]
+pub async fn delete_env_config_transaction(
+	id: String,
+	state: State<'_, AppState>,
+) -> SResult<()> {
+	let db_conn = state.db_conn.clone();
+	match TransactionService::delete_env_config(&db_conn, id).await {
+		Ok(_) => Ok(Success::success(())),
 		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}
 }

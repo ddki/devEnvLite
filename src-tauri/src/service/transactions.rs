@@ -39,9 +39,7 @@ impl TransactionService {
 					};
 
 					// 先插入 group 为 group-mapping 提供外键
-					variable_group::Entity::insert(group)
-						.exec(txn)
-						.await?;
+					variable_group::Entity::insert(group).exec(txn).await?;
 
 					let mut variables = Vec::<environment_variable::ActiveModel>::new();
 					let mut variable_group_mapping =
@@ -77,6 +75,61 @@ impl TransactionService {
 					}
 				}
 				Ok(config_id)
+			})
+		})
+		.await
+	}
+
+	pub async fn delete_env_config(db: &DbConn, id: String) -> Result<(), TransactionError<DbErr>> {
+		db.transaction::<_, (), DbErr>(|txn| {
+			Box::pin(async move {
+				// 获取配置组
+				let groups = variable_group::Entity::find()
+					.filter(variable_group::Column::ConfigId.eq(id.clone()))
+					.all(txn)
+					.await?;
+				let group_ids = groups
+					.iter()
+					.map(|group| group.id.clone())
+					.collect::<Vec<String>>();
+
+				// 获取组下的变量
+				let variable_group_mappings = variable_group_mapping::Entity::find()
+					.filter(variable_group_mapping::Column::GroupId.is_in(group_ids.clone()))
+					.all(txn)
+					.await?;
+
+				// 删除变量组映射
+				variable_group_mapping::Entity::delete_many()
+					.filter(variable_group_mapping::Column::GroupId.is_in(group_ids.clone()))
+					.exec(txn)
+					.await?;
+
+				// 删除变量组
+				variable_group::Entity::delete_many()
+					.filter(variable_group::Column::Id.is_in(group_ids.clone()))
+					.exec(txn)
+					.await?;
+				
+				// 删除变量
+				environment_variable::Entity::delete_many()
+					.filter(
+						environment_variable::Column::Id.is_in(
+							variable_group_mappings
+								.iter()
+								.map(|mapping| mapping.variable_id.clone())
+								.collect::<Vec<String>>(),
+						),
+					)
+					.exec(txn)
+					.await?;
+				
+
+				// 最后删除环境变量配置
+				env_config::Entity::delete_by_id(id.clone())
+					.exec(txn)
+					.await?;
+				Ok(())
 			})
 		})
 		.await
