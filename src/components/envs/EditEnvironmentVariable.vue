@@ -5,6 +5,7 @@
 		</PopoverTrigger>
 		<PopoverContent class="w-84">
 			<div class="grid gap-4">
+				<div class="text-lg font-bold text-center bg-secondary p-2 rounded-md">{{ title }}</div>
 				<div class="grid gap-2">
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="key">{{ t('env.key') }}</Label>
@@ -45,7 +46,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { EnvironmentVariable, Res } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
 import { invoke } from "@tauri-apps/api/core";
-import { inject, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -64,6 +65,12 @@ const props = withDefaults(defineProps<Prop>(), {
 const data = ref<EnvironmentVariable>({
 	...DefaultValue.environmentVariable(),
 	id: props.id,
+});
+
+const title = computed(() => {
+	return props.operate === "new"
+		? `${t("operate.new")}${t("env.text")}`
+		: `${t("operate.edit")}${t("env.text")}`;
 });
 
 const onClear = () => {

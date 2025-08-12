@@ -5,15 +5,16 @@
 		</PopoverTrigger>
 		<PopoverContent class="w-84">
 			<div class="grid gap-4">
+				<div class="text-lg font-bold text-center bg-secondary p-2 rounded-md">{{ title }}</div>
 				<div class="grid gap-2">
-					<div class="grid grid-cols-3 items-center gap-4">
+					<!-- <div class="grid grid-cols-3 items-center gap-4">
 						<Label for="configId">{{ t('config.id') }}</Label>
 						<Input v-model="data.configId" type="text" :placeholder="t('config.id')" class="col-span-2 h-8" readonly />
 					</div>
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="id">{{ t('envGroup.id') }}</Label>
 						<Input v-model="data.id" type="text" :placeholder="t('envGroup.id')" class="col-span-2 h-8" readonly />
-					</div>
+					</div> -->
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="name">{{ t('envGroup.name') }}</Label>
 						<Input v-model.trim="data.name" type="text" :placeholder="t('envGroup.name')" class="col-span-2 h-8" />
@@ -49,7 +50,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Res, VariableGroup } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
 import { invoke } from "@tauri-apps/api/core";
-import { inject, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -71,6 +72,12 @@ const data = ref<VariableGroup>({
 	id: props.id,
 	configId: props.configId,
 	name: "",
+});
+
+const title = computed(() => {
+	return props.operate === "new"
+		? `${t("operate.new")}${t("envGroup.text")}`
+		: `${t("operate.edit")}${t("envGroup.text")}`;
 });
 
 const onClear = () => {

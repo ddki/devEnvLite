@@ -133,6 +133,9 @@ operate:
   save: "Save "
   close: "Close "
   clear: "Clear "
+  status:
+    actived: Actived
+    inactive: Inactive
 message:
   error: An error has occurred.
   warning: Warning

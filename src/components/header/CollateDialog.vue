@@ -13,6 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { getEnvironmentVariableScopeList } from "@/constants";
 import { invoke } from "@tauri-apps/api/core";
+import { Blocks } from "lucide-vue-next";
 import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
@@ -102,7 +103,10 @@ watch(open, (newValue) => {
 <template>
 	<Dialog v-model:open="open">
 		<DialogTrigger as-child>
-			<Button @click="open = true">{{ t('header.collate.text') }}</Button>
+			<Button @click="open = true">
+				<Blocks />
+				{{ t('header.collate.text') }}
+			</Button>
 		</DialogTrigger>
 		<DialogContent class="grid-rows-[auto_minmax(0,1fr)_auto] max-h-[90dvh]">
 			<DialogHeader>

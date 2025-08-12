@@ -2,7 +2,7 @@
 	<Dialog v-model:open="dialogOpen">
 		<DialogTrigger as-child>
 			<Button variant="outline" @click="dialogOpen = true">
-				<Import class="mr-2 h-6 w-6" />
+				<Import />
 				{{ t('config.import-config.text') }}
 			</Button>
 		</DialogTrigger>

@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { invoke } from "@tauri-apps/api/core";
+import { HardDriveDownload } from "lucide-vue-next";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
@@ -53,7 +54,10 @@ watch(open, (newValue) => {
 <template>
 	<Dialog v-model:open="open">
 		<DialogTrigger as-child>
-			<Button @click="open = true">{{ t('header.backup.text') }}</Button>
+			<Button @click="open = true">
+				<HardDriveDownload />
+				{{ t('header.backup.text') }}
+			</Button>
 		</DialogTrigger>
 		<DialogContent>
 			<DialogHeader>

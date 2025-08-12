@@ -43,6 +43,8 @@ pub async fn get_env_config_with_groups(
 
 #[tauri::command]
 pub async fn create_env_config(config: EnvConfig, state: State<'_, AppState>) -> SResult<String> {
+	let mut config = config;
+	config.id = String::default();
 	let db_conn = state.db_conn.clone();
 	match MutationsService::create_env_config(&db_conn, EnvConfig::into(config)).await {
 		Ok(result) => Ok(Success::success(result)),
@@ -81,10 +83,7 @@ pub async fn create_env_config_transaction(
 }
 
 #[tauri::command]
-pub async fn delete_env_config_transaction(
-	id: String,
-	state: State<'_, AppState>,
-) -> SResult<()> {
+pub async fn delete_env_config_transaction(id: String, state: State<'_, AppState>) -> SResult<()> {
 	let db_conn = state.db_conn.clone();
 	match TransactionService::delete_env_config(&db_conn, id).await {
 		Ok(_) => Ok(Success::success(())),

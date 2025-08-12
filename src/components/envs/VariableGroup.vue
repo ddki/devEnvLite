@@ -13,7 +13,7 @@
 		<div class="grid grid-flow-col items-center">
 			<EditEnvironmentVariable operate="new" :groupId="id">
 				<Button variant="ghost" size="icon">
-					<PlusSquare class="mr-2 h-4 w-4" />
+					<ListPlus class="mr-2 h-4 w-4" />
 				</Button>
 			</EditEnvironmentVariable>
 			<EditVariableGroup operate="edit" :configId="configId" :id="props.data.id">
@@ -38,7 +38,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Res, VariableGroup } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
-import { PanelBottomClose, PanelBottomOpen, Pencil, PlusSquare, Trash2 } from "lucide-vue-next";
+import { ListPlus, PanelBottomClose, PanelBottomOpen, Pencil, Trash2 } from "lucide-vue-next";
 import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";

@@ -9,7 +9,7 @@
 			</div>
 			<EditVariableGroup operate="new" :configId="config.id" @reload="loadVariableGroupList(config.id)">
 				<Button variant="outline">
-					<PlusSquare class="mr-2" />
+					<Blocks />
 					{{ `${t("operate.new")}${t("envGroup.text")}` }}
 				</Button>
 			</EditVariableGroup>
@@ -29,7 +29,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Res, VariableGroup } from "@/types";
 import type { EnvConfig } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
-import { PlusSquare } from "lucide-vue-next";
+import { Blocks } from "lucide-vue-next";
 import { provide, ref, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";

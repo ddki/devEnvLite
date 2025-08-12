@@ -133,6 +133,9 @@ operate:
   save: 保存
   close: 关闭
   clear: 清空
+  status:
+    actived: 已激活
+    inactive: 未激活
 message:
   error: 发生了错误
   warning: 警告

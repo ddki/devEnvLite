@@ -5,11 +5,12 @@
 		</PopoverTrigger>
 		<PopoverContent class="w-84">
 			<div class="grid gap-4">
+				<div class="text-lg font-bold text-center bg-secondary p-2 rounded-md">{{ title }}</div>
 				<div class="grid gap-2">
-					<div class="grid grid-cols-3 items-center gap-4">
+					<!-- <div class="grid grid-cols-3 items-center gap-4">
 						<Label for="id">{{ t('config.id') }}</Label>
 						<Input v-model="data.id" type="text" :placeholder="t('config.id')" class="col-span-2 h-8" readonly />
-					</div>
+					</div> -->
 					<div class="grid grid-cols-3 items-center gap-4">
 						<Label for="name" class="text-right">{{ t('config.import-config.types.env.scope') }}</Label>
 						<RadioGroup v-model="data.scope">
@@ -52,11 +53,11 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { EnvironmentVariableScope, getEnvironmentVariableScopeList } from "@/constants";
+import { getEnvironmentVariableScopeList } from "@/constants";
 import type { EnvConfig, Res } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
 import { invoke } from "@tauri-apps/api/core";
-import { inject, onMounted, reactive, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -76,6 +77,12 @@ const emit = defineEmits(["reload"]);
 
 const data = ref<EnvConfig>({
 	...DefaultValue.envConfig(),
+});
+
+const title = computed(() => {
+	return props.operate === "new"
+		? `${t("operate.new")}${t("config.text")}`
+		: `${t("operate.edit")}${t("config.text")}`;
 });
 
 const onClear = () => {
@@ -113,7 +120,9 @@ const onSave = async () => {
 
 	// 编辑
 	if (props.operate === "edit" && props.id) {
-		await invoke<Res<void>>("update_env_config", data.value)
+		await invoke<Res<void>>("update_env_config", {
+			config: data.value,
+		})
 			.then((res) => {
 				if (res.code === "200") {
 					emit("reload");

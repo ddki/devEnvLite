@@ -4,7 +4,7 @@
 			<ImportDialog @reload="loadSettings" />
 			<EditPopover operate="new" @reload="loadSettings">
 				<Button variant="outline">
-					<FilePlus class="mr-2 h-6 w-6" />
+					<FilePlus />
 					{{ `${t("operate.new")}${t("config.text")}` }}
 				</Button>
 			</EditPopover>
@@ -18,7 +18,7 @@
 				v-for="item in configs" :key="item.id">
 				<div class="flex flex-row gap-2 h-full items-center p-2" @click="selectedConfig(configs, item)">
 					<CircleCheckBig class="text-destructive" v-if="item.isActive" />
-					<File />
+					<File v-else />
 					<div class="grid grid-flow-row w-full justify-start items-center">
 						<span>{{ item.name }}</span>
 						<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
@@ -39,9 +39,10 @@
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
-							<DropdownMenuItem @click="dropdownMenuActive(item)">
-								<CircleCheckBig class="mr-2 h-4 w-4" />
-								<span>{{ t("operate.active") }}</span>
+							<DropdownMenuItem>
+								<Switch :model-value="item.isActive" @update:model-value="switchActive(item)" />
+								<span v-if="item.isActive">{{ t("operate.status.actived") }}</span>
+								<span v-else>{{ t("operate.status.inactive") }}</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem @click="dropdownMenuDelete(item)">
 								<Trash2 class="mr-2 h-4 w-4 text-destructive" />
@@ -69,6 +70,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import type { EnvConfig, Res } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import {
@@ -148,9 +150,15 @@ const selectedConfig = (configs: ConfigData[], config: ConfigData) => {
 	};
 };
 
-// 激活
-const dropdownMenuActive = async (config: ConfigData) => {
-	await invoke<Res<void>>("update_env_config", { configId: config.id, isActive: true })
+// 切换选中项
+const switchActive = async (config: ConfigData) => {
+	console.log("switchActive", config);
+	await invoke<Res<void>>("update_env_config", {
+		config: {
+			...config,
+			isActive: !config.isActive,
+		},
+	})
 		.then(async (res) => {
 			if (res.code === "200") {
 				await loadSettings();
@@ -192,7 +200,7 @@ const dropdownMenuDelete = async (config: ConfigData) => {
 
 // TODO 导出配置
 const dropdownMenuExport = async (config: ConfigData) => {
-	await invoke<Res<void>>("export_env_config", { configId: config.id })
+	await invoke<Res<void>>("export_env_config", { id: config.id })
 		.then(async (res) => {
 			if (res.code === "200") {
 				toast.success(`${t("operate.export")}${t("config.text")}`, {
