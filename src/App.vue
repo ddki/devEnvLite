@@ -1,19 +1,21 @@
 <template>
 	<Suspense>
-		<div class="grid grid-rows-[3.5rem_1fr_1.5rem] grid-cols-1 h-dvh overflow-hidden">
-			<Header />
-			<main class="border overflow-auto">
-				<ResizablePanelGroup direction="horizontal">
-					<ResizablePanel :default-size="30">
-						<Config v-model:model-value="currentConfig" />
-					</ResizablePanel>
-					<ResizableHandle />
-					<ResizablePanel :default-size="70">
-						<EnvironmentPanel v-if="currentConfig.id" v-model:config="currentConfig" />
-					</ResizablePanel>
-				</ResizablePanelGroup>
-			</main>
-			<Footer />
+		<div class="h-dvh">
+			<div class="h-full grid grid-rows-[3.5rem_1fr_1.5rem] grid-cols-1 overflow-hidden">
+				<Header />
+				<main class="border h-full overflow-hidden">
+					<ResizablePanelGroup direction="horizontal">
+						<ResizablePanel :default-size="30" class="h-full">
+							<Config v-model:model-value="currentConfig" />
+						</ResizablePanel>
+						<ResizableHandle />
+						<ResizablePanel :default-size="70" class="h-full">
+							<EnvironmentPanel v-if="currentConfig.id" v-model:config="currentConfig" />
+						</ResizablePanel>
+					</ResizablePanelGroup>
+				</main>
+				<Footer />
+			</div>
 			<Toaster />
 		</div>
 	</Suspense>

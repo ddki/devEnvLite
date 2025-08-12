@@ -14,8 +14,8 @@
 				</Button>
 			</EditVariableGroup>
 		</div>
-		<ScrollArea class="h-full w-full p-2">
-			<div class="grid grid-flow-row gap-2 overflow-auto">
+		<ScrollArea class="h-full w-full p-2 overflow-auto">
+			<div class="grid grid-flow-row gap-2">
 				<VariableGroupComponent v-for="group in variableGroupListState" :data="group" @reload="loadVariableGroupList(group.configId)" />
 			</div>
 		</ScrollArea>

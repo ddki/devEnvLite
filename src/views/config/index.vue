@@ -9,52 +9,50 @@
 				</Button>
 			</EditPopover>
 		</div>
-		<ScrollArea class="h-full w-full p-2">
-			<div class="sm:mt-1 md:mt-2 overflow-auto">
-				<p class="text-secondary-foreground text-center" v-if="(!configs || configs.length < 1)">
-					{{ t("config.emptyText") }}
-				</p>
-				<div
-					:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.currentSelectedClass}`"
-					v-for="item in configs">
-					<div class="flex flex-row gap-2 h-full items-center p-2" @click="selectedConfig(configs, item)">
-						<CircleCheckBig class="text-destructive" v-if="item.isActive" />
-						<File />
-						<div class="grid grid-flow-row w-full justify-start items-center">
-							<span>{{ item.name }}</span>
-							<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
-								{{ item.description }}
-							</span>
-						</div>
+		<ScrollArea class="h-full w-full p-2 overflow-hidden sm:mt-1 md:mt-2">
+			<p class="text-secondary-foreground text-center" v-if="(!configs || configs.length < 1)">
+				{{ t("config.emptyText") }}
+			</p>
+			<div
+				:class="`grid grid-flow-col grid-cols-1 justify-between items-center hover:bg-secondary rounded-md ${item.currentSelectedClass}`"
+				v-for="item in configs" :key="item.id">
+				<div class="flex flex-row gap-2 h-full items-center p-2" @click="selectedConfig(configs, item)">
+					<CircleCheckBig class="text-destructive" v-if="item.isActive" />
+					<File />
+					<div class="grid grid-flow-row w-full justify-start items-center">
+						<span>{{ item.name }}</span>
+						<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
+							{{ item.description }}
+						</span>
 					</div>
-					<div class="grid grid-flow-col">
-						<EditPopover operate="edit" :id="item.id" @reload="loadSettings">
+				</div>
+				<div class="grid grid-flow-col">
+					<EditPopover operate="edit" :id="item.id" @reload="loadSettings">
+						<Button variant="ghost" size="icon">
+							<Pencil class="h-4 w-4" />
+						</Button>
+					</EditPopover>
+					<DropdownMenu>
+						<DropdownMenuTrigger>
 							<Button variant="ghost" size="icon">
-								<Pencil class="h-4 w-4" />
+								<Ellipsis class="h-4 w-4" />
 							</Button>
-						</EditPopover>
-						<DropdownMenu>
-							<DropdownMenuTrigger>
-								<Button variant="ghost" size="icon">
-									<Ellipsis class="h-4 w-4" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent>
-								<DropdownMenuItem @click="dropdownMenuActive(item)">
-									<CircleCheckBig class="mr-2 h-4 w-4" />
-									<span>{{ t("operate.active") }}</span>
-								</DropdownMenuItem>
-								<DropdownMenuItem @click="dropdownMenuDelete(item)">
-									<Trash2 class="mr-2 h-4 w-4 text-destructive" />
-									<span class="text-destructive">{{ t("operate.delete") }}</span>
-								</DropdownMenuItem>
-								<DropdownMenuItem @click="dropdownMenuExport(item)">
-									<FileDown class="mr-2 h-4 w-4" />
-									<span>{{ t("operate.export") }}</span>
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</div>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem @click="dropdownMenuActive(item)">
+								<CircleCheckBig class="mr-2 h-4 w-4" />
+								<span>{{ t("operate.active") }}</span>
+							</DropdownMenuItem>
+							<DropdownMenuItem @click="dropdownMenuDelete(item)">
+								<Trash2 class="mr-2 h-4 w-4 text-destructive" />
+								<span class="text-destructive">{{ t("operate.delete") }}</span>
+							</DropdownMenuItem>
+							<DropdownMenuItem @click="dropdownMenuExport(item)">
+								<FileDown class="mr-2 h-4 w-4" />
+								<span>{{ t("operate.export") }}</span>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</div>
 			</div>
 		</ScrollArea>
