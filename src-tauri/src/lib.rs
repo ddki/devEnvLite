@@ -72,6 +72,7 @@ mod app_init {
 			.plugin(tauri_plugin_clipboard_manager::init())
 			.plugin(tauri_plugin_shell::init())
 			.plugin(tauri_plugin_dialog::init())
+			.plugin(tauri_plugin_opener::init())
 			.plugin(tauri_plugin_updater::Builder::new().build());
 		// 日志插件与devtools插件冲突，二选一
 		#[cfg(not(debug_assertions))]
@@ -171,6 +172,7 @@ mod app_init {
 			command::env_config::delete_env_config,
 			command::env_config::delete_env_config_transaction,
 			command::env_config::check_variable_key_exists_in_config,
+			command::env_config::export_env_config,
 			// variable_groups
 			command::variable_group::list_variable_groups,
 			command::variable_group::list_variable_groups_with_variables,

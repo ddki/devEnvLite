@@ -2,12 +2,13 @@
 	<div class="h-full w-full grid grid-rows-[3.5rem_1fr]">
 		<div class="flex flex-row justify-between items-center px-2 border-b">
 			<div class="flex flex-row gap-1 items-center">
+				<CircleCheckBig class="text-destructive" v-if="config.isActive" />
 				<span>{{ config.name }}</span>
 				<span class="text-ellipsis text-nowrap overflow-hidden text-muted-foreground text-xs">
 					{{ config.description }}
 				</span>
 			</div>
-			<EditVariableGroup operate="new" :configId="config.id" @reload="loadVariableGroupList(config.id)">
+			<EditVariableGroup operate="new" :configId="config.id">
 				<Button variant="outline">
 					<Blocks />
 					{{ `${t("operate.new")}${t("envGroup.text")}` }}
@@ -16,7 +17,7 @@
 		</div>
 		<ScrollArea class="h-full w-full p-2 overflow-auto">
 			<div class="grid grid-flow-row gap-2">
-				<VariableGroupComponent v-for="group in variableGroupListState" :data="group" @reload="loadVariableGroupList(group.configId)" />
+				<VariableGroupComponent v-for="group in variableGroupListState" :data="group" />
 			</div>
 		</ScrollArea>
 	</div>
@@ -29,8 +30,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Res, VariableGroup } from "@/types";
 import type { EnvConfig } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
-import { Blocks } from "lucide-vue-next";
-import { provide, ref, toRefs, watch } from "vue";
+import { Blocks, CircleCheckBig } from "lucide-vue-next";
+import { provide, type Ref, ref, toRef, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -50,6 +51,7 @@ const variableGroupListState = ref<VariableGroup[]>([]);
 
 // 根据配置ID加载环境变量组列表
 const loadVariableGroupList = async (configId: string | undefined) => {
+	console.log("loadVariableGroupList:", configId);
 	const title = `${t("operate.query")}${t("envGroup.text")}`;
 	if (!configId) {
 		toast.error(title, {
@@ -85,7 +87,7 @@ watch(
 	},
 );
 
-provide("configId", config.value.id);
-provide("reloadVariableGroupList", loadVariableGroupList);
-provide<VariableGroup[]>("variableGroupList", variableGroupListState.value);
+provide("configId", toRef(config.value, "id"));
+provide("reloadVariableGroupList", () => loadVariableGroupList(config.value.id));
+provide<Ref<VariableGroup[]>>("variableGroupList", variableGroupListState);
 </script>

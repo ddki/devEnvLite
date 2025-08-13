@@ -34,7 +34,9 @@ impl QueriesService {
 				let group = Self::build_variable_group_with_variables(db, g).await?;
 				vg_list.push(group);
 			}
-			Ok(Some(EnvConfig::from(config)))
+			let mut config = EnvConfig::from(config);
+			config.groups = Some(vg_list);
+			Ok(Some(config))
 		} else {
 			Ok(None)
 		}

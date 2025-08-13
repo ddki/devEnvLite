@@ -50,7 +50,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Res, VariableGroup } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
 import { invoke } from "@tauri-apps/api/core";
-import { computed, inject, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, type Ref, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -79,6 +79,65 @@ const title = computed(() => {
 		? `${t("operate.new")}${t("envGroup.text")}`
 		: `${t("operate.edit")}${t("envGroup.text")}`;
 });
+
+const reloadVariableGroupList: () => Promise<void> =
+	inject("reloadVariableGroupList") || (async () => {});
+
+const variableGroupList = inject<Ref<VariableGroup[]>>("variableGroupList");
+
+// 创建环境变量组
+const create = async (title: string) => {
+	await invoke<Res<string>>("create_variable_group", {
+		group: {
+			...DefaultValue.variableGroup(),
+			...data.value,
+		},
+	})
+		.then(async (res) => {
+			if (res.code === "200") {
+				await reloadVariableGroupList();
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		})
+		.finally(() => {
+			onClear();
+		});
+};
+
+// 更新环境变量组
+const update = async (title: string) => {
+	await invoke<Res<void>>("update_variable_group", {
+		group: {
+			...DefaultValue.variableGroup(),
+			...data.value,
+		},
+	})
+		.then(async (res) => {
+			if (res.code === "200") {
+				toast.success(title, {
+					description: t("message.success"),
+				});
+				await reloadVariableGroupList();
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		});
+};
 
 const onClear = () => {
 	data.value = {
@@ -111,54 +170,26 @@ const onSave = async () => {
 		});
 		return;
 	}
-
 	// 更新环境变量组
 	if (props.operate === "edit" && props.id) {
-		await invoke<Res<void>>("update_variable_group", { group: data.value })
-			.then(async (res) => {
-				if (res.code === "200") {
-					await inject("reloadVariableGroupList");
-				} else {
-					toast.error(title, {
-						description: `${t("message.failure")}: ${res.message}`,
-					});
-				}
-			})
-			.catch((e) => {
-				toast.error(title, {
-					description: `${t("message.error")}: ${e.message}`,
-				});
-			});
+		await update(title);
+		return;
 	}
 	// 创建环境变量组
 	if (props.operate === "new") {
-		await invoke<Res<string>>("create_variable_group", { group: data.value })
-			.then(async (res) => {
-				if (res.code === "200") {
-					await inject("reloadVariableGroupList");
-				} else {
-					toast.error(title, {
-						description: `${t("message.failure")}: ${res.message}`,
-					});
-				}
-			})
-			.catch((e) => {
-				toast.error(title, {
-					description: `${t("message.error")}: ${e.message}`,
-				});
-			})
-			.finally(() => {
-				onClear();
-			});
+		await create(title);
+		return;
 	}
 };
 
 // 检查环境变量组名称是否存在
-const checkVariableGroupNameExists = (excludeId: string | undefined, newName: string) => {
-	return inject<VariableGroup[]>("variableGroupList")
-		?.filter((item) => item.id !== excludeId)
-		.map((item) => item.name)
-		.includes(newName);
+const checkVariableGroupNameExists = (excludeId: string | undefined, newName: string): boolean => {
+	return (
+		variableGroupList?.value
+			?.filter((item) => item.id !== excludeId)
+			.map((item) => item.name)
+			.includes(newName) || false
+	);
 };
 // 加载环境变量组
 const loadVariableGroup = async (id: string) => {

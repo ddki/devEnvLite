@@ -11,11 +11,11 @@
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
-			<EditEnvironmentVariable operate="new" :groupId="id">
+			<CreateEnvironmentVariable operate="new" :groupId="id">
 				<Button variant="ghost" size="icon">
 					<ListPlus class="mr-2 h-4 w-4" />
 				</Button>
-			</EditEnvironmentVariable>
+			</CreateEnvironmentVariable>
 			<EditVariableGroup operate="edit" :configId="configId" :id="props.data.id">
 				<Button variant="ghost" size="icon">
 					<Pencil class="h-4 w-4" />
@@ -42,7 +42,7 @@ import { ListPlus, PanelBottomClose, PanelBottomOpen, Pencil, Trash2 } from "luc
 import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import { EditEnvironmentVariable, EditVariableGroup, EnvironmentVariable } from ".";
+import { EditEnvironmentVariable as CreateEnvironmentVariable, EditVariableGroup, EnvironmentVariable } from ".";
 
 interface Props {
 	data: VariableGroup;
@@ -70,6 +70,8 @@ const configId = computed(() => {
 	return "";
 });
 
+const reloadVariableGroupList: () => Promise<void> = inject("reloadVariableGroupList") || (async () => {});
+
 // 删除环境变量组
 const dropdownMenuDelete = async (data: VariableGroup) => {
 	const title = `${t("operate.delete")}${t("envGroup.text")}`;
@@ -82,7 +84,7 @@ const dropdownMenuDelete = async (data: VariableGroup) => {
 	await invoke<Res<void>>("delete_variable_group", { id: data.id })
 		.then(async (res) => {
 			if (res.code === "200") {
-				await inject("reloadVariableGroupList");
+				await reloadVariableGroupList();
 			} else {
 				toast.error(title, {
 					description: `${t("message.error")}: ${res.message}`,

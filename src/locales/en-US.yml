@@ -124,6 +124,7 @@ operate:
   edit: "Edit "
   delete: "Delete "
   query: "Get "
+  import: "Import "
   export: "Export "
   apply: "Apply "
   check: "Check "

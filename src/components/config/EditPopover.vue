@@ -56,8 +56,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { getEnvironmentVariableScopeList } from "@/constants";
 import type { EnvConfig, Res } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
+import { checkConfigNameExists } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
-import { computed, inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, type Ref, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -85,11 +86,67 @@ const title = computed(() => {
 		: `${t("operate.edit")}${t("config.text")}`;
 });
 
+const envConfigs = inject<Ref<EnvConfig[]>>("envConfigs");
+
 const onClear = () => {
 	data.value = {
 		...DefaultValue.envConfig(),
 		sort: props.maxSort + 1,
 	};
+};
+
+// 创建环境变量配置
+const create = async (title: string) => {
+	await invoke<Res<void>>("create_env_config", {
+		config: {
+			...DefaultValue.envConfig(),
+			...data.value,
+		},
+	})
+		.then((res) => {
+			if (res.code === "200") {
+				emit("reload");
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		})
+		.finally(() => {
+			onClear();
+		});
+};
+
+// 更新环境变量配置
+const update = async (title: string) => {
+	await invoke<Res<void>>("update_env_config", {
+		config: {
+			...DefaultValue.envConfig(),
+			...data.value,
+		},
+	})
+		.then((res) => {
+			if (res.code === "200") {
+				toast.success(title, {
+					description: t("message.success"),
+				});
+				emit("reload");
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		});
 };
 
 const onSave = async () => {
@@ -109,9 +166,8 @@ const onSave = async () => {
 		});
 		return;
 	}
-	const configNames = await inject<EnvConfig[]>("listEnvConfigs")?.map((item) => item.name);
-	console.log("configNames = ", configNames);
-	if (props.operate === "new" && configNames?.includes(data.value.name)) {
+
+	if (checkConfigNameExists(envConfigs?.value || [], data.value.id, data.value.name)) {
 		toast.warning(title, {
 			description: t("config.error.nameExists"),
 		});
@@ -120,49 +176,14 @@ const onSave = async () => {
 
 	// 编辑
 	if (props.operate === "edit" && props.id) {
-		await invoke<Res<void>>("update_env_config", {
-			config: data.value,
-		})
-			.then((res) => {
-				if (res.code === "200") {
-					emit("reload");
-				} else {
-					toast.error(title, {
-						description: `${t("message.failure")}: ${res.message}`,
-					});
-					return;
-				}
-			})
-			.catch((e) => {
-				toast.error(title, {
-					description: `${t("message.error")}: ${e.message}`,
-				});
-				return;
-			});
+		await update(title);
+		return;
 	}
 
 	// 新增
 	if (props.operate === "new") {
-		await invoke<Res<void>>("create_env_config", {
-			config: data.value,
-		})
-			.then((res) => {
-				if (res.code === "200") {
-					emit("reload");
-				} else {
-					toast.error(title, {
-						description: `${t("message.failure")}: ${res.message}`,
-					});
-				}
-			})
-			.catch((e) => {
-				toast.error(title, {
-					description: `${t("message.error")}: ${e.message}`,
-				});
-			})
-			.finally(() => {
-				onClear();
-			});
+		await create(title);
+		return;
 	}
 };
 

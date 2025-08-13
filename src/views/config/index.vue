@@ -82,7 +82,7 @@ import {
 	Pencil,
 	Trash2,
 } from "lucide-vue-next";
-import { getCurrentInstance, onMounted, provide, ref } from "vue";
+import { getCurrentInstance, onMounted, provide, type Ref, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -219,6 +219,6 @@ const dropdownMenuExport = async (config: ConfigData) => {
 		});
 };
 
-provide("listEnvConfigs", listEnvConfigs);
+provide<Ref<EnvConfig[]>>("envConfigs", configs);
 provide("loadSettings", loadSettings);
 </script>

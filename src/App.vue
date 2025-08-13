@@ -16,7 +16,7 @@
 				</main>
 				<Footer />
 			</div>
-			<Toaster />
+			<Toaster :expand="true" />
 		</div>
 	</Suspense>
 </template>

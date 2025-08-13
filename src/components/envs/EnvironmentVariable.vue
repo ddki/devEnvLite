@@ -17,7 +17,7 @@
 			</div>
 		</div>
 		<div class="grid grid-flow-col items-center">
-			<EditEnvironmentVariable operate="edit" :groupId="props.groupId" :env-key="props.data.key">
+			<EditEnvironmentVariable operate="edit" :groupId="props.groupId" :id="props.data.id">
 				<Button variant="ghost" size="icon">
 					<Pencil class="h-4 w-4" />
 				</Button>
@@ -75,13 +75,15 @@ const props = defineProps<Props>();
 
 const { t } = useI18n();
 
+const reloadVariableGroupList: () => Promise<void> = inject("reloadVariableGroupList") || (async () => {});
+
 // 删除
 const dropdownMenuDelete = async (data: EnvironmentVariable) => {
 	const title = `${t("operate.delete")}${t("env.text")}`;
 	await invoke<Res<void>>("delete_environment_variable", { groupId: props.groupId, id: data.id })
 		.then(async (res) => {
 			if (res.code === "200") {
-				await inject("reloadVariableGroupList");
+				await reloadVariableGroupList();
 			} else {
 				toast.error(title, {
 					description: `${t("message.error")}: ${res.message}`,

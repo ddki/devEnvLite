@@ -1,3 +1,5 @@
+import type { EnvConfig } from "@/types";
+
 const validateUrl = (url: string) => {
 	const urlRegex = new RegExp(
 		"^(https?:\\/\\/)?" + // 协议 http/https
@@ -10,4 +12,14 @@ const validateUrl = (url: string) => {
 	return urlRegex.test(url);
 };
 
-export { validateUrl };
+// 检查环境变量配置名称是否存在
+const checkConfigNameExists = (envConfigs: EnvConfig[], excludeId: string | undefined, newName: string): boolean => {
+	return (
+		envConfigs
+			?.filter((item) => item.id !== excludeId)
+			.map((item) => item.name)
+			.includes(newName) || false
+	);
+};
+
+export { validateUrl, checkConfigNameExists };

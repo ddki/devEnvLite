@@ -63,6 +63,8 @@ pub async fn create_variable_group(
 	group: VariableGroup,
 	state: State<'_, AppState>,
 ) -> SResult<String> {
+	let mut group = group;
+	group.id = String::default();
 	let db_conn = state.db_conn.clone();
 	match MutationsService::create_variable_group(&db_conn, VariableGroup::into(group)).await {
 		Ok(result) => Ok(Success::success(result)),

@@ -3,6 +3,7 @@ use sea_orm::*;
 use crate::{
 	entity::{env_config, environment_variable, variable_group, variable_group_mapping},
 	model::{EnvConfig, EnvironmentVariable},
+	service::QueriesService,
 };
 
 // 负责复杂的事务操作，比如多表联合写入、批量操作等。用于保证数据一致性和原子性
@@ -110,7 +111,7 @@ impl TransactionService {
 					.filter(variable_group::Column::Id.is_in(group_ids.clone()))
 					.exec(txn)
 					.await?;
-				
+
 				// 删除变量
 				environment_variable::Entity::delete_many()
 					.filter(
@@ -123,7 +124,6 @@ impl TransactionService {
 					)
 					.exec(txn)
 					.await?;
-				
 
 				// 最后删除环境变量配置
 				env_config::Entity::delete_by_id(id.clone())
@@ -140,6 +140,15 @@ impl TransactionService {
 		group_id: String,
 		variable: EnvironmentVariable,
 	) -> Result<String, TransactionError<DbErr>> {
+		let group = QueriesService::get_variable_group(db, group_id.clone())
+			.await
+			.map_err(|e| TransactionError::Transaction(e))?;
+		if group.is_none() {
+			return Err(TransactionError::Transaction(DbErr::RecordNotFound(format!(
+				"没有找到 {} 分组",
+				group_id.clone()
+			))));
+		}
 		db.transaction::<_, String, DbErr>(|txn| {
 			Box::pin(async move {
 				let variable_id = ulid::Ulid::new().to_string();
@@ -154,7 +163,7 @@ impl TransactionService {
 				.await?;
 				variable_group_mapping::ActiveModel {
 					variable_id: Set(variable_id.clone()),
-					group_id: Set(group_id),
+					group_id: Set(group.unwrap().id),
 					sort: Set(variable.sort),
 					..Default::default()
 				}
@@ -205,12 +214,12 @@ impl TransactionService {
 	) -> Result<(), TransactionError<DbErr>> {
 		db.transaction::<_, (), DbErr>(|txn| {
 			Box::pin(async move {
-				environment_variable::Entity::delete_by_id(variable_id.clone())
-					.exec(txn)
-					.await?;
 				variable_group_mapping::Entity::delete_many()
 					.filter(variable_group_mapping::Column::VariableId.eq(variable_id.clone()))
 					.filter(variable_group_mapping::Column::GroupId.eq(group_id.clone()))
+					.exec(txn)
+					.await?;
+				environment_variable::Entity::delete_by_id(variable_id.clone())
 					.exec(txn)
 					.await?;
 				Ok(())

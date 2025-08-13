@@ -73,11 +73,106 @@ const title = computed(() => {
 		: `${t("operate.edit")}${t("env.text")}`;
 });
 
+const reloadVariableGroupList: () => Promise<void> =
+	inject("reloadVariableGroupList") || (async () => {});
+
 const onClear = () => {
 	data.value = {
 		...DefaultValue.environmentVariable(),
 		sort: props.maxSort + 1,
 	};
+};
+
+// 检查变量名是否存在在配置中
+const checkVariableKeyExists = async (): Promise<boolean> => {
+	try {
+		const res = await invoke<Res<boolean>>("check_variable_key_exists_in_config", {
+			groupId: props.groupId,
+			excludeVariableId: props.id,
+			key: data.value.key,
+		});
+		if (res.code === "200") {
+			if (res.data) {
+				toast.warning(title, {
+					description: t("env.error.keyExists"),
+				});
+				return true;
+			}
+			return res.data;
+		}
+		toast.error(title, {
+			description: `${t("message.error")} : ${res.message}`,
+		});
+		return true;
+	} catch (err) {
+		toast.error(title, {
+			description: `${t("message.error")} : ${err}`,
+		});
+		return true;
+	}
+};
+
+// 创建环境变量
+const create = async (title: string) => {
+	await invoke<Res<boolean>>("create_environment_variable", {
+		groupId: props.groupId,
+		variable: {
+			...DefaultValue.environmentVariable(),
+			...data.value,
+		},
+	})
+		.then(async (res) => {
+			if (res.code === "200") {
+				if (res.data) {
+					toast.success(title, {
+						description: t("message.success"),
+					});
+					await reloadVariableGroupList();
+					return;
+				}
+			} else {
+				toast.error(title, {
+					description: `${t("message.error")} : ${res.message}`,
+				});
+				return;
+			}
+		})
+		.catch((err) => {
+			toast.error(title, {
+				description: `${t("message.error")} : ${err.message}`,
+			});
+		})
+		.finally(() => {
+			onClear();
+		});
+};
+
+// 更新环境变量
+const update = async (title: string) => {
+	await invoke<Res<boolean>>("update_environment_variable", {
+		groupId: props.groupId,
+		variable: {
+			...DefaultValue.environmentVariable(),
+			...data.value,
+		},
+	})
+		.then(async (res) => {
+			if (res.code === "200") {
+				toast.success(title, {
+					description: t("message.success"),
+				});
+				await reloadVariableGroupList();
+			} else {
+				toast.error(title, {
+					description: `${t("message.error")} : ${res.message}`,
+				});
+			}
+		})
+		.catch((err) => {
+			toast.error(title, {
+				description: `${t("message.error")} : ${err.message}`,
+			});
+		});
 };
 
 const onSave = async () => {
@@ -91,96 +186,28 @@ const onSave = async () => {
 		});
 		return;
 	}
-
-	// 检查变量名是否存在在配置中
-	await invoke<Res<boolean>>("check_variable_key_exists_in_config", {
-		config_id: await inject("configId"),
-		exclude_variable_id: props.id,
-		key: data.value.key,
-	})
-		.then((res) => {
-			if (res.code === "200") {
-				if (res.data) {
-					toast.warning(title, {
-						description: t("env.error.keyExists"),
-					});
-					return;
-				}
-			} else {
-				toast.error(title, {
-					description: `${t("message.error")} : ${res.message}`,
-				});
-				return;
-			}
-		})
-		.catch((err) => {
-			toast.error(title, {
-				description: `${t("message.error")} : ${err.message}`,
-			});
-			return;
+	if (!data.value.value) {
+		toast.warning(title, {
+			description: t("env.error.valueNotEmpty"),
 		});
+		return;
+	}
+	// 检查变量名是否存在
+	const keyExists = await checkVariableKeyExists();
+	if (keyExists) {
+		return;
+	}
 
 	// 更新环境变量
 	if (props.operate === "edit" && props.id) {
-		await invoke<Res<boolean>>("update_environment_variable", {
-			group_id: props.groupId,
-			variable: data.value,
-		})
-			.then((res) => {
-				if (res.code === "200") {
-					if (res.data) {
-						toast.success(title, {
-							description: t("message.success"),
-						});
-						return;
-					}
-				} else {
-					toast.error(title, {
-						description: `${t("message.error")} : ${res.message}`,
-					});
-					return;
-				}
-			})
-			.catch((err) => {
-				toast.error(title, {
-					description: `${t("message.error")} : ${err.message}`,
-				});
-				return;
-			})
-			.finally(() => {
-				onClear();
-			});
+		await update(title);
+		return;
 	}
-
 	// 创建环境变量
-	await invoke<Res<boolean>>("create_environment_variable", {
-		group_id: props.groupId,
-		variable: data.value,
-	})
-		.then((res) => {
-			if (res.code === "200") {
-				if (res.data) {
-					toast.success(title, {
-						description: t("message.success"),
-					});
-					return;
-				}
-			} else {
-				toast.error(title, {
-					description: `${t("message.error")} : ${res.message}`,
-				});
-				return;
-			}
-		})
-		.catch((err) => {
-			toast.error(title, {
-				description: `${t("message.error")} : ${err.message}`,
-			});
-			return;
-		})
-		.finally(() => {
-			onClear();
-		});
+	if (props.operate === "new") {
+		await create(title);
+		return;
+	}
 };
 
 // 加载环境变量组

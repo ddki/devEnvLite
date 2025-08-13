@@ -124,6 +124,7 @@ operate:
   edit: 编辑
   delete: 删除
   query: 获取
+  import: 导入
   export: 导出
   apply: 应用
   check: 检查

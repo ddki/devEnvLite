@@ -144,10 +144,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnvironmentVariableScope, getEnvironmentVariableScopeList } from "@/constants";
 import type { EnvConfig, Res, VariableGroup } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
-import { validateUrl } from "@/utils/ValidateUtil";
+import { checkConfigNameExists, validateUrl } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
-import { ref, watch } from "vue";
+import { inject, type Ref, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -164,6 +164,8 @@ const fileConfigName = ref("");
 const urlConfigName = ref("");
 const filePath = ref("");
 const url = ref("");
+
+const envConfigs = inject<Ref<EnvConfig[]>>("envConfigs");
 
 const init = () => {
 	systemConfigName.value = "";
@@ -217,15 +219,22 @@ const createEnvConfig = async (title: string, config: EnvConfig) => {
 // 按钮功能：从系统环境变量导入
 const importFromSystem = async () => {
 	console.log("importFromSystem, systemConfigName: ", systemConfigName);
+	const title = `${t("operate.import")}${t("config.import-config.types.env.text")}`;
 	if (!systemScope.value || systemScope.value.length < 0) {
-		toast.warning(t("config.import-config.types.env.text"), {
+		toast.warning(title, {
 			description: t("env.error.checkScope"),
 		});
 		return;
 	}
 	if (!systemConfigName.value || systemConfigName.value.length < 0) {
-		toast.warning(t("config.import-config.types.env.text"), {
+		toast.warning(title, {
 			description: t("config.error.nameNotEmpty"),
+		});
+		return;
+	}
+	if (checkConfigNameExists(envConfigs?.value || [], undefined, systemConfigName.value)) {
+		toast.warning(title, {
+			description: t("config.error.nameExists"),
 		});
 		return;
 	}

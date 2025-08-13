@@ -72,7 +72,7 @@ impl MigrationTrait for Migration {
 							.not_null()
 							.primary_key(),
 					)
-					.col(ColumnDef::new(VariableGroup::ConfigId).integer().not_null())
+					.col(ColumnDef::new(VariableGroup::ConfigId).string().not_null())
 					.col(ColumnDef::new(VariableGroup::Name).string().not_null())
 					.col(ColumnDef::new(VariableGroup::Description).string())
 					.col(ColumnDef::new(VariableGroup::Sort).integer().default(1))
@@ -93,12 +93,12 @@ impl MigrationTrait for Migration {
 					.if_not_exists()
 					.col(
 						ColumnDef::new(VariableGroupMapping::GroupId)
-							.integer()
+							.string()
 							.not_null(),
 					)
 					.col(
 						ColumnDef::new(VariableGroupMapping::VariableId)
-							.integer()
+							.string()
 							.not_null(),
 					)
 					.col(

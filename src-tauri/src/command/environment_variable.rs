@@ -43,7 +43,7 @@ pub async fn create_environment_variable(
 	match TransactionService::create_environment_variable(
 		&db_conn,
 		group_id,
-		EnvironmentVariable::into(variable),
+		variable,
 	)
 	.await
 	{
