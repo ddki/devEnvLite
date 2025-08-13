@@ -26,7 +26,7 @@
 			</Button>
 		</div>
 	</div>
-	<ScrollArea class="h-full w-full p-2">
+	<ScrollArea class="h-full w-full px-2 overflow-hidden">
 		<div class="grid grid-flow-row items-center gap-1" v-if="showItems">
 			<EnvironmentVariable v-for="variable in props.data.variables" :groupId="id" :data="variable"></EnvironmentVariable>
 		</div>
@@ -42,7 +42,11 @@ import { ListPlus, PanelBottomClose, PanelBottomOpen, Pencil, Trash2 } from "luc
 import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
-import { EditEnvironmentVariable as CreateEnvironmentVariable, EditVariableGroup, EnvironmentVariable } from ".";
+import {
+	EditEnvironmentVariable as CreateEnvironmentVariable,
+	EditVariableGroup,
+	EnvironmentVariable,
+} from ".";
 
 interface Props {
 	data: VariableGroup;
@@ -70,7 +74,8 @@ const configId = computed(() => {
 	return "";
 });
 
-const reloadVariableGroupList: () => Promise<void> = inject("reloadVariableGroupList") || (async () => {});
+const reloadVariableGroupList: () => Promise<void> =
+	inject("reloadVariableGroupList") || (async () => {});
 
 // 删除环境变量组
 const dropdownMenuDelete = async (data: VariableGroup) => {

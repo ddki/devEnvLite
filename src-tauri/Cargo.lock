@@ -1405,6 +1405,7 @@ dependencies = [
  "anyhow",
  "cargo-edit",
  "chrono",
+ "dirs 6.0.0",
  "dotenvy",
  "futures",
  "log 0.4.27",

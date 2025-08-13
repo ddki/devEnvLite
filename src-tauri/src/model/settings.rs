@@ -50,7 +50,7 @@ pub struct Settings {
 }
 
 impl Settings {
-	pub fn default<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> Self {
+	pub fn default<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> Self {
 		let home_dir = app
 			.path()
 			.app_local_data_dir()
@@ -78,7 +78,7 @@ impl Settings {
 		return settings;
 	}
 
-	pub fn load_from_store<R: tauri::Runtime>(app: tauri::AppHandle<R>) -> anyhow::Result<Self> {
+	pub fn load_from_store<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> anyhow::Result<Self> {
 		let store = app.store("settings.json")?;
 		let default_settings = Self::default(app);
 		let theme = store
@@ -141,7 +141,10 @@ impl Settings {
 		Ok(())
 	}
 
-	pub fn save_to_store<R: tauri::Runtime>(&self, app: tauri::AppHandle<R>) -> anyhow::Result<()> {
+	pub fn save_to_store<R: tauri::Runtime>(
+		&self,
+		app: &tauri::AppHandle<R>,
+	) -> anyhow::Result<()> {
 		let store = app.store("settings.json")?;
 		store.set("theme", json!(&self.theme.to_string()));
 		store.set("language", json!(&self.language));

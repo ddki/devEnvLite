@@ -72,6 +72,10 @@ config:
         name: 配置名称
   new-config: 新增配置
   edit-config: 编辑配置
+  apply:
+    text: 一键应用
+    description: 将所有激活的配置应用到环境变量
+    warning: 应用后将覆盖当前系统环境变量，请谨慎操作
   id: 配置唯一标识
   name: 配置名称
   description: 配置描述

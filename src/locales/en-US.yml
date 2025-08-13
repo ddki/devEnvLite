@@ -72,6 +72,10 @@ config:
         name: Configuration Name
   new-config: New
   edit-config: Edit
+  apply:
+    text: Apply
+    description: Apply all active configurations to environment variables.
+    warning: Applying will overwrite current system environment variables, please operate with caution.
   id: Config's Unique Identifier
   name: Config's Name
   description: Config's Description

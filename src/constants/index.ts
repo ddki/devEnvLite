@@ -1,12 +1,9 @@
-import { useI18n } from "vue-i18n";
-
 enum EnvironmentVariableScope {
 	USER = "user",
 	SYSTEM = "system",
 }
 
-const getEnvironmentVariableScopeList = () => {
-	const { t } = useI18n();
+const getEnvironmentVariableScopeList = (t: (key: string) => string) => {
 	return [
 		{ label: t("env.scopes.user"), value: EnvironmentVariableScope.USER },
 		{ label: t("env.scopes.system"), value: EnvironmentVariableScope.SYSTEM },
@@ -24,8 +21,7 @@ const languageList = [
 	},
 ];
 
-const getThemeList = () => {
-	const { t } = useI18n();
+const getThemeList = (t: (key: string) => string) => {
 	return [
 		{
 			value: "auto",

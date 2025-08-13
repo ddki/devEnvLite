@@ -147,12 +147,12 @@ import { DefaultValue } from "@/types/defaultValue";
 import { checkConfigNameExists, validateUrl } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
-import { inject, type Ref, ref, watch } from "vue";
+import { type Ref, computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
-const scopesList = getEnvironmentVariableScopeList();
+const scopesList = getEnvironmentVariableScopeList(t);
 
 const emit = defineEmits(["reload"]);
 
@@ -166,6 +166,12 @@ const filePath = ref("");
 const url = ref("");
 
 const envConfigs = inject<Ref<EnvConfig[]>>("envConfigs");
+
+const currentSort = computed(() => {
+	return envConfigs?.value?.length
+		? Math.max(...envConfigs.value.map((item) => item.sort ?? 0)) + 1
+		: 1;
+});
 
 const init = () => {
 	systemConfigName.value = "";
@@ -251,7 +257,7 @@ const importFromSystem = async () => {
 					name: systemConfigName.value,
 					description: `${t("config.import-config.text")}-${t("config.import-config.types.env.text")}(${scopeLabel})`,
 					isActive: false,
-					sort: 1,
+					sort: currentSort.value,
 				};
 				// 设置变量组
 				setGroupsForEnvConfig(config, resMap);
@@ -292,7 +298,7 @@ const importFromFile = async () => {
 		scope: EnvironmentVariableScope.USER, // 从配置文件中提取
 		name: "", // 从配置文件中提取
 		isActive: false,
-		sort: 1,
+		sort: currentSort.value,
 	};
 	const title = `${t("config.import-config.text")}-${t("config.import-config.types.file.text")}`;
 	await createEnvConfig(title, config);
@@ -326,7 +332,7 @@ const importFromUrl = async () => {
 		scope: EnvironmentVariableScope.USER, // 从配置文件中提取
 		name: "", // 从配置文件中提取
 		isActive: false,
-		sort: 1,
+		sort: currentSort.value,
 	};
 	const title = `${t("config.import-config.text")}-${t("config.import-config.types.url.text")}`;
 	await createEnvConfig(title, config);

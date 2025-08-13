@@ -20,10 +20,7 @@ pub struct AppState {
 #[cfg(desktop)]
 #[tokio::main]
 pub async fn run() {
-	// db
-	let db_conn = setup_database().await;
 	app_init::setup_plugins(tauri::Builder::default())
-		.manage(AppState { db_conn })
 		.on_window_event(|window, event| {
 			if let tauri::WindowEvent::CloseRequested { api, .. } = event {
 				info!("窗口关闭...");
@@ -46,6 +43,14 @@ pub async fn run() {
 				error!("初始化托盘失败: {:?}", e);
 			}
 			app_init::init_core_async(app.handle());
+			match model::Settings::load_from_store(app.handle()) {
+				Ok(settings) => {
+					info!("加载设置成功: {:?}", settings);
+				}
+				Err(e) => {
+					error!("加载设置失败: {:?}", e);
+				}
+			}
 			let main = app.get_webview_window("main").unwrap();
 			let theme = main.theme().unwrap();
 			info!("主题: {}", theme);
@@ -173,6 +178,7 @@ mod app_init {
 			command::env_config::delete_env_config_transaction,
 			command::env_config::check_variable_key_exists_in_config,
 			command::env_config::export_env_config,
+			command::env_config::apply_env_config,
 			// variable_groups
 			command::variable_group::list_variable_groups,
 			command::variable_group::list_variable_groups_with_variables,
@@ -195,8 +201,15 @@ mod app_init {
 		let async_app_handle = app_handle.clone();
 		tokio::spawn(async move {
 			// 在这里调用 command::settings::get_settings(app_handle.clone()) 并打印结果
-			let settings = command::settings::get_settings(async_app_handle).await;
+			let settings = command::settings::get_settings(async_app_handle.clone()).await;
 			info!("settings: {:?}", settings);
+			// 初始化数据库
+			let db_conn = setup_database::<tauri::Wry>(
+				#[cfg(not(debug_assertions))]
+				&async_app_handle,
+			)
+			.await;
+			async_app_handle.manage(AppState { db_conn });
 		});
 	}
 }

@@ -58,21 +58,18 @@ import type { EnvConfig, Res } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
 import { checkConfigNameExists } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
-import { computed, inject, onMounted, type Ref, ref } from "vue";
+import { type Ref, computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
 const { t } = useI18n();
-const scopesList = getEnvironmentVariableScopeList();
+const scopesList = getEnvironmentVariableScopeList(t);
 
 interface Prop {
 	id?: string;
-	maxSort?: number;
 	operate: "edit" | "new";
 }
-const props = withDefaults(defineProps<Prop>(), {
-	maxSort: 0,
-});
+const props = defineProps<Prop>();
 
 const emit = defineEmits(["reload"]);
 
@@ -88,10 +85,16 @@ const title = computed(() => {
 
 const envConfigs = inject<Ref<EnvConfig[]>>("envConfigs");
 
+const currentSort = computed(() => {
+	return envConfigs?.value?.length
+		? Math.max(...envConfigs.value.map((item) => item.sort ?? 0)) + 1
+		: 1;
+});
+
 const onClear = () => {
 	data.value = {
 		...DefaultValue.envConfig(),
-		sort: props.maxSort + 1,
+		sort: currentSort.value,
 	};
 };
 

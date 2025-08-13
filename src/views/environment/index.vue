@@ -15,8 +15,8 @@
 				</Button>
 			</EditVariableGroup>
 		</div>
-		<ScrollArea class="h-full w-full p-2 overflow-auto">
-			<div class="grid grid-flow-row gap-2">
+		<ScrollArea class="h-full w-full p-2 overflow-hidden">
+			<div class="grid grid-flow-row">
 				<VariableGroupComponent v-for="group in variableGroupListState" :data="group" />
 			</div>
 		</ScrollArea>
@@ -31,7 +31,7 @@ import type { Res, VariableGroup } from "@/types";
 import type { EnvConfig } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { Blocks, CircleCheckBig } from "lucide-vue-next";
-import { provide, type Ref, ref, toRef, toRefs, watch } from "vue";
+import { type Ref, provide, ref, toRef, toRefs, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 

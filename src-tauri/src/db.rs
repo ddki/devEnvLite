@@ -1,8 +1,14 @@
 use crate::service::sea_orm::{Database, DatabaseConnection};
 use migration::{Migrator, MigratorTrait};
+use tauri::Runtime;
 
-pub async fn setup_database() -> DatabaseConnection {
-	let db_url = get_database_url();
+pub async fn setup_database<R: Runtime>(
+	#[cfg(not(debug_assertions))] app_handle: &tauri::AppHandle<R>,
+) -> DatabaseConnection {
+	let db_url = get_database_url::<R>(
+		#[cfg(not(debug_assertions))]
+		app_handle,
+	);
 	let db_conn = Database::connect(&db_url)
 		.await
 		.expect(&format!("Error connecting to {}", &db_url));
@@ -14,7 +20,9 @@ pub async fn setup_database() -> DatabaseConnection {
 	return db_conn;
 }
 
-fn get_database_url() -> String {
+fn get_database_url<R: Runtime>(
+	#[cfg(not(debug_assertions))] app_handle: &tauri::AppHandle<R>,
+) -> String {
 	#[cfg(debug_assertions)]
 	{
 		dotenvy::dotenv().ok();
@@ -23,10 +31,13 @@ fn get_database_url() -> String {
 
 	#[cfg(not(debug_assertions))]
 	{
-		let home_dir = dirs::data_dir().unwrap_or_else(|| panic!("Could not get home directory"));
-		let data_dir = home_dir.join(".devEnvLite/data");
-		std::fs::create_dir_all(&data_dir)
-			.unwrap_or_else(|_| panic!("Could not create data directory"));
-		format!("sqlite://{}db.sqlite?mode=rwc", data_dir.to_string_lossy())
+		use crate::model::Settings;
+		use std::path::PathBuf;
+
+		let settings = Settings::load_from_store(app_handle).unwrap();
+		let data_dir = settings.get_data_dir();
+		let data_path = PathBuf::from(data_dir);
+		let db_path = data_path.join("db.sqlite");
+		format!("sqlite://{}?mode=rwc", db_path.to_string_lossy())
 	}
 }

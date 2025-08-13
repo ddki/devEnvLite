@@ -50,7 +50,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Res, VariableGroup } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
 import { invoke } from "@tauri-apps/api/core";
-import { computed, inject, onMounted, type Ref, ref, watch } from "vue";
+import { type Ref, computed, inject, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -59,19 +59,23 @@ const { t } = useI18n();
 interface Prop {
 	configId: string;
 	id?: string;
-	maxSort?: number;
 	operate: "edit" | "new";
 }
-const props = withDefaults(defineProps<Prop>(), {
-	maxSort: 0,
+const props = defineProps<Prop>();
+
+const reloadVariableGroupList: () => Promise<void> =
+	inject("reloadVariableGroupList") || (async () => {});
+
+const variableGroupList = inject<Ref<VariableGroup[]>>("variableGroupList");
+
+const currentSort = computed(() => {
+	return variableGroupList?.value?.length
+		? Math.max(...variableGroupList.value.map((item) => item.sort ?? 0)) + 1
+		: 1;
 });
-console.log("props[group-env]: ", props);
 
 const data = ref<VariableGroup>({
 	...DefaultValue.variableGroup(),
-	id: props.id,
-	configId: props.configId,
-	name: "",
 });
 
 const title = computed(() => {
@@ -79,11 +83,6 @@ const title = computed(() => {
 		? `${t("operate.new")}${t("envGroup.text")}`
 		: `${t("operate.edit")}${t("envGroup.text")}`;
 });
-
-const reloadVariableGroupList: () => Promise<void> =
-	inject("reloadVariableGroupList") || (async () => {});
-
-const variableGroupList = inject<Ref<VariableGroup[]>>("variableGroupList");
 
 // 创建环境变量组
 const create = async (title: string) => {
@@ -143,7 +142,7 @@ const onClear = () => {
 	data.value = {
 		...DefaultValue.variableGroup(),
 		configId: props.configId,
-		sort: props.maxSort + 1,
+		sort: currentSort.value,
 	};
 };
 

@@ -1,3 +1,47 @@
+<template>
+	<Dialog v-model:open="open">
+		<DialogTrigger as-child>
+			<Button @click="open = true">
+				<Blocks />
+				{{ t('header.collate.text') }}
+			</Button>
+		</DialogTrigger>
+		<DialogContent class="grid-rows-[auto_minmax(0,1fr)_auto] max-h-[90dvh]">
+			<DialogHeader>
+				<DialogTitle>{{ t('header.collate.text') }}</DialogTitle>
+				<DialogDescription>
+					{{ t('header.collate.description') }}
+				</DialogDescription>
+			</DialogHeader>
+			<div class="grid gap-4 py-4 overflow-y-auto">
+				<div class="grid grid-flow-row gap-4">
+					<Label for="name" class="text-left text-base font-bold">
+						{{ t("header.collate.env-scope.text") }}
+						<span class="text-sm text-muted-foreground font-normal">
+							{{ t("header.collate.env-scope.description") }}
+						</span>
+					</Label>
+					<ListCheckbox :items="scopesList" v-model="scopes" class="pl-4" />
+				</div>
+				<div class="grid grid-flow-row gap-4">
+					<Label for="username" class="text-left text-base font-bold">
+						{{ t("header.collate.env-keys.text") }}
+						<span class="text-sm text-muted-foreground font-normal">
+							{{ t("header.collate.env-keys.description") }}
+						</span>
+					</Label>
+					<ListCheckbox :items="keyList" v-model="keys" class="pl-4" />
+				</div>
+			</div>
+			<DialogFooter>
+				<Button @click="onCollate">
+					{{ t('header.collate.text') }}
+				</Button>
+			</DialogFooter>
+		</DialogContent>
+	</Dialog>
+</template>
+
 <script setup lang="ts">
 import { ListCheckbox } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -24,14 +68,14 @@ interface CheckInfo {
 	checked: boolean;
 }
 
+const { t } = useI18n();
+
 const defaultScopes = (): CheckInfo[] => {
-	return getEnvironmentVariableScopeList().map((item) => ({
+	return getEnvironmentVariableScopeList(t).map((item) => ({
 		...item,
 		checked: false,
 	}));
 };
-
-const { t } = useI18n();
 
 const open = ref(false);
 
@@ -100,46 +144,4 @@ watch(open, (newValue) => {
 });
 </script>
 
-<template>
-	<Dialog v-model:open="open">
-		<DialogTrigger as-child>
-			<Button @click="open = true">
-				<Blocks />
-				{{ t('header.collate.text') }}
-			</Button>
-		</DialogTrigger>
-		<DialogContent class="grid-rows-[auto_minmax(0,1fr)_auto] max-h-[90dvh]">
-			<DialogHeader>
-				<DialogTitle>{{ t('header.collate.text') }}</DialogTitle>
-				<DialogDescription>
-					{{ t('header.collate.description') }}
-				</DialogDescription>
-			</DialogHeader>
-			<div class="grid gap-4 py-4 overflow-y-auto">
-				<div class="grid grid-flow-row gap-4">
-					<Label for="name" class="text-left text-base font-bold">
-						{{ t("header.collate.env-scope.text") }}
-						<span class="text-sm text-muted-foreground font-normal">
-							{{ t("header.collate.env-scope.description") }}
-						</span>
-					</Label>
-					<ListCheckbox :items="scopesList" v-model="scopes" class="pl-4" />
-				</div>
-				<div class="grid grid-flow-row gap-4">
-					<Label for="username" class="text-left text-base font-bold">
-						{{ t("header.collate.env-keys.text") }}
-						<span class="text-sm text-muted-foreground font-normal">
-							{{ t("header.collate.env-keys.description") }}
-						</span>
-					</Label>
-					<ListCheckbox :items="keyList" v-model="keys" class="pl-4" />
-				</div>
-			</div>
-			<DialogFooter>
-				<Button @click="onCollate">
-					{{ t('header.collate.text') }}
-				</Button>
-			</DialogFooter>
-		</DialogContent>
-	</Dialog>
-</template>
+

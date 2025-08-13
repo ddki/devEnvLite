@@ -10,7 +10,11 @@ pub struct QueriesService;
 
 impl QueriesService {
 	pub async fn list_env_configs(db: &DbConn) -> Result<Vec<env_config::Model>, DbErr> {
-		env_config::Entity::find().all(db).await
+		env_config::Entity::find()
+			.order_by_desc(env_config::Column::IsActive)
+			.order_by_asc(env_config::Column::Sort)
+			.all(db)
+			.await
 	}
 
 	pub async fn get_env_config(

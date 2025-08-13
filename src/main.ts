@@ -8,7 +8,7 @@ import { disableContextMenu, disableRefresh } from "./utils/Webview";
 
 const emitter = mitt();
 emitter.on("reloadApp", () => {
-	// window.location.reload();
+	window.location.reload();
 });
 
 const app = createApp(App);
@@ -17,8 +17,8 @@ app.use(await createI18nInstance());
 app.mount("#main");
 
 const setup = async () => {
-	const env = import.meta.env.NODE_ENV || 'development';
-	const disable = env === 'production';
+	const env = import.meta.env.NODE_ENV || "development";
+	const disable = env === "production";
 	console.log("app setup... ", env);
 	// 禁止刷新
 	disableRefresh(disable);

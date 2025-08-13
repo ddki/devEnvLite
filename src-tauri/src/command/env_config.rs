@@ -152,11 +152,10 @@ pub async fn export_env_config<R: tauri::Runtime>(
 					let config_data = config.data.unwrap();
 					let config_json_str = serde_json::to_string(&config_data).unwrap();
 					// 存储为文件
-					let settings =
-						crate::model::Settings::load_from_store(app.clone()).map_err(|e| {
-							log::error!("导出配置失败: 获取应用配置失败 {:?}", e);
-							return Fail::fail_with_message(String::from("获取应用配置失败"));
-						})?;
+					let settings = crate::model::Settings::load_from_store(&app).map_err(|e| {
+						log::error!("导出配置失败: 获取应用配置失败 {:?}", e);
+						return Fail::fail_with_message(String::from("获取应用配置失败"));
+					})?;
 					let date = chrono::Local::now().format("%Y%m%d%H%M%S%f");
 					let config_file_name =
 						format!("导出-{}-{}-{}.json", config_data.name, config_data.id, date);
@@ -205,4 +204,21 @@ pub async fn export_env_config<R: tauri::Runtime>(
 		}
 	}
 	Ok(Success::success(()))
+}
+
+#[tauri::command]
+pub async fn apply_env_config(id: Option<String>, state: State<'_, AppState>) -> SResult<()> {
+	match id {
+		Some(id) => {
+			// todo
+			return Err(Fail::fail("500", String::from("未实现")));
+		}
+		None => {
+			// todo
+			return Err(Fail::fail(
+				"500",
+				String::from("未实现 未指定配置：应用所有激活中的配置"),
+			));
+		}
+	}
 }

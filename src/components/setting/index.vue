@@ -132,7 +132,7 @@ import { toast } from "vue-sonner";
 
 const appVersion = await getVersion();
 const { t, locale } = useI18n();
-const themeList = getThemeList();
+const themeList = getThemeList(t);
 const context = getCurrentInstance();
 
 /**

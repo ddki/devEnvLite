@@ -32,9 +32,9 @@ const getFilePath = async () => {
 		filters: filters,
 		defaultPath: model.value,
 	});
-	console.log(file);
+	console.log("LocalFileInput", props.type, file);
 	if (file) {
-		model.value = props.type === "folder" ? (file as unknown as string) : file?.path;
+		model.value = file;
 	}
 };
 </script>

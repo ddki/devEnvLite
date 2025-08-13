@@ -8,6 +8,7 @@
 					{{ `${t("operate.new")}${t("config.text")}` }}
 				</Button>
 			</EditPopover>
+			<ApplyConfig />
 		</div>
 		<ScrollArea class="h-full w-full p-2 overflow-hidden sm:mt-1 md:mt-2">
 			<p class="text-secondary-foreground text-center" v-if="(!configs || configs.length < 1)">
@@ -61,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { EditPopover, ImportDialog } from "@/components/config";
+import { ApplyConfig, EditPopover, ImportDialog } from "@/components/config";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -82,7 +83,7 @@ import {
 	Pencil,
 	Trash2,
 } from "lucide-vue-next";
-import { getCurrentInstance, onMounted, provide, type Ref, ref } from "vue";
+import { type Ref, getCurrentInstance, onMounted, provide, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -198,7 +199,7 @@ const dropdownMenuDelete = async (config: ConfigData) => {
 		});
 };
 
-// TODO 导出配置
+// 导出配置
 const dropdownMenuExport = async (config: ConfigData) => {
 	await invoke<Res<void>>("export_env_config", { id: config.id })
 		.then(async (res) => {
