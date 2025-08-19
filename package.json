@@ -4,8 +4,8 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "cross-env NODE_ENV=development vite",
-		"build": "cross-env NODE_ENV=production vite build",
+		"dev": "vite dev --mode development",
+		"build": "vite build --mode production",
 		"preview": "vite preview",
 		"tauri": "tauri",
 		"commit": "git-cz"
@@ -50,7 +50,6 @@
 		"@types/node": "^22.17.0",
 		"@vitejs/plugin-vue": "^5.2.4",
 		"commitizen": "^4.3.1",
-		"cross-env": "^10.0.0",
 		"cz-git": "^1.12.0",
 		"czg": "^1.12.0",
 		"husky": "^9.1.7",
@@ -70,7 +69,9 @@
 			"biome format --write --no-errors-on-unmatched",
 			"biome lint --apply --no-errors-on-unmatched"
 		],
-		"**/*": ["git add"]
+		"**/*": [
+			"git add"
+		]
 	},
 	"volta": {
 		"node": "22.18.0",

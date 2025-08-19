@@ -53,7 +53,7 @@ impl Settings {
 	pub fn default<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> Self {
 		let home_dir = app
 			.path()
-			.app_local_data_dir()
+			.app_data_dir()
 			.expect("Failed to get home directory");
 		let cache_dir = home_dir.join("cache");
 		let data_dir = home_dir.join("data");

@@ -17,9 +17,9 @@ app.use(await createI18nInstance());
 app.mount("#main");
 
 const setup = async () => {
-	const env = import.meta.env.NODE_ENV || "development";
+	const env = import.meta.env.MODE || "development";
 	const disable = env === "production";
-	console.log("app setup... ", env);
+	console.log("app setup... ", import.meta.env.MODE, env);
 	// 禁止刷新
 	disableRefresh(disable);
 	// 禁止右键菜单
