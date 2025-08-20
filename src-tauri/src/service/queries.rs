@@ -16,6 +16,21 @@ impl QueriesService {
 			.all(db)
 			.await
 	}
+	pub async fn list_env_config_by_name(
+		db: &DbConn,
+		exclude_config_id: Option<String>,
+		name: String,
+	) -> Result<Vec<env_config::Model>, DbErr> {
+		let mut conditions = Condition::all();
+		if let Some(config_id) = exclude_config_id {
+			conditions = conditions.add(env_config::Column::Id.ne(config_id));
+		}
+		env_config::Entity::find()
+			.filter(conditions)
+			.filter(env_config::Column::Name.eq(name))
+			.all(db)
+			.await
+	}
 
 	pub async fn get_env_config(
 		db: &DbConn,

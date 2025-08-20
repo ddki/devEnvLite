@@ -38,3 +38,14 @@ impl Into<crate::entity::variable_group::ActiveModel> for VariableGroup {
 		}
 	}
 }
+
+impl VariableGroup {
+	pub fn clean_ids(&mut self) {
+		self.id = ulid::Ulid::new().to_string();
+		if let Some(variable) = &mut self.variables {
+			for variable in variable {
+				variable.clean_ids();
+			}
+		}
+	}
+}

@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::BufReader;
 use std::io::Write;
 
 use super::*;
@@ -139,6 +141,25 @@ pub async fn check_variable_key_exists_in_config(
 }
 
 #[tauri::command]
+pub async fn check_config_name_exists(
+	config_name: String,
+	exclude_config_id: Option<String>,
+	state: State<'_, AppState>,
+) -> SResult<bool> {
+	let db_conn = state.db_conn.clone();
+	let config = QueriesService::list_env_config_by_name(&db_conn, exclude_config_id, config_name)
+		.await
+		.map_err(|e| {
+			log::error!("检查配置名是否存在失败: {:?}", e);
+			return Fail::fail_with_message(String::from("未获取到配置信息"));
+		})?;
+	if config.is_empty() {
+		return Ok(Success::success(false));
+	}
+	Ok(Success::success(true))
+}
+
+#[tauri::command]
 pub async fn export_env_config<R: tauri::Runtime>(
 	id: String,
 	state: State<'_, AppState>,
@@ -204,6 +225,56 @@ pub async fn export_env_config<R: tauri::Runtime>(
 		}
 	}
 	Ok(Success::success(()))
+}
+
+#[tauri::command]
+pub async fn import_env_config_from_file(
+	file_path: String,
+	config_name: String,
+	state: State<'_, AppState>,
+) -> SResult<()> {
+	let config_file = File::open(file_path).map_err(|e| {
+		log::error!("导入配置失败: 打开文件失败 {:?}", e);
+		return Fail::fail_with_message(String::from("打开文件失败"));
+	})?;
+	let reader = BufReader::new(config_file);
+	let mut config: EnvConfig = serde_json::from_reader(reader).map_err(|e| {
+		log::error!("导入配置失败: 文件格式有误 {:?}", e);
+		return Fail::fail_with_message(String::from("文件格式有误"));
+	})?;
+	config.clean_ids();
+	config.name = config_name.clone();
+	// 检查配置是否存在
+	let db_conn = state.db_conn.clone();
+	let config_exists =
+		QueriesService::list_env_config_by_name(&db_conn, None, config_name.clone())
+			.await
+			.map_err(|e| {
+				log::error!("导入配置失败: 检查配置名是否存在失败 {:?}", e);
+				return Fail::fail_with_message(String::from("检查配置名是否存在失败"));
+			})?;
+	if !config_exists.is_empty() {
+		return Err(Fail::fail_with_message(String::from(format!(
+			"配置名称 {} 已存在",
+			config_name
+		))));
+	}
+	match TransactionService::create_env_config(&db_conn, EnvConfig::into(config)).await {
+		Ok(_result) => Ok(Success::success(())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
+	}
+}
+
+#[tauri::command]
+pub async fn import_env_config_from_url(
+	url: String,
+	config_name: String,
+	state: State<'_, AppState>,
+) -> SResult<()> {
+	return Err(Fail::fail(
+		"500",
+		String::from("TODO"),
+	));
 }
 
 #[tauri::command]

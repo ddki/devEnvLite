@@ -33,3 +33,10 @@ impl Into<crate::entity::environment_variable::ActiveModel> for EnvironmentVaria
 		}
 	}
 }
+
+
+impl EnvironmentVariable {
+	pub fn clean_ids(&mut self) {
+		self.id = ulid::Ulid::new().to_string();
+	}
+}

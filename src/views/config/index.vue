@@ -220,6 +220,41 @@ const dropdownMenuExport = async (config: ConfigData) => {
 		});
 };
 
+const checkConfigNameHasExists = async (
+	configName: string,
+	excludeConfigId: string | undefined,
+	title: string,
+): Promise<boolean> => {
+	return (
+		(await invoke<Res<boolean>>("check_config_name_exists", {
+			configName: configName,
+			excludeConfigId: excludeConfigId,
+		})
+			.then((res) => {
+				if (res.code === "200") {
+					if (res.data) {
+						toast.warning(title, {
+							description: t("config.error.nameExists"),
+						});
+						return true;
+					}
+				} else {
+					toast.error(title, {
+						description: `${t("message.error")} : ${res.message}`,
+					});
+					return true;
+				}
+			})
+			.catch((err) => {
+				toast.error(title, {
+					description: `${t("message.error")} : ${err.message}`,
+				});
+				return true;
+			})) || false
+	);
+};
+
 provide<Ref<EnvConfig[]>>("envConfigs", configs);
 provide("loadSettings", loadSettings);
+provide("checkConfigNameHasExists", checkConfigNameHasExists);
 </script>

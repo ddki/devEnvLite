@@ -46,3 +46,14 @@ impl Into<env_config::ActiveModel> for EnvConfig {
 		}
 	}
 }
+
+impl EnvConfig {
+	pub fn clean_ids(&mut self) {
+		self.id = ulid::Ulid::new().to_string();
+		if let Some(groups) = &mut self.groups {
+			for group in groups {
+				group.clean_ids();
+			}
+		}
+	}
+}

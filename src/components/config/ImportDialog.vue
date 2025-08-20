@@ -144,7 +144,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnvironmentVariableScope, getEnvironmentVariableScopeList } from "@/constants";
 import type { EnvConfig, Res, VariableGroup } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
-import { checkConfigNameExists, validateUrl } from "@/utils/ValidateUtil";
+import { validateUrl } from "@/utils/ValidateUtil";
 import { invoke } from "@tauri-apps/api/core";
 import { Import } from "lucide-vue-next";
 import { type Ref, computed, inject, ref, watch } from "vue";
@@ -166,6 +166,10 @@ const filePath = ref("");
 const url = ref("");
 
 const envConfigs = inject<Ref<EnvConfig[]>>("envConfigs");
+const checkConfigNameHasExists =
+	inject<
+		(configName: string, excludeConfigId: string | undefined, title: string) => Promise<boolean>
+	>("checkConfigNameHasExists");
 
 const currentSort = computed(() => {
 	return envConfigs?.value?.length
@@ -238,10 +242,8 @@ const importFromSystem = async () => {
 		});
 		return;
 	}
-	if (checkConfigNameExists(envConfigs?.value || [], undefined, systemConfigName.value)) {
-		toast.warning(title, {
-			description: t("config.error.nameExists"),
-		});
+	const checkConfigNameResult = checkConfigNameHasExists && await checkConfigNameHasExists(systemConfigName.value, undefined, title);
+	if (checkConfigNameResult) {
 		return;
 	}
 	await invoke<Res<Record<string, string>>>("get_os_environment_variables", {
@@ -278,64 +280,94 @@ const importFromSystem = async () => {
 
 // 按钮功能：从文件导入
 const importFromFile = async () => {
-	// TODO fix
+	const title = `${t("config.import-config.text")}-${t("config.import-config.types.file.text")}`;
 	if (!fileConfigName.value || fileConfigName.value.length < 0) {
-		toast.warning(t("config.import-config.types.file.text"), {
+		toast.warning(title, {
 			description: `${t("config.import-config.types.file.name")}${t("message.not-empty")}`,
 		});
 		return;
 	}
 	if (!filePath.value || filePath.value.length < 0) {
-		toast.warning(t("config.import-config.types.file.text"), {
+		toast.warning(title, {
 			description: `${t("config.import-config.types.file.file")}${t("message.not-empty")}`,
 		});
 		return;
 	}
-
-	// TODO file tranform to config
-	const config = {
-		...DefaultValue.envConfig(),
-		scope: EnvironmentVariableScope.USER, // 从配置文件中提取
-		name: "", // 从配置文件中提取
-		isActive: false,
-		sort: currentSort.value,
-	};
-	const title = `${t("config.import-config.text")}-${t("config.import-config.types.file.text")}`;
-	await createEnvConfig(title, config);
+	const checkConfigNameResult = checkConfigNameHasExists && await checkConfigNameHasExists(systemConfigName.value, undefined, title);
+	if (checkConfigNameResult) {
+		return;
+	}
+	await invoke<Res<void>>("import_env_config_from_file", {
+		configName: fileConfigName.value,
+		filePath: filePath.value,
+	}).then((res) => {
+		if (res.code === "200") {
+			emit("reload");
+			toast.success(title, {
+				description: t("message.success"),
+			});
+		} else {
+			toast.error(title, {
+				description: `${t("message.failure")} : ${res.message}`,
+			});
+			return;
+		}
+	}).catch((err) => {
+		toast.error(title, {
+			description: `${t("message.error")} : ${err.message}`,
+		});
+		return;
+	});
 };
 
 // 按钮功能：从URL导入
 const importFromUrl = async () => {
-	// TODO fix
+	const title = `${t("config.import-config.text")}-${t("config.import-config.types.url.text")}`;
 	if (!urlConfigName.value || urlConfigName.value.length < 0) {
-		toast.warning(t("config.import-config.types.url.text"), {
+		toast.warning(title, {
 			description: `${t("config.import-config.types.url.name")}${t("message.not-empty")}`,
 		});
 		return;
 	}
 	if (!url.value || url.value.length < 0) {
-		toast.warning(t("config.import-config.types.url.text"), {
+		toast.warning(title, {
 			description: `${t("config.import-config.types.url.url")}${t("message.not-empty")}`,
 		});
 		return;
 	}
 	if (!validateUrl(url.value)) {
-		toast.warning(t("config.import-config.types.url.text"), {
+		toast.warning(title, {
 			description: `${t("config.import-config.types.url.url")}${t("message.error-format")}`,
 		});
 		return;
 	}
 
-	// TODO url tranform to config
-	const config = {
-		...DefaultValue.envConfig(),
-		scope: EnvironmentVariableScope.USER, // 从配置文件中提取
-		name: "", // 从配置文件中提取
-		isActive: false,
-		sort: currentSort.value,
-	};
-	const title = `${t("config.import-config.text")}-${t("config.import-config.types.url.text")}`;
-	await createEnvConfig(title, config);
+	const checkConfigNameResult = checkConfigNameHasExists && await checkConfigNameHasExists(urlConfigName.value, undefined, title);
+	if (checkConfigNameResult) {
+		return;
+	}
+
+	await invoke<Res<void>>("import_env_config_from_url", {
+		configName: urlConfigName.value,
+		url: url.value,
+	}).then((res) => {
+		if (res.code === "200") {
+			emit("reload");
+			toast.success(title, {
+				description: t("message.success"),
+			});
+		} else {
+			toast.error(title, {
+				description: `${t("message.failure")} : ${res.message}`,
+			});
+			return;
+		}
+	}).catch((err) => {
+		toast.error(title, {
+			description: `${t("message.error")} : ${err.message}`,
+		});
+		return;
+	});
 };
 
 watch(dialogOpen, (newValue) => {

@@ -176,7 +176,10 @@ mod app_init {
 			command::env_config::update_env_config,
 			command::env_config::delete_env_config,
 			command::env_config::delete_env_config_transaction,
+			command::env_config::check_config_name_exists,
 			command::env_config::check_variable_key_exists_in_config,
+			command::env_config::import_env_config_from_file,
+			command::env_config::import_env_config_from_url,
 			command::env_config::export_env_config,
 			command::env_config::apply_env_config,
 			// variable_groups
