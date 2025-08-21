@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
 pub struct EnvironmentVariable {
 	pub id: String,
 	pub key: String,
@@ -24,7 +24,11 @@ impl From<crate::entity::environment_variable::Model> for EnvironmentVariable {
 
 impl Into<crate::entity::environment_variable::ActiveModel> for EnvironmentVariable {
 	fn into(self) -> crate::entity::environment_variable::ActiveModel {
-		let id = if self.id.is_empty() { ulid::Ulid::new().to_string() } else { self.id };
+		let id = if self.id.is_empty() {
+			ulid::Ulid::new().to_string()
+		} else {
+			self.id
+		};
 		crate::entity::environment_variable::ActiveModel {
 			id: sea_orm::ActiveValue::Set(id),
 			key: sea_orm::ActiveValue::Set(self.key),
@@ -33,7 +37,6 @@ impl Into<crate::entity::environment_variable::ActiveModel> for EnvironmentVaria
 		}
 	}
 }
-
 
 impl EnvironmentVariable {
 	pub fn clean_ids(&mut self) {

@@ -144,10 +144,9 @@ impl TransactionService {
 			.await
 			.map_err(|e| TransactionError::Transaction(e))?;
 		if group.is_none() {
-			return Err(TransactionError::Transaction(DbErr::RecordNotFound(format!(
-				"没有找到 {} 分组",
-				group_id.clone()
-			))));
+			return Err(TransactionError::Transaction(DbErr::RecordNotFound(
+				format!("没有找到 {} 分组", group_id.clone()),
+			)));
 		}
 		db.transaction::<_, String, DbErr>(|txn| {
 			Box::pin(async move {

@@ -40,13 +40,7 @@ pub async fn create_environment_variable(
 	state: State<'_, AppState>,
 ) -> SResult<String> {
 	let db_conn = state.db_conn.clone();
-	match TransactionService::create_environment_variable(
-		&db_conn,
-		group_id,
-		variable,
-	)
-	.await
-	{
+	match TransactionService::create_environment_variable(&db_conn, group_id, variable).await {
 		Ok(variable_id) => Ok(Success::success(variable_id)),
 		Err(e) => Err(Fail::fail_with_message(e.to_string())),
 	}

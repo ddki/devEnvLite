@@ -16,7 +16,28 @@ impl QueriesService {
 			.all(db)
 			.await
 	}
-	pub async fn list_env_config_by_name(
+
+	pub async fn list_env_configs_with_group_active(db: &DbConn) -> Result<Vec<EnvConfig>, DbErr> {
+		let active_configs = env_config::Entity::find()
+			.filter(env_config::Column::IsActive.eq(true))
+			.order_by_desc(env_config::Column::IsActive)
+			.order_by_asc(env_config::Column::Sort)
+			.all(db)
+			.await?;
+		let result = active_configs
+			.into_iter()
+			.map(|config| async { Self::get_env_config_with_groups(db, config.id).await })
+			.collect::<futures::future::JoinAll<_>>()
+			.await
+			.into_iter()
+			.collect::<Result<Vec<Option<EnvConfig>>, DbErr>>()?
+			.into_iter()
+			.flatten()
+			.collect::<Vec<EnvConfig>>();
+			Ok(result)
+	}
+
+	pub async fn list_env_configs_by_name(
 		db: &DbConn,
 		exclude_config_id: Option<String>,
 		name: String,

@@ -3,6 +3,9 @@ use std::io::BufReader;
 use std::io::Write;
 
 use super::*;
+use crate::environment_vars::get_environment_vars_manager;
+use crate::environment_vars::EnvironmentVars;
+use crate::environment_vars::EnvironmentVarsType;
 use crate::model::EnvConfig;
 use crate::service::MutationsService;
 use crate::service::QueriesService;
@@ -147,7 +150,7 @@ pub async fn check_config_name_exists(
 	state: State<'_, AppState>,
 ) -> SResult<bool> {
 	let db_conn = state.db_conn.clone();
-	let config = QueriesService::list_env_config_by_name(&db_conn, exclude_config_id, config_name)
+	let config = QueriesService::list_env_configs_by_name(&db_conn, exclude_config_id, config_name)
 		.await
 		.map_err(|e| {
 			log::error!("检查配置名是否存在失败: {:?}", e);
@@ -247,7 +250,7 @@ pub async fn import_env_config_from_file(
 	// 检查配置是否存在
 	let db_conn = state.db_conn.clone();
 	let config_exists =
-		QueriesService::list_env_config_by_name(&db_conn, None, config_name.clone())
+		QueriesService::list_env_configs_by_name(&db_conn, None, config_name.clone())
 			.await
 			.map_err(|e| {
 				log::error!("导入配置失败: 检查配置名是否存在失败 {:?}", e);
@@ -271,25 +274,100 @@ pub async fn import_env_config_from_url(
 	config_name: String,
 	state: State<'_, AppState>,
 ) -> SResult<()> {
-	return Err(Fail::fail(
-		"500",
-		String::from("TODO"),
-	));
+	let mut config = reqwest::get(url)
+		.await
+		.map_err(|e| {
+			log::error!("从网络导入配置失败: 获取配置失败 {:?}", e);
+			Fail::fail_with_message(String::from("获取配置失败"))
+		})?
+		.json::<EnvConfig>()
+		.await
+		.map_err(|e| {
+			log::error!("从网络导入配置失败: 内容格式有误 {:?}", e);
+			Fail::fail_with_message(String::from("内容格式有误"))
+		})?;
+	config.clean_ids();
+	config.name = config_name.clone();
+	// 检查配置是否存在
+	let db_conn = state.db_conn.clone();
+	let config_exists =
+		QueriesService::list_env_configs_by_name(&db_conn, None, config_name.clone())
+			.await
+			.map_err(|e| {
+				log::error!("从网络导入配置失败: 检查配置名是否存在失败 {:?}", e);
+				return Fail::fail_with_message(String::from("检查配置名是否存在失败"));
+			})?;
+	if !config_exists.is_empty() {
+		return Err(Fail::fail_with_message(String::from(format!(
+			"配置名称 {} 已存在",
+			config_name
+		))));
+	}
+	match TransactionService::create_env_config(&db_conn, EnvConfig::into(config)).await {
+		Ok(_result) => Ok(Success::success(())),
+		Err(e) => Err(Fail::fail_with_message(e.to_string())),
+	}
 }
 
 #[tauri::command]
 pub async fn apply_env_config(id: Option<String>, state: State<'_, AppState>) -> SResult<()> {
 	match id {
 		Some(id) => {
-			// todo
-			return Err(Fail::fail("500", String::from("未实现")));
+			let db_conn = state.db_conn.clone();
+			let config = QueriesService::get_env_config_with_groups(&db_conn, id)
+				.await
+				.map_err(|e| {
+					log::error!("应用配置失败: 获取配置失败 {:?}", e);
+					return Fail::fail_with_message(String::from("获取配置失败"));
+				})?;
+			match config {
+				Some(config) => {
+					if !config.is_active {
+						return Err(Fail::fail_with_message(String::from("配置未激活")));
+					}
+					let variables = config.flatten_variables();
+					let manager = get_environment_vars_manager(
+						&EnvironmentVarsType::from_str(&config.scope)
+							.map_err(|_| Fail::fail_with_message(String::from("环境变量作用域有误")))
+							.unwrap(),
+					);
+					variables
+						.into_iter()
+						.map(|variable| (variable.key, variable.value))
+						.for_each(|(key, value)| {
+							manager.inner().set(&key, &value).unwrap();
+						});
+					Ok(Success::success(()))
+				}
+				None => Err(Fail::fail_with_message(String::from("没有找到配置")))
+			}
 		}
 		None => {
-			// todo
-			return Err(Fail::fail(
-				"500",
-				String::from("未实现 未指定配置：应用所有激活中的配置"),
-			));
+			let db_conn = state.db_conn.clone();
+			let configs = QueriesService::list_env_configs_with_group_active(&db_conn)
+				.await
+				.map_err(|e| {
+					log::error!("应用配置失败: 获取激活配置失败 {:?}", e);
+					return Fail::fail_with_message(String::from("获取激活配置失败"));
+				})?;
+			if configs.is_empty() {
+				return Err(Fail::fail_with_message(String::from("没有激活的配置")));
+			}
+			configs.into_iter().for_each(|config| {
+				let variables = config.flatten_variables();
+				let manager = get_environment_vars_manager(
+					&EnvironmentVarsType::from_str(&config.scope)
+						.map_err(|_| Fail::fail_with_message(String::from("环境变量作用域有误")))
+						.unwrap(),
+				);
+				variables
+					.into_iter()
+					.map(|variable| (variable.key, variable.value))
+					.for_each(|(key, value)| {
+						manager.inner().set(&key, &value).unwrap();
+					});
+			});
+			Ok(Success::success(()))
 		}
 	}
 }

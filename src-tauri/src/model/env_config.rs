@@ -1,9 +1,12 @@
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
 
-use crate::{entity::env_config, model::VariableGroup};
+use crate::{
+	entity::env_config,
+	model::{EnvironmentVariable, VariableGroup},
+};
 
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
 pub struct EnvConfig {
 	pub id: String,
 	pub name: String,
@@ -54,6 +57,18 @@ impl EnvConfig {
 			for group in groups {
 				group.clean_ids();
 			}
+		}
+	}
+
+	pub fn flatten_variables(&self) -> Vec<EnvironmentVariable> {
+		if let Some(groups) = &self.groups {
+			groups
+				.iter()
+				.flat_map(|group| group.variables.iter().flatten())
+				.cloned()
+				.collect()
+		} else {
+			vec![]
 		}
 	}
 }

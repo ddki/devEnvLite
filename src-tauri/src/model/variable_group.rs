@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::model::EnvironmentVariable;
 
-#[derive(Deserialize, Serialize, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Clone)]
 pub struct VariableGroup {
 	pub id: String,
 	#[serde(rename = "configId")]
@@ -28,7 +28,11 @@ impl From<crate::entity::variable_group::Model> for VariableGroup {
 
 impl Into<crate::entity::variable_group::ActiveModel> for VariableGroup {
 	fn into(self) -> crate::entity::variable_group::ActiveModel {
-		let id = if self.id.is_empty() { ulid::Ulid::new().to_string() } else { self.id };
+		let id = if self.id.is_empty() {
+			ulid::Ulid::new().to_string()
+		} else {
+			self.id
+		};
 		crate::entity::variable_group::ActiveModel {
 			id: sea_orm::ActiveValue::Set(id),
 			config_id: sea_orm::ActiveValue::Set(self.config_id),
