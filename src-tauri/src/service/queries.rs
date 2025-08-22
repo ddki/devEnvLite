@@ -34,7 +34,7 @@ impl QueriesService {
 			.into_iter()
 			.flatten()
 			.collect::<Vec<EnvConfig>>();
-			Ok(result)
+		Ok(result)
 	}
 
 	pub async fn list_env_configs_by_name(

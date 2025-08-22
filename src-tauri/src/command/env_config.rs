@@ -134,7 +134,7 @@ pub async fn check_variable_key_exists_in_config(
 				.map(|var| var.key.clone())
 				.collect::<Vec<String>>()
 				.iter()
-				.any(|db_key| key.contains(db_key));
+				.any(|db_key| key == *db_key);
 
 			Ok(Success::success(key_exist))
 		}
@@ -328,7 +328,9 @@ pub async fn apply_env_config(id: Option<String>, state: State<'_, AppState>) ->
 					let variables = config.flatten_variables();
 					let manager = get_environment_vars_manager(
 						&EnvironmentVarsType::from_str(&config.scope)
-							.map_err(|_| Fail::fail_with_message(String::from("环境变量作用域有误")))
+							.map_err(|_| {
+								Fail::fail_with_message(String::from("环境变量作用域有误"))
+							})
 							.unwrap(),
 					);
 					variables
@@ -339,7 +341,7 @@ pub async fn apply_env_config(id: Option<String>, state: State<'_, AppState>) ->
 						});
 					Ok(Success::success(()))
 				}
-				None => Err(Fail::fail_with_message(String::from("没有找到配置")))
+				None => Err(Fail::fail_with_message(String::from("没有找到配置"))),
 			}
 		}
 		None => {
