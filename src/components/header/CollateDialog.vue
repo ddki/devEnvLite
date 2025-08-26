@@ -137,13 +137,23 @@ const onCollate = async () => {
 		});
 		return;
 	}
-	await invoke("collate_envs", { keys: keys.value, scopes: scopes.value })
+	await invoke<Res<void>>("collate_os_environment_variables", {
+		keys: keys.value,
+		scopes: scopes.value,
+	})
 		.then((res) => {
-			console.log("collate res = ", res);
+			console.log("onCollate: ", res);
+			if (res.code === "200") {
+				toast.success(title);
+			} else {
+				toast.error(title, {
+					description: `${t("message.error")} : ${res.message}`,
+				});
+			}
 		})
 		.catch((err) => {
-			console.error(err);
-			toast.error(t("config.import-config.types.env.text"), {
+			console.error(title, err);
+			toast.error(title, {
 				description: `${t("message.error")} : ${err.message}`,
 			});
 		});

@@ -93,16 +93,24 @@ const init = () => {
 };
 
 const onBackup = async () => {
-	await invoke("backup_envs", { backupName: name.value, folder: folder.value })
+	const title = t("header.backup.text");
+	await invoke<Res<void>>("backup_os_environment_variables", { backupName: name.value })
 		.then((res) => {
-			console.log("Backup res = ", res);
+			if (res.code === "200") {
+				toast.success(title);
+			} else {
+				toast.error(title, {
+					description: `${t("message.error")} : ${res.message}`,
+				});
+			}
 		})
 		.catch((err) => {
 			console.error(err);
-			toast.error(t("config.import-config.types.env.text"), {
+			toast.error(title, {
 				description: `${t("message.error")} : ${err.message}`,
 			});
 		});
+	open.value = false;
 };
 
 watch(open, (newValue) => {

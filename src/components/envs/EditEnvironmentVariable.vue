@@ -1,47 +1,59 @@
 <template>
-	<Popover>
-		<PopoverTrigger as-child>
+	<Dialog>
+		<DialogTrigger as-child>
 			<slot />
-		</PopoverTrigger>
-		<PopoverContent class="w-84">
-			<div class="grid gap-4">
-				<div class="text-lg font-bold text-center bg-secondary p-2 rounded-md">{{ title }}</div>
-				<div class="grid gap-2">
-					<div class="grid grid-cols-3 items-center gap-4">
-						<Label for="key">{{ t('env.key') }}</Label>
-						<Input v-model="data.key" type="text" :placeholder="t('env.key')" class="col-span-2 h-8" />
-					</div>
-					<div class="grid grid-cols-3 items-center gap-4">
-						<Label for="value">{{ t('env.value') }}</Label>
-						<Textarea v-model.trim="data.value" :placeholder="t('env.value')" class="col-span-2 h-8" />
-					</div>
-					<div class="grid grid-cols-3 items-center gap-4">
-						<Label for="description">{{ t('env.description') }}</Label>
-						<Textarea v-model="data.description" :placeholder="t('env.description')" class="col-span-2 h-8" />
-					</div>
-					<div class="grid grid-cols-3 items-center gap-4">
-						<Label for="sort">{{ t('env.sort') }}</Label>
-						<Input v-model="data.sort" type="number" :placeholder="t('env.sort')" class="col-span-2 h-8" />
-					</div>
+		</DialogTrigger>
+		<DialogContent>
+			<DialogHeader>
+				<DialogTitle>{{ title }}</DialogTitle>
+				<DialogDescription>
+				</DialogDescription>
+				<DialogClose />
+			</DialogHeader>
+			<div class="grid gap-2">
+				<div class="grid grid-cols-3 items-center gap-4">
+					<Label for="key">{{ t('env.key') }}</Label>
+					<Input v-model="data.key" type="text" :placeholder="t('env.key')" class="col-span-2 h-8" />
 				</div>
-				<div class="grid grid-cols-2 gap-4">
-					<Button variant="secondary" @click="onClear">
-						{{ t("operate.clear") }}
-					</Button>
-					<Button @click="onSave">
-						{{ t("operate.save") }}
-					</Button>
+				<div class="grid grid-cols-3 items-center gap-4">
+					<Label for="value">{{ t('env.value') }}</Label>
+					<Textarea v-model.trim="data.value" :placeholder="t('env.value')" class="col-span-2 h-8" />
+				</div>
+				<div class="grid grid-cols-3 items-center gap-4">
+					<Label for="description">{{ t('env.description') }}</Label>
+					<Textarea v-model="data.description" :placeholder="t('env.description')" class="col-span-2 h-8" />
+				</div>
+				<div class="grid grid-cols-3 items-center gap-4">
+					<Label for="sort">{{ t('env.sort') }}</Label>
+					<Input v-model="data.sort" type="number" :placeholder="t('env.sort')" class="col-span-2 h-8" />
 				</div>
 			</div>
-		</PopoverContent>
-	</Popover>
+			<DialogFooter>
+				<Button variant="secondary" @click="onClear">
+					{{ t("operate.clear") }}
+				</Button>
+				<Button @click="onSave">
+					{{ t("operate.save") }}
+				</Button>
+			</DialogFooter>
+		</DialogContent>
+	</Dialog>
 </template>
 
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import type { EnvironmentVariable, Res } from "@/types";
 import { DefaultValue } from "@/types/defaultValue";
@@ -74,7 +86,7 @@ const title = computed(() => {
 });
 
 const reloadVariableGroupList: () => Promise<void> =
-	inject("reloadVariableGroupList") || (async () => {});
+	inject("reloadVariableGroupList") || (async () => { });
 
 const onClear = () => {
 	data.value = {
