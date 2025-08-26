@@ -25,11 +25,12 @@ header:
   recover:
     text: Recover
     description: Recover current system environment variables.
+    warning: Recover will overwrite current system environment variables, please operate with caution.
     file: Recover File Path
-    name: Recover Name
+    scope: Recover Scope
     error:
       fileNotEmpty: Recover file path is not empty.
-      nameNotEmpty: Recover Name is not empty.
+      scopeNotEmpty: Recover scope is not empty.
   setting: Setting
   theme: Theme
 

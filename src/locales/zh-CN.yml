@@ -25,11 +25,12 @@ header:
   recover:
     text: 恢复
     description: 从备份中恢复系统环境变量
+    warning: 恢复后将覆盖当前系统环境变量，请谨慎操作
     file: 文件路径
-    name: 名称
+    scope: 范围
     error:
       fileNotEmpty: 文件路径不能为空
-      nameNotEmpty: 名称不能为空
+      scopeNotEmpty: 范围不能为空
   setting: 设置
   theme: 主题
 
