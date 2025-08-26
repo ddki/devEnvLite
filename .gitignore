@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 
 .history/
+
+# ignore .tauri
+.tauri/

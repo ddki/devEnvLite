@@ -3,7 +3,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { type Update, check } from "@tauri-apps/plugin-updater";
 import { Tag } from "lucide-vue-next";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 
@@ -16,16 +16,21 @@ const update = ref<boolean>(false);
 const checkResult = ref<Update | null | void>(null);
 
 const checkUpdate = async () => {
-	const result = await check().catch((e) => {
-		console.error("check update error: ", e);
-		toast.error(t("footer.check-update"), {
-			description: t("footer.connect-failed"),
+	await check()
+		.then((res) => {
+			console.log("check update result: ", res);
+			checkResult.value = res;
+			if (res?.currentVersion === res?.version) {
+				update.value = true;
+			}
+		})
+		.catch((e) => {
+			console.error("check update error: ", e);
+			toast.error(t("footer.check-update"), {
+				description: t("footer.connect-failed"),
+			});
+			return;
 		});
-	});
-	checkResult.value = result;
-	if (result?.currentVersion === result?.version) {
-		update.value = true;
-	}
 };
 
 const updateApp = async () => {
@@ -34,6 +39,10 @@ const updateApp = async () => {
 		await relaunch();
 	}
 };
+
+onMounted(async () => {
+	await checkUpdate();
+});
 </script>
 
 <template>

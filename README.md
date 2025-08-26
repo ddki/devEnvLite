@@ -68,33 +68,38 @@
 
 ## :sparkles: Features ##
 
-| 功能               | 功能描述                                     | Windows | Linux | Mac |
-| ------------------ | -------------------------------------------- | ------- | ----- | --- |
-| 多语言             | 支持中英文切换                               | ✅       | ✅     | ✅   |
-| 自动更新           |                                              | ⬜       | ⬜     | ⬜   |
-| 主题切换           | 白、黑、跟随系统主题                         | ✅       | ✅     | ✅   |
-| 一键整理           | 整理当前系统中的环境变量值，升序排序         | ✅       | ⬜     | ⬜   |
-| 备份               | 备份当前环境变量                             | ⬜       | ⬜     | ⬜   |
-| 恢复备份           | 从备份文件中恢复环境变量                     | ⬜       | ⬜     | ⬜   |
-| 配置-增删改查      |                                              | ✅       | ✅     | ✅   |
-| 配置-应用          | 将配置应用到系统                             | ✅       | ⬜     | ⬜   |
-| 配置-检查          | 检查配置的应用情况                           | ✅       | ⬜     | ⬜   |
-| 配置-导入-分组过滤 | 导入的时候根据分组过滤器自动匹配导入对应分组 | ⬜       | ⬜     | ⬜   |
-| 配置-导入-系统     | 从当前系统环境变量导入配置                   | ✅       | ⬜     | ⬜   |
-| 配置-导入-文件     | 从配置文件中导入配置                         | ⬜       | ⬜     | ⬜   |
-| 配置-导入-网络     | 从网络导入配置                               | ⬜       | ⬜     | ⬜   |
-| 分组-增删改查      |                                              | ✅       | ✅     | ✅   |
-| 分组-应用          | 将分组下的环境变量应用到系统                 | ✅       | ⬜     | ⬜   |
-| 环境变量-增删改查  |                                              | ✅       | ✅     | ✅   |
-| 环境变量-复制      | 复制键、值、键值                             | ✅       | ✅     | ✅   |
-| 环境变量-应用      | 将环境变量应用到系统                         | ✅       | ⬜     | ⬜   |
+| 功能          | 功能描述                             | Windows | Linux | Mac |
+| ------------- | ------------------------------------ | ------- | ----- | --- |
+| 多语言        | 支持中英文切换                       | ✅       | ✅     | ✅   |
+| 自动更新      |                                      | ⬜       | ⬜     | ⬜   |
+| 主题切换      | 白、黑、跟随系统主题                 | ✅       | ✅     | ✅   |
+| 一键整理      | 整理当前系统中的环境变量值，升序排序 | ✅       | ⬜     | ⬜   |
+| 备份          | 备份当前环境变量                     | ✅       | ⬜     | ⬜   |
+| 恢复备份      | 从备份文件中恢复环境变量             | ✅       | ⬜     | ⬜   |
+| 配置-增删改查 |                                      | ✅       | ✅     | ✅   |
+| 配置-导入配置 | 从文件、系统环境变量、网络导入配置   | ✅       | ✅     | ✅   |
+| 配置-一键应用 | 一键将配置应用到系统                 | ✅       | ⬜     | ⬜   |
+| 分组管理      | 分组管理，增删改查                   | ✅       | ✅     | ✅   |
+| 环境变量-管理 | 环境变量管理，增删改查               | ✅       | ✅     | ✅   |
+
+![](./images/app-header-1.png)
+![](./images/app-header-2.png)
+![](./images/app-header-3.png)
+![](./images/app-header-4.png)
+![](./images/app-home.png)
+![](./images/config-apply.png)
+![](./images/config-import.png)
+![](./images/config-more.png)
+![](./images/config-new.png)
+![](./images/env-copy.png)
+![](./images/env-edit.png)
 
 ## :rocket: Technologies
 
 The following tools were used in this project:
 
 **font:**
-- [Tauri2](https://beta.tauri.app/)
+- [Tauri2](https://tauri.app/)
 - [Vite](https://vitejs.dev/)
 - [Vue3](https://vuejs.org/)
 - [tailwindcss](https://tailwindcss.com/)
@@ -114,6 +119,7 @@ The following tools were used in this project:
 - [anyhow](https://github.com/dtolnay/anyhow)
 - [winreg](https://github.com/gentoo90/winreg-rs)
 - [log](https://github.com/rust-lang/log)
+- [sea-orm](https://github.com/SeaQL/sea-orm)
 
 Thanks to these contributors.
 
