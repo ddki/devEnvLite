@@ -82,11 +82,11 @@
 | 分组管理      | 分组管理，增删改查                   | ✅       | ✅     | ✅   |
 | 环境变量-管理 | 环境变量管理，增删改查               | ✅       | ✅     | ✅   |
 
+![](./images/app-home.png)
 ![](./images/app-header-1.png)
 ![](./images/app-header-2.png)
 ![](./images/app-header-3.png)
 ![](./images/app-header-4.png)
-![](./images/app-home.png)
 ![](./images/config-apply.png)
 ![](./images/config-import.png)
 ![](./images/config-more.png)
