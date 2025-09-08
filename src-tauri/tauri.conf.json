@@ -56,7 +56,7 @@
 			"endpoints": ["https://github.com/ddki/devEnvLite/releases/latest/download/latest.json"],
 			"active": true,
 			"dialog": true,
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU4RDI0QkJGMjU3M0I1MjUKUldRbHRYTWx2MHZTV0ttekFwcGlnaWJmZ0xGMkhIYjFMV2NCK0tGSE5SajhKSms1ZS9Ibld1QVYK",
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZBQjBBRDA0NTQyNEY1QgpSV1JiVDBKRjBBcXJEOTFmWkJ5cDVEOW5NZnlQOGpsbXJOekxVMXJtRHhYOHYwZis1d2tYT0FmeAo=",
 			"windows": {
 				"installMode": "passive"
 			}
