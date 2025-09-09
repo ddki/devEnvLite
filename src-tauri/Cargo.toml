@@ -1,6 +1,6 @@
 [package]
 name = "devenvlite"
-version = "0.0.1"
+version = "0.1.0"
 description = "一个环境变量管理和配置工具。 A lightweight tool for managing and configuring environment variables. "
 authors = ["ddki"]
 edition = "2021"
