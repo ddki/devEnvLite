@@ -1,0 +1,57 @@
+name: 📚 文档改进
+description: 报告文档错误或提出改进建议
+title: "[DOCS] "
+labels: ["documentation"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您帮助改进文档！请简要描述文档问题。
+
+  - type: textarea
+    id: problem-links
+    attributes:
+      label: 出问题的链接或位置
+      description: 请提供具体的文档链接或文件位置（可一次性反馈多个类似问题）
+      placeholder: |
+        例如：
+        - README.md 第25行：安装步骤描述不清晰
+        - docs/user-guide.md：环境变量配置示例错误
+        - https://docs.example.com/api：API参数说明过时
+        - src/components/README.md：组件使用示例缺失
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: problem-type
+    attributes:
+      label: 问题方面
+      description: 请选择文档中存在的问题类型（可多选）
+      options:
+        - label: 链接过时 - 失效链接或指向错误地址
+        - label: 图文不符 - 图片与描述内容不匹配
+        - label: 信息错误 - 内容错误或过时信息
+        - label: 步骤缺失 - 操作步骤不完整或跳跃
+        - label: 示例错误 - 代码示例或配置示例有误
+        - label: 格式问题 - 排版混乱或显示异常
+        - label: 描述不清 - 说明模糊或容易误解
+        - label: 内容缺失 - 重要信息未说明
+
+  - type: textarea
+    id: improvement-suggestions
+    attributes:
+      label: 改进意见
+      description: 请详细描述问题并提供改进建议
+      placeholder: |
+        问题描述：
+        - 具体哪里有问题...
+        
+        改进建议：
+        - 建议如何修改...
+        - 应该补充什么内容...
+        - 正确的做法应该是...
+        
+        （如果有具体的修改文本，也可以直接提供）
+    validations:
+      required: true

@@ -6,7 +6,7 @@ module.exports = {
 		"after:bump": ["pnpm biome format --write package.json ./src-tauri/tauri.conf.json"],
 	},
 	git: {
-		commitMessage: "🔖 release: v${version}",
+		commitMessage: "release 🔖: v${version}",
 		tagName: "v${version}",
 	},
 	plugins: {

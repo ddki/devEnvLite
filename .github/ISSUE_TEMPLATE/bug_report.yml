@@ -1,0 +1,75 @@
+name: 🐛 Bug报告
+description: 发现了一个Bug？帮助我们修复它！
+title: "[BUG] "
+labels: ["bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您提交Bug报告！请简要填写以下信息。
+
+  - type: input
+    id: app-version
+    attributes:
+      label: 软件版本
+      description: 您使用的应用版本
+      placeholder: 例如：v1.2.3
+    validations:
+      required: true
+
+  - type: input
+    id: operating-system
+    attributes:
+      label: 系统版本
+      description: 您的操作系统及版本信息
+      placeholder: 例如：Windows 11 24H2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: bug-area
+    attributes:
+      label: 问题方面
+      description: Bug涉及哪个功能模块？
+      options:
+        - 环境变量管理
+        - 配置管理
+        - 分组管理
+        - 导入导出
+        - 界面显示
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: 发生了什么？
+      description: 简要描述重现步骤
+      placeholder: |
+        1. 打开应用
+        2. 点击...
+        3. 输入...
+        4. 出现问题
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 你期望发生的行为？
+      description: 期望的正确行为
+      placeholder: 应该显示/执行...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 错误日志
+      description: 相关的错误信息或日志（如有）
+      render: shell
+      placeholder: 粘贴错误信息...
+    validations:
+      required: false

@@ -1,0 +1,38 @@
+name: 💬 其他
+description: 其他类型的问题、建议或讨论
+title: "[OTHER] "
+labels: ["other"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        如果您的问题不属于Bug报告、功能请求或文档改进，请使用此模板。
+        您可以自由描述任何与项目相关的问题、建议、疑问或讨论话题。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 描述
+      description: 请详细描述您想要反馈的内容
+      placeholder: |
+        请在此处自由描述您的问题、建议或想法...
+        
+        您可以包含：
+        - 问题描述
+        - 使用场景
+        - 期望结果
+        - 相关截图
+        - 其他任何相关信息
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 补充信息
+      description: 任何其他相关信息或上下文
+      placeholder: |
+        如有需要，可在此补充更多信息...
+    validations:
+      required: false

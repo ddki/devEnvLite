@@ -16,7 +16,11 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2.3.0", features = [] }
 
 [dependencies]
-tauri = { version = "2.6.2", features = ["devtools", "config-json5", "tray-icon"] }
+tauri = { version = "2.6.2", features = [
+  "devtools",
+  "config-json5",
+  "tray-icon",
+] }
 tauri-plugin-shell = "2.3.0"
 tauri-plugin-dialog = "2.3.0"
 tauri-plugin-updater = "2.9.0"
@@ -37,7 +41,7 @@ ulid = "1.2.1"
 dotenvy = "0.15.7"
 migration = { version = "0.1.0", path = "migration" }
 tokio = { version = "1.20.0", features = ["rt-multi-thread", "macros"] }
-tauri-plugin-notification = "2"
+tauri-plugin-notification = { version = "2", features = ["windows7-compat"] }
 tauri-plugin-devtools = "2.0.0"
 futures = "0.3.31"
 chrono = "0.4.41"

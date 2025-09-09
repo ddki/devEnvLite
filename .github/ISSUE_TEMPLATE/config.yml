@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ 问答和使用帮助
+    url: https://github.com/ddki/devEnvLite/discussions/categories/q-a
+    about: 使用问题、故障排除、最佳实践咨询
+  - name: 💬 通用反馈和建议
+    url: https://github.com/ddki/devEnvLite/discussions/categories/general
+    about: 产品建议、用户体验反馈、社区讨论
+  - name: 🔧 技术讨论
+    url: https://github.com/ddki/devEnvLite/discussions/categories/technical
+    about: 技术架构、实现方案、开发相关讨论
+  - name: 📚 查看文档
+    url: https://github.com/ddki/devEnvLite/blob/main/README.md
+    about: 查看项目文档和使用指南

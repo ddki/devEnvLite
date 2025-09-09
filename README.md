@@ -53,11 +53,9 @@
 <p align="center">
   <a href="#dart-about">About</a> &#xa0; | &#xa0;
   <a href="#sparkles-features">Features</a> &#xa0; | &#xa0;
+  <a href="#arrow_down-installation">Installation</a> &#xa0; | &#xa0;
   <a href="#rocket-technologies">Technologies</a> &#xa0; | &#xa0;
-  <a href="#white_check_mark-requirements">Requirements</a> &#xa0; | &#xa0;
-  <a href="#checkered_flag-starting">Starting</a> &#xa0; | &#xa0;
   <a href="#memo-license">License</a> &#xa0; | &#xa0;
-  <a href="https://github.com/ddki" target="_blank">Author</a>
 </p>
 
 <br>
@@ -65,6 +63,7 @@
 ## :dart: About ##
 
 :man_technologist: 一个环境变量管理和配置工具。 A lightweight tool for managing and configuring environment variables. 
+
 
 ## :sparkles: Features ##
 
@@ -93,6 +92,14 @@
 ![](./images/config-new.png)
 ![](./images/env-copy.png)
 ![](./images/env-edit.png)
+
+## :arrow_down: Installation ##
+
+从下载安装 [Github Releases](https://github.com/ddki/devEnvLite/releases).
+
+项目基于 tauri 开发。 Windows 运行依赖于 MicrosoftEdgeWebView2Runtime，Windows10 2004 版本以后系统内置 WebView2Runtime，之前版本系统需要安装它， 官方下载地址：https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download-section。
+
+*注意：需要管理员权限运行。*
 
 ## :rocket: Technologies
 
@@ -150,10 +157,6 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
 TAURI_KEY_PASSWORD="your password"
 TAURI_PRIVATE_KEY="your private key"
 ```
-
-### About Tauri Version
-
-2.0 预览版本随时都在改变，项目中的这个版本是测试通过的，不要轻易去改变 tauri 的版本，等待 2.0 正式版发布。
 
 ### Upgrade project's rust dependencies
 
