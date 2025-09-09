@@ -1,0 +1,164 @@
+header:
+  collate:
+    text: Collate
+    description: Sort environment variable values in ascending order.
+    env-scope:
+      text: Scope
+      description: Collate the scope.
+    env-scopes:
+      system: System
+      user: User
+    env-keys:
+      text: Keys
+      description: Please select the environment variables that you want to collate.
+    error:
+      keysNotEmpty: Keys is not empty.
+      scopesNotEmpty: Scopes is not empty.
+  backup:
+    text: Backup
+    description: Backup current system environment variables.
+    folder: Backup Folder
+    name: Backup Name
+    error:
+      folderNotEmpty: Backup folder is not empty.
+      nameNotEmpty: Backup name is not empty.
+  recover:
+    text: Recover
+    description: Recover current system environment variables.
+    warning: Recover will overwrite current system environment variables, please operate with caution.
+    file: Recover File Path
+    scope: Recover Scope
+    error:
+      fileNotEmpty: Recover file path is not empty.
+      scopeNotEmpty: Recover scope is not empty.
+  setting: Setting
+  theme: Theme
+
+settings:
+  theme:
+    text: Theme
+    auto: Auto
+    light: Light
+    dark: Dark
+  language: Language
+  home-dir: Home Directory
+  cache-dir: Cache Directory
+  data-dir: Data Directory
+  env-backup-dir: Backup Directory
+  log-dir: Log Directory
+  directory: Directory
+  save: Save
+
+config:
+  emptyText: Click on "New Config" to create a new configuration.
+  text: Config
+  import-config:
+    text: Import Config
+    description: Import your configuration.
+    types:
+      env:
+        text: From System
+        description: Read system environment variables and create configuration.
+        scope: Scope
+        name: Configuration Name
+      file:
+        text: From Local File
+        description: Read the configuration file and create a configuration.
+        file: File Path
+        name: Configuration Name
+      url:
+        text: From URL
+        description: Get network configuration and create configuration.
+        url: Url
+        name: Configuration Name
+  new-config: New
+  edit-config: Edit
+  apply:
+    text: Apply
+    description: Apply all active configurations to environment variables.
+    warning: Applying will overwrite current system environment variables, please operate with caution.
+  id: Config's Unique Identifier
+  name: Config's Name
+  description: Config's Description
+  sort: Config's Sort
+  error:
+    nameNotEmpty: Name is not empty.
+    scopesNotEmpty: Scope is not empty.
+    nameExists: Name has already been.
+    missId: Missing config's unique identifier.
+
+envGroup:
+  emptyText: Click on "New Group" to create a new group for configuration.
+  text: Environment Group
+  new: New Group
+  edit: Edit Group
+  id: Group's Identifier
+  name: Group's Name
+  description: Group's Description
+  sort: Group's Sort
+  error:
+    selectConfig: Please select a configuration first.
+    nameNotEmpty: Name is not empty.
+    nameExists: Name has already been.
+    missId: Missing group unique identifier.
+
+env:
+  text: Environment Variable
+  new: New Environment Variable
+  edit: Edit Environment Variable
+  key: Key
+  value: Value
+  description: Description
+  sort: Serial Number
+  error:
+    selectGroup: Please select a group first.
+    checkScope: Please check a scope first.
+    keyNotEmpty: Key is not empty.
+    valueNotEmpty: Value is not empty.
+    keyExists: Key has already been.
+    missKey: Missing key.
+  scope:
+    text: Scope
+    description: Environment variable scope.
+  scopes:
+    system: System
+    user: User
+
+operate:
+  new: "New "
+  edit: "Edit "
+  delete: "Delete "
+  query: "Get "
+  import: "Import "
+  export: "Export "
+  apply: "Apply "
+  check: "Check "
+  active: "Active "
+  move: "Move to "
+  copy: "Copy "
+  save: "Save "
+  close: "Close "
+  clear: "Clear "
+  status:
+    actived: Actived
+    inactive: Inactive
+message:
+  error: An error has occurred.
+  warning: Warning
+  success: Success
+  failure: Failure
+  confirm: Confirm
+  cancel: Cancel
+  not-empty: " is not empty"
+  error-format: " is not in the correct format"
+
+footer:
+  check-update: Check Update
+  connect-failed: Connect to server for updating failed.
+
+version: Version
+component:
+  loading-error: Failed to load component.
+
+common:
+  default: Default

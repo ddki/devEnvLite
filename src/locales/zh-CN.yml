@@ -1,0 +1,165 @@
+header:
+  collate:
+    text: 一键整理
+    description: 环境变量值升序排序
+    env-scope:
+      text: 范围
+      description: 整理范围
+    env-scopes:
+      system: 系统
+      user: 用户
+    env-keys:
+      text: 键
+      description: 请勾选需要整理的环境变量
+    error:
+      keysNotEmpty: 键不能为空
+      scopesNotEmpty: 范围不能为空
+  backup:
+    text: 备份
+    description: 备份当前系统环境变量
+    folder: 备份路径
+    name: 名称
+    error:
+      folderNotEmpty: 备份路径不能为空
+      nameNotEmpty: 名称不能为空
+  recover:
+    text: 恢复
+    description: 从备份中恢复系统环境变量
+    warning: 恢复后将覆盖当前系统环境变量，请谨慎操作
+    file: 文件路径
+    scope: 范围
+    error:
+      fileNotEmpty: 文件路径不能为空
+      scopeNotEmpty: 范围不能为空
+  setting: 设置
+  theme: 主题
+
+settings:
+  theme:
+    text: 主题
+    auto: 自动
+    light: 浅色
+    dark: 深色
+  language: 语言
+  home-dir: 应用目录
+  cache-dir: 缓存目录
+  data-dir: 数据目录
+  env-backup-dir: 备份目录
+  log-dir: 日志目录
+  directory: 目录
+  save: 保存
+
+config:
+  emptyText: 点击“新增配置”创建一个配置吧
+  text: 配置
+  import-config:
+    text: 导入配置
+    description: 导入你的配置
+    types:
+      env:
+        text: 系统环境变量
+        description: 读取系统环境变量并创建配置
+        scope: 范围
+        name: 配置名称
+      file:
+        text: 文件
+        description: 读取配置文件并创建配置
+        file: 文件路径
+        name: 配置名称
+      url:
+        text: 网络链接
+        description: 获取网络配置并创建配置
+        url: 链接地址
+        name: 配置名称
+  new-config: 新增配置
+  edit-config: 编辑配置
+  apply:
+    text: 一键应用
+    description: 将所有激活的配置应用到环境变量
+    warning: 应用后将覆盖当前系统环境变量，请谨慎操作
+  id: 配置唯一标识
+  name: 配置名称
+  description: 配置描述
+  sort: 配置序号
+  error:
+    nameNotEmpty: 名称不能为空
+    scopesNotEmpty: 范围不能为空
+    nameExists: 名称已经存在
+    missId: 缺失配置唯一标识
+
+envGroup:
+  emptyText: 点击“新增分组”创建一个配置分组吧
+  text: 分组
+  new: 新增分组
+  edit: 编辑分组
+  id: 分组唯一标识
+  name: 分组名称
+  description: 分组描述
+  sort: 分组序号
+  error:
+    selectConfig: 请先选择一个配置
+    nameNotEmpty: 名称不能为空
+    nameExists: 名称已经存在
+    missId: 缺失分组唯一标识
+
+env:
+  text: 环境变量
+  new: 新增
+  edit: 编辑
+  key: 键
+  value: 值
+  description: 描述
+  sort: 序号
+  error:
+    selectGroup: 请先选择一个分组
+    checkScope: 请勾选范围
+    keyNotEmpty: 键不能为空
+    valueNotEmpty: 值不能为空
+    keyExists: 键已经存在
+    missKey: 缺失键
+  scope:
+    text: 范围
+    description: 环境变量范围
+  scopes:
+    system: 系统
+    user: 用户
+
+operate:
+  new: 新增
+  edit: 编辑
+  delete: 删除
+  query: 获取
+  import: 导入
+  export: 导出
+  apply: 应用
+  check: 检查
+  active: 激活
+  move: 移动到
+  copy: 复制
+  save: 保存
+  close: 关闭
+  clear: 清空
+  status:
+    actived: 已激活
+    inactive: 未激活
+message:
+  error: 发生了错误
+  warning: 警告
+  success: 成功
+  failure: 失败
+  confirm: 确认
+  cancel: 取消
+  not-empty: 不能为空
+  error-format: 格式不正确
+
+footer:
+  check-update: 检查更新
+  connect-failed: 连接更新服务器失败
+
+version: 版本
+
+component:
+  loading-error: 加载组件失败
+
+common:
+  default: 默认

@@ -1,0 +1,221 @@
+name: Release CI
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  NODE_VERSION: '22.18.0'
+  PNPM_VERSION: '10.14.0'
+  app_name: 'DevEnvLite'
+
+jobs:
+  create-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      release_id: ${{ steps.create-release.outputs.id }}
+      app_version: ${{ steps.get-version.outputs.version }}
+      # app_name: ${{ steps.get-name.outputs.name }}
+
+    steps:
+      - name: 检出代码仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: 获取 pnpm 存储目录
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 设置 pnpm 缓存
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 安装前端依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 提取发布说明
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v2
+        with:
+          changelog_file: CHANGELOG.md
+
+      - name: 获取应用版本
+        id: get-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "app_version=$VERSION" >> $GITHUB_ENV
+
+      # - name: 获取应用名称
+      #   id: get-name
+      #   run: |
+      #     NAME=$(node -p "require('./package.json').name")
+      #     echo "name=$NAME" >> $GITHUB_OUTPUT
+      #     echo "app_name=$NAME" >> $GITHUB_ENV
+
+      - name: 创建发布版本
+        id: create-release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: 'v${{ env.app_version }}'
+          name: '${{ env.app_name }} v${{ env.app_version }}'
+          prerelease: false
+          body: |
+            ## 🎉 Release v${{ env.app_version }}
+            
+            ${{ steps.extract-release-notes.outputs.release_notes }}
+            
+            ---
+            
+            ### 📥 下载方式
+            
+            请根据您的操作系统选择对应的安装包：
+            
+            #### 🕸️ Windows
+            - 🔗 **MSI 安装包**: [DevEnvLite_${{ env.app_version }}_x64_en-US.msi](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_x64_en-US.msi)
+            - 🔗 **NSIS 安装包**: [DevEnvLite_${{ env.app_version }}_x64-setup.exe](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_x64-setup.exe)
+            
+            #### 🍎 macOS  
+            - 🔗 **DMG 安装包**: [DevEnvLite_${{ env.app_version }}_universal.dmg](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_universal.dmg)
+            - 🔗 **App 压缩包**: [DevEnvLite_${{ env.app_version }}_universal.app.tar.gz](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_universal.app.tar.gz)
+            
+            #### 🐧 Linux
+            - 🔗 **Debian 包**: [dev-env-lite_${{ env.app_version }}_amd64.deb](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/dev-env-lite_${{ env.app_version }}_amd64.deb)
+            - 🔗 **AppImage**: [dev-env-lite_${{ env.app_version }}_amd64.AppImage](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/dev-env-lite_${{ env.app_version }}_amd64.AppImage)
+            
+            > 💡 **提示**: 如果上述直链无法下载或文件名不匹配，请查看下方的 **Assets** 区域手动下载对应文件。
+            
+            ### 🔄 自动更新
+            
+            本应用内置自动更新功能，启动后会自动检查并提示更新到最新版本。您也可以在设置中手动检查更新。
+            
+            ### 🛠️ 系统要求
+            
+            - **Windows**: Windows 10 (1903) 或更高版本
+            - **macOS**: macOS 10.15 (Catalina) 或更高版本，支持 Intel 和 Apple Silicon
+            - **Linux**: 支持 GTK 3.0+ 的主流发行版 (Ubuntu 18.04+, Fedora 30+, etc.)
+            
+            ### 📝 安装说明
+            
+            - **Windows**: 
+              - 下载 [MSI 安装包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_x64_en-US.msi) 或 [NSIS 安装包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_x64-setup.exe)
+              - 双击下载的 `.msi` 或 `.exe` 文件即可安装
+            - **macOS**: 
+              - 下载 [DMG 安装包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_universal.dmg) 或 [App 压缩包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_universal.app.tar.gz)
+              - 打开 `.dmg` 文件，将应用拖拽到 Applications 文件夹
+            - **Linux**: 
+              - 下载 [Debian 包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/dev-env-lite_${{ env.app_version }}_amd64.deb) 或 [AppImage](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/dev-env-lite_${{ env.app_version }}_amd64.AppImage)
+              - 使用 `sudo dpkg -i` 安装 `.deb` 包，或给 `.AppImage` 文件添加执行权限后直接运行
+          generateReleaseNotes: true
+
+  build-tauri:
+    needs: create-release
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-latest'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+    
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 60
+    
+    steps:
+      - name: 检出代码仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 安装 Rust 稳定版
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: 安装依赖 (仅限 Ubuntu)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf openssl
+
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: 获取 pnpm 存储目录
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 设置 pnpm 缓存
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 设置 Rust 缓存
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            src-tauri/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: 安装 Node.js 依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 构建 Tauri 应用
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          args: ${{ matrix.args }}
+          updaterJsonPreferNsis: true

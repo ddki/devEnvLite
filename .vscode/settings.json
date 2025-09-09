@@ -1,0 +1,21 @@
+{
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"editor.quickSuggestions": {
+		"strings": "on"
+	},
+	"tailwindCSS.includeLanguages": {
+		"plaintext": "html"
+	},
+	"i18n-ally.localesPaths": ["src/locales"],
+	"[vue]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[typescript,javascript,json,jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"i18n-ally.keystyle": "nested",
+	"i18n-ally.sourceLanguage": "zh-CN",
+	"editor.fontSize": 14
+}

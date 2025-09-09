@@ -1,0 +1,230 @@
+<template>
+	<Popover>
+		<PopoverTrigger as-child>
+			<slot />
+		</PopoverTrigger>
+		<PopoverContent class="w-84">
+			<div class="grid gap-4">
+				<div class="text-lg font-bold text-center bg-secondary p-2 rounded-md">{{ title }}</div>
+				<div class="grid gap-2">
+					<!-- <div class="grid grid-cols-3 items-center gap-4">
+						<Label for="configId">{{ t('config.id') }}</Label>
+						<Input v-model="data.configId" type="text" :placeholder="t('config.id')" class="col-span-2 h-8" readonly />
+					</div>
+					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="id">{{ t('envGroup.id') }}</Label>
+						<Input v-model="data.id" type="text" :placeholder="t('envGroup.id')" class="col-span-2 h-8" readonly />
+					</div> -->
+					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="name">{{ t('envGroup.name') }}</Label>
+						<Input v-model.trim="data.name" type="text" :placeholder="t('envGroup.name')" class="col-span-2 h-8" />
+					</div>
+					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="description">{{ t('envGroup.description') }}</Label>
+						<Textarea v-model="data.description" :placeholder="t('envGroup.description')" class="col-span-2 h-8" />
+					</div>
+					<div class="grid grid-cols-3 items-center gap-4">
+						<Label for="sort">{{ t('envGroup.sort') }}</Label>
+						<Input v-model="data.sort" type="number" :placeholder="t('envGroup.sort')" class="col-span-2 h-8" />
+					</div>
+				</div>
+				<div class="grid grid-cols-2 gap-4">
+					<Button variant="secondary" @click="onClear">
+						{{ t("operate.clear") }}
+					</Button>
+					<Button @click="onSave">
+						{{ t("operate.save") }}
+					</Button>
+				</div>
+			</div>
+		</PopoverContent>
+	</Popover>
+</template>
+
+<script setup lang="ts">
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import type { Res, VariableGroup } from "@/types";
+import { DefaultValue } from "@/types/defaultValue";
+import { invoke } from "@tauri-apps/api/core";
+import { type Ref, computed, inject, onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
+
+const { t } = useI18n();
+
+interface Prop {
+	configId: string;
+	id?: string;
+	operate: "edit" | "new";
+}
+const props = defineProps<Prop>();
+
+const reloadVariableGroupList: () => Promise<void> =
+	inject("reloadVariableGroupList") || (async () => {});
+
+const variableGroupList = inject<Ref<VariableGroup[]>>("variableGroupList");
+
+const currentSort = computed(() => {
+	return variableGroupList?.value?.length
+		? Math.max(...variableGroupList.value.map((item) => item.sort ?? 0)) + 1
+		: 1;
+});
+
+const data = ref<VariableGroup>({
+	...DefaultValue.variableGroup(),
+});
+
+const title = computed(() => {
+	return props.operate === "new"
+		? `${t("operate.new")}${t("envGroup.text")}`
+		: `${t("operate.edit")}${t("envGroup.text")}`;
+});
+
+// 创建环境变量组
+const create = async (title: string) => {
+	await invoke<Res<string>>("create_variable_group", {
+		group: {
+			...DefaultValue.variableGroup(),
+			...data.value,
+		},
+	})
+		.then(async (res) => {
+			if (res.code === "200") {
+				await reloadVariableGroupList();
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		})
+		.finally(() => {
+			onClear();
+		});
+};
+
+// 更新环境变量组
+const update = async (title: string) => {
+	await invoke<Res<void>>("update_variable_group", {
+		group: {
+			...DefaultValue.variableGroup(),
+			...data.value,
+		},
+	})
+		.then(async (res) => {
+			if (res.code === "200") {
+				toast.success(title, {
+					description: t("message.success"),
+				});
+				await reloadVariableGroupList();
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		});
+};
+
+const onClear = () => {
+	data.value = {
+		...DefaultValue.variableGroup(),
+		configId: props.configId,
+		sort: currentSort.value,
+	};
+};
+
+const onSave = async () => {
+	const title =
+		props.operate === "new"
+			? `${t("operate.new")}${t("envGroup.text")}`
+			: `${t("operate.edit")}${t("envGroup.text")}`;
+	if (!data.value.configId) {
+		toast.warning(title, {
+			description: t("envGroup.error.selectConfig"),
+		});
+		return;
+	}
+	if (!data.value.name) {
+		toast.warning(title, {
+			description: t("envGroup.error.nameNotEmpty"),
+		});
+		return;
+	}
+	if (checkVariableGroupNameExists(data.value.id, data.value.name)) {
+		toast.warning(title, {
+			description: t("envGroup.error.nameExists"),
+		});
+		return;
+	}
+	// 更新环境变量组
+	if (props.operate === "edit" && props.id) {
+		await update(title);
+		return;
+	}
+	// 创建环境变量组
+	if (props.operate === "new") {
+		await create(title);
+		return;
+	}
+};
+
+// 检查环境变量组名称是否存在
+const checkVariableGroupNameExists = (excludeId: string | undefined, newName: string): boolean => {
+	return (
+		variableGroupList?.value
+			?.filter((item) => item.id !== excludeId)
+			.map((item) => item.name)
+			.includes(newName) || false
+	);
+};
+// 加载环境变量组
+const loadVariableGroup = async (id: string) => {
+	const title = `${t("operate.query")}${t("envGroup.text")}`;
+	await invoke<Res<VariableGroup>>("get_variable_group", { id })
+		.then((res) => {
+			if (res.code === "200") {
+				data.value = {
+					...res.data,
+				};
+			} else {
+				toast.error(title, {
+					description: `${t("message.failure")}: ${res.message}`,
+				});
+			}
+		})
+		.catch((e) => {
+			toast.error(title, {
+				description: `${t("message.error")}: ${e.message}`,
+			});
+		});
+};
+
+onMounted(async () => {
+	if (props.operate === "edit" && props.configId && props.id) {
+		await loadVariableGroup(props.id);
+	} else {
+		onClear();
+	}
+});
+
+watch(props, async (newValue, _oldValue) => {
+	if (newValue.operate === "edit" && newValue.configId && newValue.id) {
+		await loadVariableGroup(newValue.id);
+	} else {
+		onClear();
+	}
+});
+</script>

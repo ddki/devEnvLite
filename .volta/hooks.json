@@ -1,0 +1,34 @@
+{
+	"node": {
+		"index": {
+			"template": "https://cdn.npmmirror.com/binaries/node/index.json"
+		},
+		"distro": {
+			"template": "https://registry.npmmirror.com/-/binary/node/v{{version}}/{{filename}}"
+		}
+	},
+	"npm": {
+		"index": {
+			"prefix": "https://registry.npmmirror.com/"
+		},
+		"distro": {
+			"prefix": "https://registry.npmmirror.com/npm/-/"
+		}
+	},
+	"yarn": {
+		"index": {
+			"prefix": "https://registry.npmmirror.com/"
+		},
+		"distro": {
+			"prefix": "https://registry.npmmirror.com/yarn/-/"
+		}
+	},
+	"pnpm": {
+		"index": {
+			"prefix": "https://registry.npmmirror.com/"
+		},
+		"distro": {
+			"prefix": "https://registry.npmmirror.com/pnpm/-/"
+		}
+	}
+}

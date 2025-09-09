@@ -1,0 +1,78 @@
+{
+	"name": "devenvlite",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev --mode development",
+		"build": "vite build --mode production",
+		"preview": "vite preview",
+		"tauri": "tauri",
+		"commit": "git-cz"
+	},
+	"dependencies": {
+		"@tauri-apps/api": "2.6.0",
+		"@tauri-apps/plugin-clipboard-manager": "2.3.0",
+		"@tauri-apps/plugin-dialog": "2.3.0",
+		"@tauri-apps/plugin-fs": "2.4.0",
+		"@tauri-apps/plugin-notification": "2.3.0",
+		"@tauri-apps/plugin-opener": "2.4.0",
+		"@tauri-apps/plugin-process": "2.2.1",
+		"@tauri-apps/plugin-store": "2.3.0",
+		"@tauri-apps/plugin-updater": "2.9.0",
+		"@types/uuid": "^10.0.0",
+		"@vee-validate/zod": "^4.15.1",
+		"@vueuse/core": "^13.6.0",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"lucide-vue-next": "^0.525.0",
+		"mitt": "^3.0.1",
+		"radix-vue": "^1.9.17",
+		"reka-ui": "^2.4.1",
+		"tailwind-merge": "^3.3.1",
+		"tailwindcss-animate": "^1.0.7",
+		"tw-animate-css": "^1.3.6",
+		"uuid": "^11.1.0",
+		"vee-validate": "^4.15.1",
+		"vue": "^3.5.18",
+		"vue-i18n": "^11.1.11",
+		"vue-sonner": "^2.0.2",
+		"zod": "^3.25.76"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@intlify/unplugin-vue-i18n": "^6.0.8",
+		"@release-it/bumper": "^7.0.5",
+		"@release-it/conventional-changelog": "^10.0.1",
+		"@tailwindcss/typography": "^0.5.16",
+		"@tailwindcss/vite": "^4.1.11",
+		"@tauri-apps/cli": "2.6.2",
+		"@types/node": "^22.17.0",
+		"@vitejs/plugin-vue": "^5.2.4",
+		"commitizen": "^4.3.1",
+		"cz-git": "^1.12.0",
+		"czg": "^1.12.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.5.2",
+		"oxlint": "^0.16.12",
+		"release-it": "^18.1.2",
+		"shadcn-vue": "^2.2.0",
+		"tailwindcss": "^4.1.11",
+		"typescript": "^5.9.2",
+		"vite": "^6.3.5",
+		"vue-tsc": "^2.2.12"
+	},
+	"lint-staged": {
+		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,html,vue,css,md}": [
+			"biome check --apply --no-errors-on-unmatched",
+			"biome check --apply-unsafe --no-errors-on-unmatched",
+			"biome format --write --no-errors-on-unmatched",
+			"biome lint --apply --no-errors-on-unmatched"
+		],
+		"**/*": ["git add"]
+	},
+	"volta": {
+		"node": "22.18.0",
+		"pnpm": "10.14.0"
+	}
+}

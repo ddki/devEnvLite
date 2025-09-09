@@ -1,0 +1,164 @@
+use lombok::{Getter, Setter};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use tauri::Manager;
+use tauri_plugin_store::StoreExt;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Theme {
+	#[serde(rename = "auto")]
+	Auto,
+	#[serde(rename = "light")]
+	Light,
+	#[serde(rename = "dark")]
+	Dark,
+}
+
+impl Theme {
+	pub fn to_string(&self) -> String {
+		match self {
+			Theme::Auto => String::from("auto"),
+			Theme::Light => String::from("light"),
+			Theme::Dark => String::from("dark"),
+		}
+	}
+
+	pub fn from_string(s: &str) -> Self {
+		match s {
+			"auto" => Theme::Auto,
+			"light" => Theme::Light,
+			"dark" => Theme::Dark,
+			_ => Theme::Auto,
+		}
+	}
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Getter, Setter)]
+pub struct Settings {
+	theme: Theme,
+	language: String,
+	#[serde(rename = "homeDir")]
+	home_dir: String,
+	#[serde(rename = "cacheDir")]
+	cache_dir: String,
+	#[serde(rename = "dataDir")]
+	data_dir: String,
+	#[serde(rename = "logDir")]
+	log_dir: String,
+	#[serde(rename = "envBackupDir")]
+	env_backup_dir: String,
+}
+
+impl Settings {
+	pub fn default<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> Self {
+		let home_dir = app
+			.path()
+			.app_data_dir()
+			.expect("Failed to get home directory");
+		let cache_dir = home_dir.join("cache");
+		let data_dir = home_dir.join("data");
+		let log_dir = app
+			.path()
+			.app_log_dir()
+			.expect("Failed to get log directory");
+		let env_backup_dir = home_dir.join("backup");
+		let settings = Self {
+			theme: Theme::Auto,
+			language: String::from("zh-CN"),
+			home_dir: home_dir.into_os_string().to_string_lossy().to_string(),
+			cache_dir: cache_dir.into_os_string().to_string_lossy().to_string(),
+			data_dir: data_dir.into_os_string().to_string_lossy().to_string(),
+			log_dir: log_dir.into_os_string().to_string_lossy().to_string(),
+			env_backup_dir: env_backup_dir
+				.into_os_string()
+				.to_string_lossy()
+				.to_string(),
+		};
+		settings.create_dir().expect("Failed to create directories");
+		return settings;
+	}
+
+	pub fn load_from_store<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> anyhow::Result<Self> {
+		let store = app.store("settings.json")?;
+		let default_settings = Self::default(app);
+		let theme = store
+			.get("theme")
+			.and_then(|v| v.as_str().map(Theme::from_string))
+			.unwrap_or_else(|| default_settings.theme);
+		let language = store
+			.get("language")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.language);
+		let home_dir = store
+			.get("home_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.home_dir);
+		let cache_dir = store
+			.get("cache_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.cache_dir);
+		let data_dir = store
+			.get("data_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.data_dir);
+		let log_dir = store
+			.get("log_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.log_dir);
+		let env_backup_dir = store
+			.get("env_backup_dir")
+			.and_then(|v| v.as_str().map(String::from))
+			.unwrap_or_else(|| default_settings.env_backup_dir);
+		Ok(Self {
+			theme,
+			language,
+			home_dir,
+			cache_dir,
+			data_dir,
+			log_dir,
+			env_backup_dir,
+		})
+	}
+
+	fn create_dir(&self) -> anyhow::Result<()> {
+		let home_dir = std::path::Path::new(&self.home_dir);
+		let cache_dir = std::path::Path::new(&self.cache_dir);
+		let data_dir = std::path::Path::new(&self.data_dir);
+		let env_backup_dir = std::path::Path::new(&self.env_backup_dir);
+
+		if !home_dir.exists() {
+			std::fs::create_dir_all(home_dir)?;
+		}
+		if !cache_dir.exists() {
+			std::fs::create_dir_all(cache_dir)?;
+		}
+		if !data_dir.exists() {
+			std::fs::create_dir_all(data_dir)?;
+		}
+		if !env_backup_dir.exists() {
+			std::fs::create_dir_all(env_backup_dir)?;
+		}
+		Ok(())
+	}
+
+	pub fn save_to_store<R: tauri::Runtime>(
+		&self,
+		app: &tauri::AppHandle<R>,
+	) -> anyhow::Result<()> {
+		let store = app.store("settings.json")?;
+		store.set("theme", json!(&self.theme.to_string()));
+		store.set("language", json!(&self.language));
+		store.set("home_dir", json!(&self.home_dir));
+		store.set("cache_dir", json!(&self.cache_dir));
+		store.set("data_dir", json!(&self.data_dir));
+		store.set("log_dir", json!(&self.log_dir));
+		store.set("env_backup_dir", json!(&self.env_backup_dir));
+		match self.create_dir() {
+			Ok(()) => {
+				store.save()?;
+				Ok(())
+			}
+			Err(e) => Err(e),
+		}
+	}
+}

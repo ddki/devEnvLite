@@ -1,0 +1,12 @@
+{
+	"recommendations": [
+		"tauri-apps.tauri-vscode",
+		"editorconfig.editorconfig",
+		"rust-lang.rust-analyzer",
+		"tamasfe.even-better-toml",
+		"bradlc.vscode-tailwindcss",
+		"biomejs.biome",
+		"lokalise.i18n-ally",
+		"fill-labs.dependi"
+	]
+}
