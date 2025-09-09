@@ -1,5 +1,15 @@
 # 📄 更新日志
 
+## [0.1.1](https://github.com/ddki/devEnvLite/compare/...v0.1.1) (2025-09-09)
+
+### ✨ 新增功能 | A new feature
+
+* :sparkles: v0.1.0 done ([760f8ed](https://github.com/ddki/devEnvLite/commit/760f8edc19b1b4c43ac11d25581e9a63e6dd4e90))
+
+### 🐛 修复缺陷 | A bug fix
+
+* **ui,docs,build:** :bug: fix issues ([61455a2](https://github.com/ddki/devEnvLite/commit/61455a22ccf44f9abe6fec4b34f5d58cd4fd5ae0)), closes [#1](https://github.com/ddki/devEnvLite/issues/1) [#2](https://github.com/ddki/devEnvLite/issues/2) [#3](https://github.com/ddki/devEnvLite/issues/3) [#4](https://github.com/ddki/devEnvLite/issues/4)
+
 ## [0.1.0](https://github.com/ddki/devEnvLite/compare/...v0.1.0) (2025-09-09)
 
 ### ✨ 新增功能 | A new feature
