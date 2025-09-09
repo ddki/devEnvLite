@@ -82,7 +82,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: 'v${{ env.app_version }}'
           name: '${{ env.app_name }} v${{ env.app_version }}'
-          draft: true
           prerelease: false
           body: |
             ## 🎉 Release v${{ env.app_version }}
