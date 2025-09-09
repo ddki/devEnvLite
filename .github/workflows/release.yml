@@ -8,6 +8,7 @@ on:
 env:
   NODE_VERSION: '22.18.0'
   PNPM_VERSION: '10.14.0'
+  app_name: 'DevEnvLite'
 
 jobs:
   create-release:
@@ -18,7 +19,7 @@ jobs:
     outputs:
       release_id: ${{ steps.create-release.outputs.id }}
       app_version: ${{ steps.get-version.outputs.version }}
-      app_name: ${{ steps.get-name.outputs.name }}
+      # app_name: ${{ steps.get-name.outputs.name }}
 
     steps:
       - name: 检出代码仓库
@@ -67,12 +68,12 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "app_version=$VERSION" >> $GITHUB_ENV
 
-      - name: 获取应用名称
-        id: get-name
-        run: |
-          NAME=$(node -p "require('./package.json').name")
-          echo "name=$NAME" >> $GITHUB_OUTPUT
-          echo "app_name=$NAME" >> $GITHUB_ENV
+      # - name: 获取应用名称
+      #   id: get-name
+      #   run: |
+      #     NAME=$(node -p "require('./package.json').name")
+      #     echo "name=$NAME" >> $GITHUB_OUTPUT
+      #     echo "app_name=$NAME" >> $GITHUB_ENV
 
       - name: 创建发布版本
         id: create-release
@@ -219,70 +220,3 @@ jobs:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.args }}
           updaterJsonPreferNsis: true
-
-  publish-release:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    needs: [create-release, build-tauri]
-    timeout-minutes: 5
-    if: success()
-
-    steps:
-      - name: 发布版本
-        uses: actions/github-script@v7
-        env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
-        with:
-          script: |
-            try {
-              const { data: release } = await github.rest.repos.updateRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: process.env.release_id,
-                draft: false,
-                prerelease: false
-              });
-              
-              console.log(`✅ 发布成功: ${release.html_url}`);
-              
-              core.summary
-                .addHeading('🎉 版本发布成功！')
-                .addRaw(`
-                **发布版本**: [${release.name}](${release.html_url})
-                **标签**: ${release.tag_name}
-                **创建时间**: ${new Date(release.created_at).toLocaleString('zh-CN')}
-                `)
-                .write();
-            } catch (error) {
-              core.setFailed(`❌ 发布失败: ${error.message}`);
-              throw error;
-            }
-
-  cleanup-on-failure:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    needs: [create-release, build-tauri]
-    timeout-minutes: 5
-    if: failure()
-
-    steps:
-      - name: 删除失败的发布
-        uses: actions/github-script@v7
-        env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
-        with:
-          script: |
-            try {
-              if (process.env.release_id) {
-                await github.rest.repos.deleteRelease({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  release_id: process.env.release_id,
-                });
-                console.log('🗑️ 已清理失败的发布');
-              }
-            } catch (error) {
-              console.log(`⚠️ 无法删除发布: ${error.message}`);
-            }
