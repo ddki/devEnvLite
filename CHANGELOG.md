@@ -1,5 +1,11 @@
 # 📄 更新日志
 
+## [0.1.2](https://github.com/ddki/devEnvLite/compare/v0.1.1...v0.1.2) (2025-09-10)
+
+### ✨ 新增功能 | A new feature
+
+* :sparkles: add about ([9be3e6b](https://github.com/ddki/devEnvLite/commit/9be3e6b1d86b201b16672a380f499cbfbfd66ced)), closes [#3](https://github.com/ddki/devEnvLite/issues/3)
+
 ## [0.1.1](https://github.com/ddki/devEnvLite/compare/...v0.1.1) (2025-09-09)
 
 ### ✨ 新增功能 | A new feature
