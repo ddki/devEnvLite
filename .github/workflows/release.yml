@@ -84,51 +84,11 @@ jobs:
           name: '${{ env.app_name }} v${{ env.app_version }}'
           prerelease: false
           body: |
-            ## 🎉 Release v${{ env.app_version }}
+            ## 🎉 发布日志
             
             ${{ steps.extract-release-notes.outputs.release_notes }}
             
             ---
-            
-            ### 📥 下载方式
-            
-            请根据您的操作系统选择对应的安装包：
-            
-            #### 🕸️ Windows
-            - 🔗 **MSI 安装包**: [DevEnvLite_${{ env.app_version }}_x64_en-US.msi](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_x64_en-US.msi)
-            - 🔗 **NSIS 安装包**: [DevEnvLite_${{ env.app_version }}_x64-setup.exe](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_x64-setup.exe)
-            
-            #### 🍎 macOS  
-            - 🔗 **DMG 安装包**: [DevEnvLite_${{ env.app_version }}_universal.dmg](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_universal.dmg)
-            - 🔗 **App 压缩包**: [DevEnvLite_${{ env.app_version }}_universal.app.tar.gz](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_universal.app.tar.gz)
-            
-            #### 🐧 Linux
-            - 🔗 **Debian 包**: [dev-env-lite_${{ env.app_version }}_amd64.deb](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/dev-env-lite_${{ env.app_version }}_amd64.deb)
-            - 🔗 **AppImage**: [dev-env-lite_${{ env.app_version }}_amd64.AppImage](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/dev-env-lite_${{ env.app_version }}_amd64.AppImage)
-            
-            > 💡 **提示**: 如果上述直链无法下载或文件名不匹配，请查看下方的 **Assets** 区域手动下载对应文件。
-            
-            ### 🔄 自动更新
-            
-            本应用内置自动更新功能，启动后会自动检查并提示更新到最新版本。您也可以在设置中手动检查更新。
-            
-            ### 🛠️ 系统要求
-            
-            - **Windows**: Windows 10 (1903) 或更高版本
-            - **macOS**: macOS 10.15 (Catalina) 或更高版本，支持 Intel 和 Apple Silicon
-            - **Linux**: 支持 GTK 3.0+ 的主流发行版 (Ubuntu 18.04+, Fedora 30+, etc.)
-            
-            ### 📝 安装说明
-            
-            - **Windows**: 
-              - 下载 [MSI 安装包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_x64_en-US.msi) 或 [NSIS 安装包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_x64-setup.exe)
-              - 双击下载的 `.msi` 或 `.exe` 文件即可安装
-            - **macOS**: 
-              - 下载 [DMG 安装包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_universal.dmg) 或 [App 压缩包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/DevEnvLite_${{ env.app_version }}_universal.app.tar.gz)
-              - 打开 `.dmg` 文件，将应用拖拽到 Applications 文件夹
-            - **Linux**: 
-              - 下载 [Debian 包](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/dev-env-lite_${{ env.app_version }}_amd64.deb) 或 [AppImage](https://github.com/${{ github.repository }}/releases/download/v${{ env.app_version }}/dev-env-lite_${{ env.app_version }}_amd64.AppImage)
-              - 使用 `sudo dpkg -i` 安装 `.deb` 包，或给 `.AppImage` 文件添加执行权限后直接运行
           generateReleaseNotes: true
 
   build-tauri:

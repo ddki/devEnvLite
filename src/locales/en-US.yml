@@ -162,3 +162,6 @@ component:
 
 common:
   default: Default
+  about: About
+  help-wiki: Help Wiki
+  issue: Issue

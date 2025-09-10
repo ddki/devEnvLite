@@ -163,3 +163,6 @@ component:
 
 common:
   default: 默认
+  about: 关于
+  help-wiki: 帮助文档
+  issue: 反馈问题

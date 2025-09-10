@@ -20,7 +20,7 @@ const checkUpdate = async () => {
 		.then((res) => {
 			console.log("check update result: ", res);
 			checkResult.value = res;
-			if (res?.currentVersion === res?.version) {
+			if (res?.currentVersion !== res?.version) {
 				update.value = true;
 			}
 		})

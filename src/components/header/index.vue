@@ -6,6 +6,7 @@
 			<Recover />
 		</div>
 		<div class="flex flex-row items-start gap-2">
+			<About />
 			<Setting />
 		</div>
 	</header>
@@ -14,5 +15,5 @@
 
 <script setup lang="ts">
 import Setting from "@/components/setting/index.vue";
-import { Backup, Collate, Recover } from "./index";
+import { Backup, Collate, Recover, About } from "./index";
 </script>
